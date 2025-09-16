@@ -1,0 +1,42 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Prevent flickering on page transitions */
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reduce animation flickering */
+*,
+*::before,
+*::after {
+  animation-fill-mode: both;
+}
+
+/* Stable layout for navigation elements */
+.layout-stable {
+  contain: layout style paint;
+  will-change: auto;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Prevent flash of unstyled content */
+.animate-fade-in {
+  animation-fill-mode: both;
+}
