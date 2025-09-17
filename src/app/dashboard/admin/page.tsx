@@ -128,11 +128,11 @@ export default function AdminDashboard() {
               <StatCard
                 title="Total Spend (This Month)"
                 value={formatCurrency(kpis.totalSpendThisMonth)}
-                change={{
-                  value: kpis.monthOverMonthTrend.percentageChange,
+                change={kpis.monthOverMonthTrend ? {
+                  value: kpis.monthOverMonthTrend.percentageChange || 0,
                   label: 'vs last month',
-                  trend: kpis.monthOverMonthTrend.percentageChange >= 0 ? 'up' : 'down'
-                }}
+                  trend: (kpis.monthOverMonthTrend.percentageChange || 0) >= 0 ? 'up' : 'down'
+                } : undefined}
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1" />
@@ -142,8 +142,10 @@ export default function AdminDashboard() {
 
               <StatCard
                 title="Fuel Expenses"
-                value={formatCurrency(kpis.fuelVsMiscSplit.fuel)}
-                description={`${Math.round((kpis.fuelVsMiscSplit.fuel / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`}
+                value={formatCurrency(kpis.fuelVsMiscSplit?.fuel || 0)}
+                description={kpis.fuelVsMiscSplit && (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc) > 0
+                  ? `${Math.round((kpis.fuelVsMiscSplit.fuel / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`
+                  : '0% of total spend'}
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -153,8 +155,10 @@ export default function AdminDashboard() {
 
               <StatCard
                 title="Miscellaneous"
-                value={formatCurrency(kpis.fuelVsMiscSplit.misc)}
-                description={`${Math.round((kpis.fuelVsMiscSplit.misc / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`}
+                value={formatCurrency(kpis.fuelVsMiscSplit?.misc || 0)}
+                description={kpis.fuelVsMiscSplit && (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc) > 0
+                  ? `${Math.round((kpis.fuelVsMiscSplit.misc / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`
+                  : '0% of total spend'}
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -164,7 +168,7 @@ export default function AdminDashboard() {
 
               <StatCard
                 title="Active Drivers"
-                value={formatNumber(kpis.topDriversBySpend.length)}
+                value={formatNumber(kpis.topDriversBySpend?.length || 0)}
                 description="Drivers with expenses this month"
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -187,7 +191,7 @@ export default function AdminDashboard() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {kpis.topDriversBySpend.length > 0 ? (
+                  {kpis.topDriversBySpend && kpis.topDriversBySpend.length > 0 ? (
                     <div className="space-y-4">
                       {kpis.topDriversBySpend.map((driver, index) => (
                         <div key={driver.driverId} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
