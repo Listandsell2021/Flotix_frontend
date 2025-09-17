@@ -1,11 +1,10 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Header from './Header';
-import Sidebar, { adminSidebarItems, superAdminSidebarItems } from './Sidebar';
+import { useRouter, usePathname } from 'next/navigation';
+import Header from '@/components/layout/Header';
+import Sidebar, { adminSidebarItems, superAdminSidebarItems } from '@/components/layout/Sidebar';
 import { authApi } from '@/lib/api';
-import Spinner from '@/components/ui/Spinner';
 
 interface User {
   name: string;
@@ -13,12 +12,13 @@ interface User {
   role: string;
 }
 
-interface DashboardLayoutProps {
+export default function AuthenticatedLayout({
+  children,
+}: {
   children: React.ReactNode;
-}
-
-const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
+}) {
   const router = useRouter();
+  const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -28,14 +28,17 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
         const userData = await authApi.getMe();
         setUser(userData);
       } catch (error) {
-        router.push('/login');
+        // Only redirect to login if we're not already on the login page
+        if (pathname !== '/login') {
+          router.push('/login');
+        }
       } finally {
         setLoading(false);
       }
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, pathname]);
 
   if (loading) {
     return (
@@ -56,8 +59,8 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     return null;
   }
 
-  const sidebarItems = user.role === 'SUPER_ADMIN' 
-    ? superAdminSidebarItems 
+  const sidebarItems = user.role === 'SUPER_ADMIN'
+    ? superAdminSidebarItems
     : adminSidebarItems;
 
   return (
@@ -73,7 +76,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
           <Sidebar items={sidebarItems} userRole={user.role} />
         </div>
 
-        {/* Main Content - with stable height to prevent bouncing */}
+        {/* Main Content */}
         <main className="flex-1 ml-64 pt-16" style={{ minHeight: '100vh' }}>
           <div className="p-6 lg:p-8 h-full">
             <div className="max-w-7xl mx-auto" style={{ minHeight: 'calc(100vh - 10rem)' }}>
@@ -84,6 +87,4 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
       </div>
     </div>
   );
-};
-
-export default DashboardLayout;
+}

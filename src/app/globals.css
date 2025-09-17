@@ -25,3 +25,58 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+/* Smooth page transitions without bouncing */
+* {
+  box-sizing: border-box;
+  /* Disable all animations and transitions globally */
+  animation-duration: 0s !important;
+  animation-delay: 0s !important;
+  transition-duration: 0s !important;
+  transition-delay: 0s !important;
+}
+
+/* Prevent layout shift */
+html, body {
+  height: 100%;
+  overflow-x: hidden;
+}
+
+/* Ensure consistent scroll behavior */
+html {
+  scroll-behavior: auto; /* Disable smooth scroll to prevent bounce */
+}
+
+/* Remove default margin/padding that causes jumps */
+h1, h2, h3, h4, h5, h6, p {
+  margin-top: 0;
+}
+
+/* Stable transitions */
+.page-content {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+/* Prevent content jumping */
+main {
+  contain: layout;
+  min-height: 100vh !important;
+}
+
+/* Override any component-level transitions */
+.transition-all,
+.transition-opacity,
+.transition-transform,
+.transition,
+[class*="transition-"] {
+  transition: none !important;
+}
+
+/* Disable animations */
+.animate-pulse,
+.animate-spin,
+.animate-bounce,
+[class*="animate-"] {
+  animation: none !important;
+}

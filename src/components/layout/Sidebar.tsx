@@ -28,15 +28,15 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
       
       {/* Logo Section */}
       <div className="relative flex items-center px-6 py-5 border-b border-secondary-100/50">
-        <Link href={userRole === 'SUPER_ADMIN' ? '/dashboard/super-admin' : '/dashboard/admin'} className="group flex items-center space-x-3 hover:scale-105 transition-transform duration-300">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-medium group-hover:shadow-glow group-hover:rotate-3 transition-all duration-300">
-            <svg className="w-5 h-5 text-white group-hover:animate-bounce-gentle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <Link href={userRole === 'SUPER_ADMIN' ? '/dashboard/super-admin' : '/dashboard/admin'} className="group flex items-center space-x-3">
+          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-medium">
+            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
             </svg>
           </div>
           <div>
-            <h1 className="text-lg font-bold text-secondary-900 group-hover:text-primary-700 transition-colors duration-300">Flotix</h1>
-            <p className="text-xs text-secondary-500 group-hover:text-secondary-600 transition-colors duration-300">Fleet Management</p>
+            <h1 className="text-lg font-bold text-secondary-900 group-hover:text-primary-700">Flotix</h1>
+            <p className="text-xs text-secondary-500 group-hover:text-secondary-600">Fleet Management</p>
           </div>
         </Link>
       </div>
@@ -52,7 +52,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
                 <Link
                   href={item.href}
                   className={cn(
-                    "group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl transition-all duration-300 hover:-translate-y-0.5",
+                    "group relative flex items-center px-4 py-3 text-sm font-medium rounded-xl",
                     isActive
                       ? "bg-gradient-to-r from-primary-500 to-primary-600 text-white shadow-glow"
                       : "text-secondary-600 hover:text-secondary-900 hover:bg-gradient-to-r hover:from-secondary-50 hover:to-primary-50/30 hover:shadow-soft"
@@ -60,23 +60,23 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
                 >
                   <span
                     className={cn(
-                      "mr-4 flex-shrink-0 transition-all duration-300",
+                      "mr-4 flex-shrink-0",
                       isActive ? "text-white" : "text-secondary-400 group-hover:text-primary-600 group-hover:scale-110"
                     )}
                   >
                     {item.icon}
                   </span>
-                  <span className="font-medium transition-colors duration-300">{item.name}</span>
+                  <span className="font-medium">{item.name}</span>
                   {isActive && (
                     <div className="ml-auto flex items-center space-x-1">
-                      <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
-                      <span className="w-1 h-1 bg-white/70 rounded-full animate-pulse" style={{animationDelay: '0.5s'}}></span>
+                      <span className="w-1.5 h-1.5 bg-white rounded-full"></span>
+                      <span className="w-1 h-1 bg-white/70 rounded-full"></span>
                     </div>
                   )}
                   
                   {/* Hover shimmer effect */}
                   {!isActive && (
-                    <div className="absolute inset-0 rounded-xl bg-shimmer bg-[length:200%_100%] opacity-0 group-hover:opacity-100 group-hover:animate-shimmer transition-opacity pointer-events-none"></div>
+                    <div className="absolute inset-0 rounded-xl bg-shimmer bg-[length:200%_100%] opacity-0 group-hover:opacity-100 pointer-events-none"></div>
                   )}
                 </Link>
               </li>
@@ -87,22 +87,22 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
 
       {/* Footer Section */}
       <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-secondary-100/50">
-        <div className="group bg-gradient-to-r from-primary-50 to-primary-100/50 hover:from-primary-100 hover:to-primary-200/50 rounded-xl p-4 transition-all duration-300 hover:shadow-soft cursor-pointer">
+        <div className="group bg-gradient-to-r from-primary-50 to-primary-100/50 hover:from-primary-100 hover:to-primary-200/50 rounded-xl p-4 hover:shadow-soft cursor-pointer">
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center group-hover:bg-primary-600 group-hover:scale-110 group-hover:rotate-12 transition-all duration-300 shadow-soft group-hover:shadow-medium">
-              <svg className="w-4 h-4 text-white group-hover:animate-bounce-gentle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center group-hover:bg-primary-600 shadow-soft group-hover:shadow-medium">
+              <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
             </div>
             <div>
-              <p className="text-xs font-medium text-secondary-900 group-hover:text-secondary-800 transition-colors duration-300">Need Help?</p>
-              <button className="text-xs text-primary-600 hover:text-primary-700 group-hover:text-primary-800 transition-colors duration-300 font-medium">Contact Support</button>
+              <p className="text-xs font-medium text-secondary-900 group-hover:text-secondary-800">Need Help?</p>
+              <button className="text-xs text-primary-600 hover:text-primary-700 group-hover:text-primary-800 font-medium">Contact Support</button>
             </div>
           </div>
           
           {/* Decorative elements */}
-          <div className="absolute top-1 right-1 w-1 h-1 bg-primary-300 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-float transition-all duration-500" style={{animationDelay: '0.1s'}}></div>
-          <div className="absolute bottom-1 right-3 w-0.5 h-0.5 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100 group-hover:animate-float transition-all duration-500" style={{animationDelay: '0.3s'}}></div>
+          <div className="absolute top-1 right-1 w-1 h-1 bg-primary-300 rounded-full opacity-0 group-hover:opacity-100"></div>
+          <div className="absolute bottom-1 right-3 w-0.5 h-0.5 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100"></div>
         </div>
       </div>
     </div>
@@ -147,6 +147,7 @@ export const adminSidebarItems: SidebarItem[] = [
       </svg>
     ),
   },
+  /* HIDDEN: Reports functionality - Re-enable when backend ready
   {
     name: 'Reports',
     href: '/reports',
@@ -155,7 +156,7 @@ export const adminSidebarItems: SidebarItem[] = [
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
       </svg>
     ),
-  },
+  }, */
   {
     name: 'Audit Logs',
     href: '/audit',

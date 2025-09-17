@@ -178,9 +178,9 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
                 )}
               </div>
             ) : (
-              <Button asChild>
-                <Link href="/login">Sign In</Link>
-              </Button>
+              <Link href="/login">
+                <Button>Sign In</Button>
+              </Link>
             )}
           </div>
         </div>
