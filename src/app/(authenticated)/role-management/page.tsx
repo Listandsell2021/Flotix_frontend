@@ -51,11 +51,11 @@ export default function RoleManagementPage() {
         api.get('/roles/permissions'),
         api.get('/auth/me')
       ]);
-      
+
       if (rolesResponse.data.success) {
         setRoles(rolesResponse.data.data.data || []);
       }
-      
+
       if (permissionsResponse.data.success) {
         setPermissions(permissionsResponse.data.data);
       }
@@ -64,7 +64,8 @@ export default function RoleManagementPage() {
         setCurrentUser(userResponse.data.data);
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      console.error('Error loading role data:', err);
+      setError(err.response?.data?.message || err.message || 'Failed to load roles');
     } finally {
       setLoading(false);
     }
@@ -72,14 +73,42 @@ export default function RoleManagementPage() {
 
   const handleCreateRole = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
+    // Validation
+    if (!createFormData.name || !createFormData.displayName || !createFormData.description) {
+      setError('Please fill in all required fields');
+      return;
+    }
+
+    if (createFormData.permissions.length === 0) {
+      setError('Please select at least one permission');
+      return;
+    }
+
+    // Validate name format (uppercase letters and underscores only)
+    if (!/^[A-Z_]+$/.test(createFormData.name)) {
+      setError('Role name must contain only uppercase letters and underscores (e.g., FLEET_MANAGER)');
+      return;
+    }
+
     try {
+      // Extract companyId properly - it might be an object or a string
+      const companyId = typeof currentUser?.companyId === 'object'
+        ? currentUser.companyId._id || currentUser.companyId.id
+        : currentUser?.companyId;
+
       const roleData = {
-        ...createFormData,
+        name: createFormData.name,
+        displayName: createFormData.displayName,
+        description: createFormData.description,
+        permissions: createFormData.permissions,
         // For regular Admins, always include their companyId to create company-specific custom roles
-        // For Super Admins, include companyId to create company-specific roles (never create system roles via UI)
-        companyId: currentUser?.companyId || undefined
+        // For Super Admins, also include companyId if they have one (they might be testing in a company context)
+        ...(companyId && { companyId })
       };
+
+      console.log('Creating role with data:', roleData);
+      console.log('CompanyId type:', typeof companyId, 'value:', companyId);
 
       const response = await api.post('/roles', roleData);
 
@@ -96,13 +125,13 @@ export default function RoleManagementPage() {
         setError(response.data.message || 'Failed to create role');
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      setError(err.response?.data?.message || err.message || 'Failed to create role');
     }
   };
 
   const handleUpdateRole = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (!selectedRole) return;
 
     try {
@@ -116,25 +145,40 @@ export default function RoleManagementPage() {
         setError(response.data.message || 'Failed to update role');
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      setError(err.response?.data?.message || err.message || 'Failed to update role');
     }
   };
 
-  const handleDeleteRole = async (roleId: string) => {
-    if (!confirm('Are you sure you want to delete this role? This action cannot be undone.')) {
+  const handleDeleteRole = async (roleId: string, forceDelete: boolean = false) => {
+    if (!forceDelete && !confirm('Are you sure you want to delete this role? This action cannot be undone.')) {
       return;
     }
 
     try {
-      const response = await api.delete(`/roles/${roleId}`);
+      const url = forceDelete ? `/roles/${roleId}?force=true` : `/roles/${roleId}`;
+      const response = await api.delete(url);
 
       if (response.data.success) {
         await loadData();
+        setError(''); // Clear any previous errors
       } else {
         setError(response.data.message || 'Failed to delete role');
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to delete role';
+
+      // If role has assignments, ask if user wants to force delete
+      if (errorMessage.includes('assigned to') && errorMessage.includes('user(s)')) {
+        const forceConfirm = confirm(
+          `${errorMessage}\n\nDo you want to force delete this role and remove all assignments?`
+        );
+
+        if (forceConfirm) {
+          handleDeleteRole(roleId, true);
+        }
+      } else {
+        setError(errorMessage);
+      }
     }
   };
 
@@ -266,22 +310,27 @@ export default function RoleManagementPage() {
                     <p className="text-sm text-gray-500 mt-1">{role.description}</p>
                   </div>
                   <div className="flex space-x-2">
-                    <Button 
-                      variant="outline" 
-                      size="sm" 
-                      onClick={() => handleEditRole(role)}
-                    >
-                      Edit
-                    </Button>
                     {!role.isSystem && (
-                      <Button 
-                        variant="outline" 
-                        size="sm" 
-                        onClick={() => handleDeleteRole(role._id)}
-                        className="text-red-600 hover:text-red-700"
-                      >
-                        Delete
-                      </Button>
+                      <>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleEditRole(role)}
+                        >
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteRole(role._id, false)}
+                          className="text-red-600 hover:text-red-700"
+                        >
+                          Delete
+                        </Button>
+                      </>
+                    )}
+                    {role.isSystem && (
+                      <span className="text-xs text-gray-500 italic">System role (read-only)</span>
                     )}
                   </div>
                 </div>
@@ -338,13 +387,20 @@ export default function RoleManagementPage() {
                     <input
                       type="text"
                       value={createFormData.name}
-                      onChange={(e) => setCreateFormData(prev => ({ ...prev, name: e.target.value.toUpperCase() }))}
+                      onChange={(e) => {
+                        // Only allow uppercase letters and underscores
+                        const value = e.target.value.toUpperCase().replace(/[^A-Z_]/g, '');
+                        setCreateFormData(prev => ({ ...prev, name: value }));
+                      }}
                       className="w-full p-2 border border-gray-300 rounded-md"
                       placeholder="e.g., FLEET_MANAGER"
                       pattern="[A-Z_]+"
                       title="Only uppercase letters and underscores allowed"
                       required
                     />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Use uppercase letters and underscores only (e.g., FLEET_MANAGER, EXPENSE_APPROVER)
+                    </p>
                   </div>
 
                   <div>
@@ -377,8 +433,11 @@ export default function RoleManagementPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Permissions
+                      Permissions <span className="text-red-500">*</span>
                     </label>
+                    <p className="text-xs text-gray-500 mb-3">
+                      Select at least one permission for this role. Permissions determine what actions users with this role can perform.
+                    </p>
                     {permissions && Object.entries(permissions.grouped).map(([category, perms]) => (
                       <div key={category} className="mb-4">
                         <h4 className="font-medium text-gray-800 mb-2 capitalize">
@@ -404,14 +463,21 @@ export default function RoleManagementPage() {
                   </div>
 
                   <div className="flex justify-end space-x-2 pt-4">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
-                      onClick={() => setShowCreateModal(false)}
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => {
+                        setShowCreateModal(false);
+                        setError('');
+                      }}
                     >
                       Cancel
                     </Button>
-                    <Button type="submit" className="bg-primary-600 hover:bg-primary-700 text-white">
+                    <Button
+                      type="submit"
+                      className="bg-primary-600 hover:bg-primary-700 text-white"
+                      disabled={!createFormData.name || !createFormData.displayName || !createFormData.description || createFormData.permissions.length === 0}
+                    >
                       Create Role
                     </Button>
                   </div>

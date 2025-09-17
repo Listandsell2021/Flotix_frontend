@@ -60,6 +60,12 @@ export default function UserManagement() {
 
   useEffect(() => {
     loadData();
+    // Reload data when the page gets focus (e.g., after creating a role)
+    const handleFocus = () => {
+      loadData();
+    };
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
   }, []);
 
   const loadData = async () => {
@@ -67,44 +73,97 @@ export default function UserManagement() {
       setLoading(true);
       const currentUserResponse = await authApi.getMe();
       setCurrentUser(currentUserResponse);
-      
+
       const requests = [
         api.get('/users'),
         api.get('/roles')
       ];
-      
+
       // Load companies only for Super Admins
       if (currentUserResponse.role === 'SUPER_ADMIN') {
         requests.push(api.get('/companies'));
       }
-      
+
       const responses = await Promise.all(requests);
       const [usersResponse, rolesResponse, companiesResponse] = responses;
-      
+
       if (usersResponse.data.success) {
         setUsers(usersResponse.data.data?.data || []);
       }
-      
-      if (rolesResponse.data.success) {
-        const allRoles: Role[] = rolesResponse.data.data.data || [];
-        let customRoles;
 
-        if (currentUserResponse.role === 'SUPER_ADMIN') {
-          // Super Admin can see all custom roles (both system-wide and company-specific)
-          customRoles = allRoles.filter((role: Role) => !role.isSystem);
-        } else {
-          // Regular Admin can only see custom roles for their company
-          customRoles = allRoles.filter((role: Role) => !role.isSystem && role.companyId === currentUserResponse.companyId);
+      if (rolesResponse.data.success) {
+        // The response might be in different formats, let's handle both
+        const responseData = rolesResponse.data.data;
+        console.log('Raw roles response:', rolesResponse.data);
+        console.log('Response data structure:', responseData);
+
+        let allRoles: Role[] = [];
+
+        // Check if it's directly an array or has a data property
+        if (Array.isArray(responseData)) {
+          allRoles = responseData;
+          console.log('Roles are directly an array');
+        } else if (responseData && Array.isArray(responseData.data)) {
+          allRoles = responseData.data;
+          console.log('Roles are in responseData.data');
+        } else if (responseData) {
+          // It might be a single object, convert to array
+          allRoles = [responseData];
+          console.log('Single role object, converted to array');
         }
 
+        // Debug: Log all roles to see what's coming from the backend
+        console.log('All roles from backend:', allRoles);
+        console.log('Role details:', allRoles.map((r: Role) => ({
+          name: r.name,
+          displayName: r.displayName,
+          isSystem: r.isSystem,
+          companyId: r.companyId
+        })));
+
+        // IMPORTANT: Only show CUSTOM roles (non-system roles) for assignment
+        // System roles are assigned directly when creating the user, not through assign-multiple
+        let customRoles = allRoles.filter((role: Role) => !role.isSystem);
+        console.log('After filtering for custom (non-system) roles:', customRoles.length, 'roles');
+
+        // Re-enable company filtering for custom roles
+        // Further filter by company if not Super Admin
+        if (currentUserResponse.role !== 'SUPER_ADMIN' && currentUserResponse.companyId) {
+          const beforeCompanyFilter = customRoles.length;
+          const userCompanyId = typeof currentUserResponse.companyId === 'object'
+            ? (currentUserResponse.companyId._id || currentUserResponse.companyId.id)
+            : currentUserResponse.companyId;
+
+          console.log('User companyId:', userCompanyId, 'Type:', typeof currentUserResponse.companyId);
+          console.log('Comparing with role companyIds:', customRoles.map(r => ({
+            name: r.name,
+            displayName: r.displayName,
+            companyId: r.companyId,
+            companyIdType: typeof r.companyId
+          })));
+
+          // Filter custom roles by company
+          customRoles = customRoles.filter((role: Role) => {
+            // Custom roles should have a companyId
+            if (!role.companyId) return false;
+
+            const roleCompanyId = typeof role.companyId === 'object'
+              ? (role.companyId._id || role.companyId.id || role.companyId)
+              : role.companyId;
+            return roleCompanyId === userCompanyId;
+          });
+          console.log(`After company filter (companyId: ${userCompanyId}):`, customRoles.length, 'roles (was', beforeCompanyFilter, ')');
+        }
+
+        console.log('Custom roles available for assignment:', customRoles);
         setRoles(customRoles);
       }
-      
+
       if (companiesResponse && companiesResponse.data.success) {
         setCompanies(companiesResponse.data.data?.data || []);
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred while loading data');
+      setError(err.response?.data?.message || err.message || 'Failed to load data');
     } finally {
       setLoading(false);
     }
@@ -112,26 +171,26 @@ export default function UserManagement() {
 
   const handleCreateUser = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     // Validation
     if (createFormData.roleType === 'system' && !createFormData.role) {
       setError('Please select a system role');
       return;
     }
-    
+
     if (createFormData.roleType === 'custom' && createFormData.assignedRoleIds.length === 0) {
       setError('Please select a custom role');
       return;
     }
-    
+
     if (currentUser?.role === 'SUPER_ADMIN' && createFormData.roleType === 'system' && !createFormData.companyId) {
       setError('Please select a company for the admin');
       return;
     }
-    
+
     try {
       setCreateLoading(true);
-      
+
       let userData;
       if (createFormData.roleType === 'system') {
         // Creating user with system role
@@ -152,9 +211,9 @@ export default function UserManagement() {
           ...(createFormData.companyId && { companyId: createFormData.companyId })
         };
       }
-      
+
       const response = await api.post('/users', userData);
-      
+
       if (response.data.success) {
         // If custom role type is selected, assign the custom roles
         if (createFormData.roleType === 'custom' && createFormData.assignedRoleIds.length > 0) {
@@ -163,7 +222,7 @@ export default function UserManagement() {
             roleIds: createFormData.assignedRoleIds
           });
         }
-        
+
         setShowCreateModal(false);
         setCreateFormData({
           name: '',
@@ -171,14 +230,15 @@ export default function UserManagement() {
           password: '',
           role: '',
           assignedRoleIds: [],
-          roleType: 'system'
+          roleType: 'system',
+          companyId: ''
         });
         await loadData();
       } else {
         setError(response.data.message || 'Failed to create user');
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      setError(err.response?.data?.message || err.message || 'Failed to create user');
     } finally {
       setCreateLoading(false);
     }
@@ -186,13 +246,13 @@ export default function UserManagement() {
 
   const handleAssignRoles = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     try {
       const response = await api.post('/roles/assign-multiple', {
         userId: assignFormData.userId,
         roleIds: assignFormData.roleIds
       });
-      
+
       if (response.data.success) {
         setShowAssignModal(false);
         setSelectedUser(null);
@@ -201,25 +261,28 @@ export default function UserManagement() {
         setError(response.data.message || 'Failed to assign roles');
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      setError(err.response?.data?.message || err.message || 'Failed to assign roles');
     }
   };
 
   const handleDeleteUser = async (userId: string) => {
-    if (!confirm('Are you sure you want to delete this user? This action cannot be undone.')) {
+    // Confirm permanent deletion
+    if (!confirm('Are you sure you want to permanently delete this user? This action cannot be undone and will remove all associated data.')) {
       return;
     }
-    
+
     try {
-      const response = await api.delete(`/users/${userId}`);
-      
+      // Always do hard delete to actually remove from database
+      const response = await api.delete(`/users/${userId}?hard=true`);
+
       if (response.data.success) {
         await loadData();
+        setError(''); // Clear any previous errors
       } else {
         setError(response.data.message || 'Failed to delete user');
       }
     } catch (err: any) {
-      setError(err.message || 'An error occurred');
+      setError(err.response?.data?.message || err.message || 'Failed to delete user');
     }
   };
 
@@ -261,18 +324,29 @@ export default function UserManagement() {
               {currentUser?.role === 'SUPER_ADMIN' ? 'Admin Management' : 'User Management'}
             </h1>
             <p className="text-secondary-600 mt-1">
-              {currentUser?.role === 'SUPER_ADMIN' 
+              {currentUser?.role === 'SUPER_ADMIN'
                 ? 'Manage company administrators and assign roles'
                 : 'Manage company users and assign roles to control access'
               }
             </p>
           </div>
-          <Button
-            onClick={() => setShowCreateModal(true)}
-            className="bg-primary-600 hover:bg-primary-700"
-          >
-            {currentUser?.role === 'SUPER_ADMIN' ? 'Create Admin' : 'Create User'}
-          </Button>
+          <div className="flex space-x-3">
+            <Button
+              variant="outline"
+              onClick={() => loadData()}
+              title="Refresh data"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+            </Button>
+            <Button
+              onClick={() => setShowCreateModal(true)}
+              className="bg-primary-600 hover:bg-primary-700"
+            >
+              {currentUser?.role === 'SUPER_ADMIN' ? 'Create Admin' : 'Create User'}
+            </Button>
+          </div>
         </div>
 
         {/* Error Message */}
@@ -447,6 +521,10 @@ export default function UserManagement() {
                 <label className="block text-sm font-medium text-secondary-700 mb-2">
                   Role Type
                 </label>
+                <div className="bg-blue-50 p-3 rounded-md mb-3 text-xs text-blue-800">
+                  <p className="mb-1"><strong>System Roles:</strong> Built-in roles that define base permissions (Super Admin, Admin, Manager, Driver, Viewer)</p>
+                  <p><strong>Custom Roles:</strong> Additional roles created in Role Management for specialized permissions (e.g., FLEET_MANAGER)</p>
+                </div>
                 <div className="flex space-x-4 mb-4">
                   <label className="flex items-center">
                     <input
@@ -462,7 +540,7 @@ export default function UserManagement() {
                       })}
                       className="mr-2"
                     />
-                    <span className="text-sm text-secondary-700">System Role</span>
+                    <span className="text-sm text-secondary-700">System Role (Primary)</span>
                   </label>
                   <label className="flex items-center">
                     <input
@@ -478,7 +556,7 @@ export default function UserManagement() {
                       })}
                       className="mr-2"
                     />
-                    <span className="text-sm text-secondary-700">Custom Role</span>
+                    <span className="text-sm text-secondary-700">Custom Role (Additional)</span>
                   </label>
                 </div>
               </div>
@@ -498,17 +576,18 @@ export default function UserManagement() {
                     {currentUser?.role === 'SUPER_ADMIN' ? (
                       // Super Admin can create all system roles
                       <>
+                        <option value={UserRole.SUPER_ADMIN}>Super Admin</option>
                         <option value={UserRole.ADMIN}>Admin</option>
                         <option value={UserRole.MANAGER}>Manager</option>
-                        <option value={UserRole.VIEWER}>Viewer</option>
                         <option value={UserRole.DRIVER}>Driver</option>
+                        <option value={UserRole.VIEWER}>Viewer</option>
                       </>
                     ) : (
                       // Regular Admin can create these company-level users
                       <>
                         <option value={UserRole.MANAGER}>Manager</option>
-                        <option value={UserRole.VIEWER}>Viewer</option>
                         <option value={UserRole.DRIVER}>Driver</option>
+                        <option value={UserRole.VIEWER}>Viewer</option>
                       </>
                     )}
                   </select>
@@ -540,9 +619,15 @@ export default function UserManagement() {
                   <label className="block text-sm font-medium text-secondary-700 mb-2">
                     Select Custom Role
                   </label>
+                  <div className="text-xs text-secondary-500 mb-2">
+                    Custom roles provide additional permissions beyond the base system role. Create custom roles in the Role Management page.
+                  </div>
                   <div className="max-h-32 overflow-y-auto border border-secondary-200 rounded-md p-2">
                     {roles.length === 0 ? (
-                      <p className="text-sm text-secondary-500 p-2">No custom roles available. Create roles in Role Management first.</p>
+                      <div className="text-center p-4">
+                        <p className="text-sm text-secondary-600 mb-2">No custom roles available</p>
+                        <p className="text-xs text-secondary-500">Create custom roles in the Role Management page first, then refresh this page.</p>
+                      </div>
                     ) : (
                       roles.map((role) => (
                         <label key={role._id} className="flex items-center space-x-2 py-1">
