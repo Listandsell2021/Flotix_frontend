@@ -1,0 +1,61 @@
+{
+  "title": "Vehicle Management",
+  "subtitle": "Manage your fleet vehicles",
+  "addVehicle": "Add Vehicle",
+  "filters": {
+    "all": "All Vehicles",
+    "active": "Active",
+    "maintenance": "In Maintenance",
+    "retired": "Retired",
+    "search": "Search vehicles..."
+  },
+  "table": {
+    "licensePlate": "License Plate",
+    "makeModel": "Make & Model",
+    "year": "Year",
+    "type": "Type",
+    "status": "Status",
+    "driver": "Assigned Driver",
+    "odometer": "Odometer",
+    "lastService": "Last Service",
+    "actions": "Actions",
+    "noData": "No vehicles found"
+  },
+  "types": {
+    "car": "Car",
+    "truck": "Truck",
+    "van": "Van",
+    "motorcycle": "Motorcycle"
+  },
+  "form": {
+    "title": "Add New Vehicle",
+    "editTitle": "Edit Vehicle",
+    "make": "Make",
+    "model": "Model",
+    "year": "Year",
+    "licensePlate": "License Plate",
+    "vin": "VIN Number",
+    "type": "Vehicle Type",
+    "color": "Color",
+    "fuelType": "Fuel Type",
+    "currentOdometer": "Current Odometer",
+    "purchaseDate": "Purchase Date",
+    "assignDriver": "Assign Driver",
+    "submit": "Add Vehicle",
+    "save": "Save Changes",
+    "cancel": "Cancel"
+  },
+  "status": {
+    "active": "Active",
+    "maintenance": "Maintenance",
+    "retired": "Retired"
+  },
+  "messages": {
+    "createSuccess": "Vehicle added successfully",
+    "updateSuccess": "Vehicle updated successfully",
+    "deleteSuccess": "Vehicle deleted successfully",
+    "assignSuccess": "Driver assigned successfully",
+    "unassignSuccess": "Driver unassigned successfully",
+    "error": "An error occurred"
+  }
+}

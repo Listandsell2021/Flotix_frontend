@@ -7,8 +7,8 @@ import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { formatDate } from '@/lib/utils';
 import { api } from '@/lib/api';
-import type { Role, User } from '@fleetflow/types';
-import { Permission } from '@fleetflow/types';
+import type { Role, User } from "../../../types"
+import { Permission } from "../../../types"
 
 interface RoleWithUsers extends Role {
   userCount?: number;

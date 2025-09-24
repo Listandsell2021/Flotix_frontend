@@ -1,29 +1,33 @@
 {
-  "name": "@fleetflow/flotix-frontend",
-  "version": "0.1.0",
+  "name": "flotix-frontend-standalone",
+  "version": "1.0.0",
+  "description": "Flotix Fleet Management Frontend - Standalone Deployment",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "deploy": "./deploy.sh"
   },
   "dependencies": {
-    "@fleetflow/types": "workspace:*",
+    "@hookform/resolvers": "^3.3.2",
+    "axios": "^1.6.2",
+    "clsx": "^2.0.0",
+    "date-fns": "^2.30.0",
+    "i18next": "^25.5.2",
+    "i18next-browser-languagedetector": "^8.2.0",
+    "lucide-react": "^0.294.0",
     "next": "14.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "axios": "^1.6.2",
-    "react-query": "^3.39.3",
     "react-hook-form": "^7.48.2",
-    "@hookform/resolvers": "^3.3.2",
-    "zod": "^3.22.4",
+    "react-i18next": "^15.7.3",
+    "react-query": "^3.39.3",
     "recharts": "^2.8.0",
-    "date-fns": "^2.30.0",
-    "lucide-react": "^0.294.0",
-    "clsx": "^2.0.0",
-    "tailwind-merge": "^2.1.0"
+    "tailwind-merge": "^2.1.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@types/node": "^20.9.0",
@@ -35,5 +39,8 @@
     "postcss": "^8.4.32",
     "tailwindcss": "^3.3.6",
     "typescript": "^5.2.2"
-  }
+  },
+  "keywords": ["fleet-management", "frontend", "nextjs", "react", "typescript", "flotix"],
+  "author": "Flotix Team",
+  "license": "MIT"
 }

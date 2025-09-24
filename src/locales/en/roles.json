@@ -1,0 +1,66 @@
+{
+  "title": "Role Management",
+  "subtitle": "Manage custom roles and permissions",
+  "addRole": "Create Role",
+  "filters": {
+    "all": "All Roles",
+    "system": "System Roles",
+    "custom": "Custom Roles",
+    "search": "Search roles..."
+  },
+  "table": {
+    "name": "Role Name",
+    "displayName": "Display Name",
+    "description": "Description",
+    "permissions": "Permissions",
+    "assignedUsers": "Assigned Users",
+    "createdAt": "Created",
+    "actions": "Actions",
+    "noData": "No roles found"
+  },
+  "permissions": {
+    "title": "Permissions",
+    "expenses": {
+      "view": "View Expenses",
+      "create": "Create Expenses",
+      "edit": "Edit Expenses",
+      "delete": "Delete Expenses"
+    },
+    "vehicles": {
+      "view": "View Vehicles",
+      "create": "Create Vehicles",
+      "edit": "Edit Vehicles",
+      "delete": "Delete Vehicles"
+    },
+    "users": {
+      "view": "View Users",
+      "create": "Create Users",
+      "edit": "Edit Users",
+      "delete": "Delete Users"
+    },
+    "reports": {
+      "view": "View Reports",
+      "export": "Export Reports"
+    }
+  },
+  "form": {
+    "title": "Create New Role",
+    "editTitle": "Edit Role",
+    "roleName": "Role Name",
+    "displayName": "Display Name",
+    "description": "Description",
+    "selectPermissions": "Select Permissions",
+    "submit": "Create Role",
+    "save": "Save Changes",
+    "cancel": "Cancel"
+  },
+  "messages": {
+    "createSuccess": "Role created successfully",
+    "updateSuccess": "Role updated successfully",
+    "deleteSuccess": "Role deleted successfully",
+    "assignSuccess": "Role assigned successfully",
+    "error": "An error occurred",
+    "confirmDelete": "Are you sure you want to delete this role?",
+    "hasUsers": "This role has assigned users"
+  }
+}

@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency } from '@/lib/utils';
-import type { DashboardKPIs, ReportFilters } from '@fleetflow/types';
+import type { DashboardKPIs, ReportFilters } from "../../../types"
 
 export default function ReportsPage() {
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import Header from '@/components/layout/Header';
 import Sidebar, { adminSidebarItems, superAdminSidebarItems } from '@/components/layout/Sidebar';
+import MobileMenu from '@/components/layout/MobileMenu';
 import { authApi } from '@/lib/api';
 
 interface User {
@@ -21,6 +22,7 @@ export default function AuthenticatedLayout({
   const pathname = usePathname();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -67,18 +69,30 @@ export default function AuthenticatedLayout({
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <div className="relative z-20">
-        <Header user={user} />
+        <Header
+          user={user}
+          onMenuToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          isMobileMenuOpen={isMobileMenuOpen}
+        />
       </div>
 
-      <div className="flex">
-        {/* Sidebar */}
-        <div>
+      <div className="flex relative">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block">
           <Sidebar items={sidebarItems} userRole={user.role} />
         </div>
 
+        {/* Mobile Menu */}
+        <MobileMenu
+          items={sidebarItems}
+          userRole={user.role}
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
+        />
+
         {/* Main Content */}
-        <main className="flex-1 ml-64 pt-16" style={{ minHeight: '100vh' }}>
-          <div className="p-6 lg:p-8 h-full">
+        <main className="flex-1 lg:ml-64 pt-16" style={{ minHeight: '100vh' }}>
+          <div className="p-4 sm:p-6 lg:p-8 h-full">
             <div className="max-w-7xl mx-auto" style={{ minHeight: 'calc(100vh - 10rem)' }}>
               {children}
             </div>

@@ -1,0 +1,61 @@
+{
+  "title": "Fahrzeugverwaltung",
+  "subtitle": "Verwalten Sie Ihre Flottenfahrzeuge",
+  "addVehicle": "Fahrzeug hinzufügen",
+  "filters": {
+    "all": "Alle Fahrzeuge",
+    "active": "Aktiv",
+    "maintenance": "In Wartung",
+    "retired": "Außer Dienst",
+    "search": "Fahrzeuge suchen..."
+  },
+  "table": {
+    "licensePlate": "Kennzeichen",
+    "makeModel": "Marke & Modell",
+    "year": "Jahr",
+    "type": "Typ",
+    "status": "Status",
+    "driver": "Zugewiesener Fahrer",
+    "odometer": "Kilometerstand",
+    "lastService": "Letzte Wartung",
+    "actions": "Aktionen",
+    "noData": "Keine Fahrzeuge gefunden"
+  },
+  "types": {
+    "car": "Auto",
+    "truck": "LKW",
+    "van": "Transporter",
+    "motorcycle": "Motorrad"
+  },
+  "form": {
+    "title": "Neues Fahrzeug hinzufügen",
+    "editTitle": "Fahrzeug bearbeiten",
+    "make": "Marke",
+    "model": "Modell",
+    "year": "Jahr",
+    "licensePlate": "Kennzeichen",
+    "vin": "FIN-Nummer",
+    "type": "Fahrzeugtyp",
+    "color": "Farbe",
+    "fuelType": "Kraftstoffart",
+    "currentOdometer": "Aktueller Kilometerstand",
+    "purchaseDate": "Kaufdatum",
+    "assignDriver": "Fahrer zuweisen",
+    "submit": "Fahrzeug hinzufügen",
+    "save": "Änderungen speichern",
+    "cancel": "Abbrechen"
+  },
+  "status": {
+    "active": "Aktiv",
+    "maintenance": "Wartung",
+    "retired": "Außer Dienst"
+  },
+  "messages": {
+    "createSuccess": "Fahrzeug erfolgreich hinzugefügt",
+    "updateSuccess": "Fahrzeug erfolgreich aktualisiert",
+    "deleteSuccess": "Fahrzeug erfolgreich gelöscht",
+    "assignSuccess": "Fahrer erfolgreich zugewiesen",
+    "unassignSuccess": "Fahrerzuweisung erfolgreich entfernt",
+    "error": "Ein Fehler ist aufgetreten"
+  }
+}

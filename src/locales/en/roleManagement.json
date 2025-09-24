@@ -1,0 +1,45 @@
+{
+  "title": "Role Management",
+  "subtitle": "Manage user roles and permissions",
+  "buttons": {
+    "createRole": "Create Role",
+    "cancel": "Cancel",
+    "retry": "Retry",
+    "edit": "Edit",
+    "delete": "Delete",
+    "updateRole": "Update Role"
+  },
+  "loading": "Loading role management...",
+  "error": {
+    "title": "Error Loading Roles",
+    "generic": "Failed to load roles"
+  },
+  "systemRole": "System",
+  "systemRoleNote": "System role (read-only)",
+  "created": "Created: {{date}}",
+  "permissions": {
+    "title": "Permissions ({{count}})",
+    "more": "+{{count}} more",
+    "selectAtLeastOne": "Select at least one permission for this role. Permissions determine what actions users with this role can perform.",
+    "category": "{{category}} Permissions"
+  },
+  "modals": {
+    "createTitle": "Create New Role",
+    "editTitle": "Edit Role: {{name}}",
+    "fields": {
+      "roleName": "Role Name (Internal)",
+      "roleNameHint": "Use uppercase letters and underscores only (e.g., FLEET_MANAGER, EXPENSE_APPROVER)",
+      "displayName": "Display Name",
+      "description": "Description"
+    },
+    "placeholders": {
+      "roleName": "e.g., FLEET_MANAGER",
+      "displayName": "e.g., Fleet Manager",
+      "description": "Describe what this role is for..."
+    }
+  },
+  "confirm": {
+    "delete": "Are you sure you want to delete this role? This action cannot be undone.",
+    "forceDelete": "{{message}} Do you want to force delete this role and remove all assignments?"
+  }
+}

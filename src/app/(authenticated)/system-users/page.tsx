@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
-import type { User } from '@fleetflow/types';
+import type { User } from "../../../types"
 
 export default function SystemUsersPage() {
   const [users, setUsers] = useState<User[]>([]);

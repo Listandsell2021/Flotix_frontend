@@ -1,0 +1,13 @@
+{
+  "admin": {
+    "Dashboard": "Übersicht",
+    "Expenses": "Ausgaben",
+    "Drivers": "Fahrer",
+    "Vehicles": "Fahrzeuge",
+    "Audit Logs": "Prüfprotokolle",
+    "Role Management": "Rollenverwaltung",
+    "User Management": "Benutzerverwaltung",
+    "Profile": "Profil"
+  },
+  "superAdmin": {}
+}

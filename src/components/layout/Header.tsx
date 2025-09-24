@@ -1,11 +1,14 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useOutsideClick } from '@/hooks/useOutsideClick';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { authApi } from '@/lib/api';
+import { auditApi } from '@/lib/auditApi';
 import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
+import LanguageSwitcher from '@/components/LanguageSwitcher';
 
 interface HeaderProps {
   user?: {
@@ -13,12 +16,31 @@ interface HeaderProps {
     email: string;
     role: string;
   };
+  onMenuToggle?: () => void;
+  isMobileMenuOpen?: boolean;
 }
 
-const Header: React.FC<HeaderProps> = ({ user }) => {
+const Header: React.FC<HeaderProps> = ({ user, onMenuToggle, isMobileMenuOpen }) => {
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showNotifications, setShowNotifications] = useState(false);
+  const notificationRef = useRef<HTMLDivElement>(null);
+  const [auditLogs, setAuditLogs] = useState<any[]>([]);
+  const [auditLoading, setAuditLoading] = useState(false);
+  const [auditError, setAuditError] = useState('');
+
+  useOutsideClick(notificationRef, () => setShowNotifications(false), showNotifications);
+
+  useEffect(() => {
+    if (showNotifications) {
+      setAuditLoading(true);
+      auditApi.getRecentLogs(5)
+        .then((logs) => setAuditLogs(logs.data || logs))
+        .catch(() => setAuditError('Failed to load audit logs'))
+        .finally(() => setAuditLoading(false));
+    }
+  }, [showNotifications]);
 
   const handleLogout = async () => {
     setLoading(true);
@@ -33,12 +55,29 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
   };
 
   return (
-    <header className="layout-stable fixed top-0 right-0 left-64 z-30 bg-white/85 backdrop-blur-xl border-b border-secondary-200/50 shadow-soft">
-      <div className="px-6 lg:px-8">
+    <header className="layout-stable fixed top-0 right-0 left-0 lg:left-64 z-30 bg-white/85 backdrop-blur-xl border-b border-secondary-200/50 shadow-soft">
+      <div className="px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
-          {/* Page Title Area - Will be dynamically set */}
+          {/* Mobile Menu Toggle and Logo */}
           <div className="flex items-center">
-            <div className="flex items-center space-x-3">
+            {/* Mobile Menu Toggle */}
+            <button
+              onClick={onMenuToggle}
+              className="lg:hidden p-2 mr-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              {isMobileMenuOpen ? (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              ) : (
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                </svg>
+              )}
+            </button>
+
+            {/* Logo - Hidden on desktop since sidebar shows it */}
+            <div className="flex lg:hidden items-center space-x-3">
               <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-medium animate-bounce-gentle">
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
@@ -48,33 +87,62 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
             </div>
           </div>
 
-          {/* Search Bar */}
-          <div className="hidden md:flex items-center max-w-md mx-auto">
-            <div className="relative w-full group">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <svg className="w-4 h-4 text-secondary-400 group-focus-within:text-primary-500 transition-colors duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                placeholder="Search fleet, drivers, expenses..."
-                className="block w-full pl-10 pr-3 py-2.5 border border-secondary-200/50 rounded-xl bg-white/60 backdrop-blur-sm text-sm placeholder-secondary-400 focus:outline-none focus:ring-2 focus:ring-primary-500/30 focus:border-primary-400 focus:bg-white/80 focus:shadow-glow transition-all duration-300 hover:border-primary-300 hover:bg-white/70"
-              />
-              <div className="absolute inset-0 rounded-xl bg-shimmer bg-[length:200%_100%] opacity-0 group-focus-within:opacity-100 group-focus-within:animate-shimmer transition-opacity pointer-events-none"></div>
-            </div>
-          </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            {/* Language Switcher - Hidden on mobile */}
+            <div className="hidden sm:block">
+              <LanguageSwitcher />
+            </div>
+
             {/* Notifications */}
-            <div className="relative">
-              <button className="p-2.5 text-secondary-500 hover:text-secondary-700 hover:bg-secondary-100/50 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-medium group">
+            <div className="relative" ref={notificationRef}>
+              <button
+                className="p-2 sm:p-2.5 text-secondary-500 hover:text-secondary-700 hover:bg-secondary-100/50 rounded-xl transition-all duration-300 hover:scale-110 hover:shadow-medium group"
+                onClick={() => setShowNotifications(!showNotifications)}
+              >
                 <svg className="w-5 h-5 group-hover:animate-wiggle" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 17h5l-3.405-3.405A6.5 6.5 0 0118 10c0-3.314-2.686-6-6-6s-6 2.686-6 6a6.5 6.5 0 001.405 4.595L6 17h5m4 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
               </button>
-              <div className="absolute -top-1 -right-1 w-3 h-3 bg-accent-500 rounded-full animate-pulse"></div>
+              <div className="absolute -top-1 -right-1 w-2 h-2 sm:w-3 sm:h-3 bg-accent-500 rounded-full animate-pulse"></div>
+              {/* Dropdown Notification */}
+              {showNotifications && (
+                <div className="absolute right-0 mt-3 w-80 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-xl rounded-xl shadow-large border border-secondary-200/50 py-2 z-50">
+                  <div className="px-4 py-2 border-b border-secondary-100">
+                    <span className="font-semibold text-secondary-900">Audit Log Notifications</span>
+                  </div>
+                  <div className="max-h-96 overflow-y-auto">
+                    {auditLoading ? (
+                      <div className="flex items-center justify-center py-6 text-secondary-400">Loading...</div>
+                    ) : auditError ? (
+                      <div className="text-red-500 px-4 py-2">{auditError}</div>
+                    ) : auditLogs.length === 0 ? (
+                      <div className="px-4 py-6 text-secondary-400 text-center">No recent audit logs</div>
+                    ) : (
+                      <ul className="divide-y divide-secondary-100">
+                        {auditLogs.map((log) => {
+                          const date = new Date(log.timestamp);
+                          return (
+                            <li key={log._id} className="py-3 px-4 flex flex-col gap-1 hover:bg-secondary-50 transition-colors">
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-sm text-secondary-900">{typeof log.userId === 'object' && log.userId?.name ? log.userId.name : 'Unknown User'}</span>
+                                <span className="text-xs px-2 py-0.5 rounded bg-secondary-100 text-secondary-700">{log.action}</span>
+                                <span className="text-xs px-2 py-0.5 rounded bg-primary-100 text-primary-700">{log.module}</span>
+                              </div>
+                              <div className="text-xs text-secondary-500">{log.details || `${log.action} ${log.module}`}</div>
+                              <div className="text-xs text-secondary-400">{date.toLocaleDateString()} {date.toLocaleTimeString()}</div>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    )}
+                  </div>
+                  <div className="border-t border-secondary-100 px-4 py-2 text-right">
+                    <Link href="/audit" className="text-primary-600 hover:underline text-sm">View all</Link>
+                  </div>
+                </div>
+              )}
             </div>
 
             {/* User Menu */}
@@ -82,14 +150,14 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
               <div className="relative">
                 <button
                   onClick={() => setShowDropdown(!showDropdown)}
-                  className="flex items-center space-x-3 p-2 rounded-xl hover:bg-secondary-100/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 hover:shadow-medium group"
+                  className="flex items-center space-x-2 sm:space-x-3 p-1.5 sm:p-2 rounded-xl hover:bg-secondary-100/50 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-primary-500/20 hover:shadow-medium group"
                 >
                   <div className="w-8 h-8 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-medium group-hover:shadow-glow group-hover:scale-110 transition-all duration-300">
                     <span className="text-white font-semibold text-sm">
                       {user.name.charAt(0).toUpperCase()}
                     </span>
                   </div>
-                  <div className="text-left hidden sm:block">
+                  <div className="text-left hidden md:block">
                     <p className="text-sm font-medium text-secondary-900">
                       {user.name}
                     </p>
@@ -99,7 +167,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
                   </div>
                   <svg
                     className={cn(
-                      "w-4 h-4 text-secondary-400 transition-transform",
+                      "w-4 h-4 text-secondary-400 transition-transform hidden sm:block",
                       showDropdown && "rotate-180"
                     )}
                     fill="none"
@@ -112,7 +180,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
 
                 {/* Dropdown Menu */}
                 {showDropdown && (
-                  <div className="absolute right-0 mt-3 w-64 bg-white/95 backdrop-blur-xl rounded-xl shadow-large border border-secondary-200/50 py-2 z-50">
+                  <div className="absolute right-0 mt-3 w-64 max-w-[calc(100vw-2rem)] bg-white/95 backdrop-blur-xl rounded-xl shadow-large border border-secondary-200/50 py-2 z-50">
                     <div className="px-4 py-3 border-b border-secondary-100">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-medium">
@@ -185,6 +253,7 @@ const Header: React.FC<HeaderProps> = ({ user }) => {
           </div>
         </div>
       </div>
+    
     </header>
   );
 };

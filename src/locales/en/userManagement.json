@@ -1,0 +1,75 @@
+{
+  "title": {
+    "superAdmin": "Admin Management",
+    "default": "User Management"
+  },
+  "subtitle": {
+    "superAdmin": "Manage company administrators and assign roles",
+    "default": "Manage company users and assign roles to control access"
+  },
+  "buttons": {
+    "refresh": "Refresh data",
+    "createAdmin": "Create Admin",
+    "createUser": "Create User",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "manageRoles": "Manage Custom Roles",
+    "updateRoles": "Update Custom Roles",
+    "creating": "Creating..."
+  },
+  "loading": "Loading user management...",
+  "error": {
+    "title": "Error",
+    "dismiss": "Dismiss"
+  },
+  "users": {
+    "title": "Users ({{count}})",
+    "emptyTitle": "No users found",
+    "emptyDesc": "Create your first user to get started."
+  },
+  "table": {
+    "user": "User",
+    "baseRole": "Base Role",
+    "activeRoles": "Active Roles",
+    "created": "Created",
+    "actions": "Actions"
+  },
+  "roles": {
+    "systemRole": "System Role (Primary)",
+    "customRole": "Custom Role (Additional)",
+    "systemInfo": "System Roles: Built-in roles that define base permissions (Super Admin, Admin, Manager, Driver, Viewer)",
+    "customInfo": "Custom Roles: Additional roles created in Role Management for specialized permissions (e.g., FLEET_MANAGER)",
+    "selectSystemRole": "Select System Role",
+    "selectCustomRole": "Select Custom Role",
+    "noCustom": "No custom roles available",
+    "noCustomHint": "Create custom roles in the Role Management page first, then refresh this page.",
+    "customInstruction": "Custom roles provide additional permissions beyond the base system role. Create custom roles on the Role Management page."
+  },
+  "form": {
+    "name": "Name",
+    "email": "Email",
+    "password": "Password",
+    "roleType": "Role Type",
+    "company": "Select Company",
+    "createTitle": "Create New User"
+  },
+  "assignRoles": {
+    "title": "Manage Custom Roles for {{name}}",
+    "customRoles": "Custom Roles"
+  },
+  "confirmDelete": "Are you sure you want to permanently delete this user? This action cannot be undone and will remove all associated data.",
+  "errors": {
+    "selectSystemRole": "Please select a system role",
+    "selectCustomRole": "Please select a custom role",
+    "selectCompany": "Please select a company for the admin",
+    "createFailed": "Failed to create user",
+    "loadFailed": "Failed to load data",
+    "assignFailed": "Failed to assign roles",
+    "deleteFailed": "Failed to delete user"
+  },
+  "success": {
+    "userCreated": "User created successfully",
+    "rolesAssigned": "Roles assigned successfully",
+    "userDeleted": "User deleted successfully"
+  }
+}

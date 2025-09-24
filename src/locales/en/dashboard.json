@@ -1,0 +1,42 @@
+{
+  "title": "Admin Dashboard",
+  "superAdminTitle": "System Admin Dashboard",
+  "welcome": "Welcome",
+  "kpi": {
+    "totalExpenses": "Total Expenses",
+    "thisMonth": "This Month",
+    "activeVehicles": "Active Vehicles",
+    "totalDrivers": "Total Drivers",
+    "pendingExpenses": "Pending Expenses",
+    "fuel": "Fuel",
+    "misc": "Misc",
+    "noChange": "No change",
+    "increase": "increase",
+    "decrease": "decrease",
+    "fromLastMonth": "from last month"
+  },
+  "charts": {
+    "monthlySpend": "Monthly Spend Trend",
+    "expenseByCategory": "Expenses by Category",
+    "topDrivers": "Top Drivers by Spend",
+    "vehicleExpenses": "Vehicle Expenses",
+    "noData": "No data available"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "addExpense": "Add Expense",
+    "addVehicle": "Add Vehicle",
+    "viewReports": "View Reports",
+    "manageUsers": "Manage Users"
+  },
+  "recentExpenses": {
+    "title": "Recent Expenses",
+    "driver": "Driver",
+    "amount": "Amount",
+    "date": "Date",
+    "type": "Type",
+    "viewAll": "View All Expenses"
+  },
+  "loading": "Loading dashboard...",
+  "error": "Failed to load dashboard data"
+}

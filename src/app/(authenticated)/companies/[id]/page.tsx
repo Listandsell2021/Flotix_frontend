@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import type { User, Expense, Vehicle } from '@fleetflow/types';
+import type { User, Expense, Vehicle } from "../../../../types"
 
 interface Company {
   _id: string;

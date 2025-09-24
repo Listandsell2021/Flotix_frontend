@@ -1,0 +1,42 @@
+{
+  "title": "Admin Dashboard",
+  "superAdminTitle": "System Admin Dashboard",
+  "welcome": "Willkommen",
+  "kpi": {
+    "totalExpenses": "Gesamtausgaben",
+    "thisMonth": "Diesen Monat",
+    "activeVehicles": "Aktive Fahrzeuge",
+    "totalDrivers": "Gesamtfahrer",
+    "pendingExpenses": "Ausstehende Ausgaben",
+    "fuel": "Kraftstoff",
+    "misc": "Sonstiges",
+    "noChange": "Keine Änderung",
+    "increase": "Anstieg",
+    "decrease": "Rückgang",
+    "fromLastMonth": "vom letzten Monat"
+  },
+  "charts": {
+    "monthlySpend": "Monatlicher Ausgabentrend",
+    "expenseByCategory": "Ausgaben nach Kategorie",
+    "topDrivers": "Top-Fahrer nach Ausgaben",
+    "vehicleExpenses": "Fahrzeugausgaben",
+    "noData": "Keine Daten verfügbar"
+  },
+  "quickActions": {
+    "title": "Schnellaktionen",
+    "addExpense": "Ausgabe hinzufügen",
+    "addVehicle": "Fahrzeug hinzufügen",
+    "viewReports": "Berichte anzeigen",
+    "manageUsers": "Benutzer verwalten"
+  },
+  "recentExpenses": {
+    "title": "Letzte Ausgaben",
+    "driver": "Fahrer",
+    "amount": "Betrag",
+    "date": "Datum",
+    "type": "Typ",
+    "viewAll": "Alle Ausgaben anzeigen"
+  },
+  "loading": "Dashboard wird geladen...",
+  "error": "Fehler beim Laden der Dashboard-Daten"
+}

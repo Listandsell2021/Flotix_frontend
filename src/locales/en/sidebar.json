@@ -1,0 +1,13 @@
+{
+  "admin": {
+    "Dashboard": "Dashboard",
+    "Expenses": "Expenses",
+    "Drivers": "Drivers",
+    "Vehicles": "Vehicles",
+    "Audit Logs": "Audit Logs",
+    "Role Management": "Role Management",
+    "User Management": "User Management",
+    "Profile": "Profile"
+  },
+  "superAdmin": {}
+}

@@ -1,0 +1,60 @@
+{
+  "navigation": {
+    "dashboard": "Dashboard",
+    "expenses": "Ausgaben",
+    "vehicles": "Fahrzeuge",
+    "users": "Benutzer",
+    "roles": "Rollen",
+    "companies": "Unternehmen",
+    "reports": "Berichte",
+    "settings": "Einstellungen",
+    "profile": "Profil",
+    "logout": "Abmelden"
+  },
+  "language": {
+    "english": "Englisch",
+    "german": "Deutsch",
+    "selectLanguage": "Sprache wählen"
+  },
+  "buttons": {
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "add": "Hinzufügen",
+    "close": "Schließen",
+    "submit": "Absenden",
+    "back": "Zurück",
+    "next": "Weiter",
+    "confirm": "Bestätigen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "import": "Importieren",
+    "refresh": "Aktualisieren"
+  },
+  "status": {
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "pending": "Ausstehend",
+    "approved": "Genehmigt",
+    "rejected": "Abgelehnt",
+    "completed": "Abgeschlossen"
+  },
+  "messages": {
+    "success": "Vorgang erfolgreich",
+    "error": "Ein Fehler ist aufgetreten",
+    "loading": "Wird geladen...",
+    "noData": "Keine Daten verfügbar",
+    "confirmDelete": "Möchten Sie dieses Element wirklich löschen?"
+  },
+  "time": {
+    "today": "Heute",
+    "yesterday": "Gestern",
+    "thisWeek": "Diese Woche",
+    "thisMonth": "Diesen Monat",
+    "lastMonth": "Letzten Monat",
+    "thisYear": "Dieses Jahr",
+    "custom": "Benutzerdefiniert"
+  }
+}

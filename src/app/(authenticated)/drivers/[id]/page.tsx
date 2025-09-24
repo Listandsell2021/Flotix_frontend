@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency } from '@/lib/utils';
-import type { User, Vehicle } from '@fleetflow/types';
+import type { User, Vehicle } from "../../../../types"
 
 export default function DriverDetailsPage() {
   const params = useParams();
@@ -41,7 +41,7 @@ export default function DriverDetailsPage() {
         // Load assigned vehicle if exists
         if (driverData.assignedVehicleId) {
           try {
-            const vehicleResponse = await vehiclesApi.getVehicle(driverData.assignedVehicleId);
+            const vehicleResponse = await vehiclesApi.getVehicle(driverData.assignedVehicleId?._id);
             if (vehicleResponse.success && vehicleResponse.data) {
               setAssignedVehicle(vehicleResponse.data);
             }

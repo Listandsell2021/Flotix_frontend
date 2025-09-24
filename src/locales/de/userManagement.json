@@ -1,0 +1,75 @@
+{
+  "title": {
+    "superAdmin": "Admin-Verwaltung",
+    "default": "Benutzerverwaltung"
+  },
+  "subtitle": {
+    "superAdmin": "Verwalten Sie Unternehmensadministratoren und weisen Sie Rollen zu",
+    "default": "Verwalten Sie Benutzer und weisen Sie Rollen zu, um den Zugriff zu steuern"
+  },
+  "buttons": {
+    "refresh": "Daten aktualisieren",
+    "createAdmin": "Admin erstellen",
+    "createUser": "Benutzer erstellen",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "manageRoles": "Benutzerdefinierte Rollen verwalten",
+    "updateRoles": "Benutzerdefinierte Rollen aktualisieren",
+    "creating": "Wird erstellt..."
+  },
+  "loading": "Benutzerverwaltung wird geladen...",
+  "error": {
+    "title": "Fehler",
+    "dismiss": "Schließen"
+  },
+  "users": {
+    "title": "Benutzer ({{count}})",
+    "emptyTitle": "Keine Benutzer gefunden",
+    "emptyDesc": "Erstellen Sie Ihren ersten Benutzer, um zu beginnen."
+  },
+  "table": {
+    "user": "Benutzer",
+    "baseRole": "Basisrolle",
+    "activeRoles": "Aktive Rollen",
+    "created": "Erstellt",
+    "actions": "Aktionen"
+  },
+  "roles": {
+    "systemRole": "Systemrolle (Primär)",
+    "customRole": "Benutzerdefinierte Rolle (Zusätzlich)",
+    "systemInfo": "Systemrollen: Eingebaute Rollen, die Grundberechtigungen definieren (Super Admin, Admin, Manager, Fahrer, Betrachter)",
+    "customInfo": "Benutzerdefinierte Rollen: Zusätzliche Rollen, die in der Rollenverwaltung für spezielle Berechtigungen erstellt wurden (z. B. FLEET_MANAGER)",
+    "selectSystemRole": "Systemrolle auswählen",
+    "selectCustomRole": "Benutzerdefinierte Rolle auswählen",
+    "noCustom": "Keine benutzerdefinierten Rollen verfügbar",
+    "noCustomHint": "Erstellen Sie zuerst benutzerdefinierte Rollen in der Rollenverwaltung und aktualisieren Sie dann diese Seite.",
+    "customInstruction": "Benutzerdefinierte Rollen bieten zusätzliche Berechtigungen über die Basissystemrolle hinaus. Erstellen Sie benutzerdefinierte Rollen auf der Seite „Rollenverwaltung“."
+  },
+  "form": {
+    "name": "Name",
+    "email": "E-Mail",
+    "password": "Passwort",
+    "roleType": "Rollentyp",
+    "company": "Unternehmen auswählen",
+    "createTitle": "Neuen Benutzer erstellen"
+  },
+  "assignRoles": {
+    "title": "Benutzerdefinierte Rollen für {{name}} verwalten",
+    "customRoles": "Benutzerdefinierte Rollen"
+  },
+  "confirmDelete": "Sind Sie sicher, dass Sie diesen Benutzer dauerhaft löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden und entfernt alle zugehörigen Daten.",
+  "errors": {
+    "selectSystemRole": "Bitte wählen Sie eine Systemrolle aus",
+    "selectCustomRole": "Bitte wählen Sie eine benutzerdefinierte Rolle aus",
+    "selectCompany": "Bitte wählen Sie ein Unternehmen für den Administrator aus",
+    "createFailed": "Benutzererstellung fehlgeschlagen",
+    "loadFailed": "Daten konnten nicht geladen werden",
+    "assignFailed": "Rollen konnten nicht zugewiesen werden",
+    "deleteFailed": "Benutzer konnte nicht gelöscht werden"
+  },
+  "success": {
+    "userCreated": "Benutzer erfolgreich erstellt",
+    "rolesAssigned": "Rollen erfolgreich zugewiesen",
+    "userDeleted": "Benutzer erfolgreich gelöscht"
+  }
+}

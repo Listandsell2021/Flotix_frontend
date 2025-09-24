@@ -8,7 +8,7 @@ import type {
   Vehicle,
   CreateVehicleRequest,
   AssignVehicleRequest
-} from '@fleetflow/types';
+} from "../types"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
@@ -196,6 +196,10 @@ export const reportsApi = {
 
 export const usersApi = {
   getUsers: async (params: any = {}) => {
+    const response = await api.get('/users', { params });
+    return response.data;
+  },
+  getUsersByRole: async (params: { role?: string; search?: string; page?: number; limit?: number } = {}) => {
     const response = await api.get('/users', { params });
     return response.data;
   },

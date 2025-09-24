@@ -1,0 +1,49 @@
+/* Custom scrollbar styles for mobile tables */
+.mobile-scroll::-webkit-scrollbar {
+  height: 6px;
+  background: #f3f4f6;
+}
+
+.mobile-scroll::-webkit-scrollbar-thumb {
+  background: #9ca3af;
+  border-radius: 3px;
+}
+
+.mobile-scroll::-webkit-scrollbar-thumb:hover {
+  background: #6b7280;
+}
+
+/* Scroll indicator */
+.scroll-indicator {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 40px;
+  background: linear-gradient(to left, white, transparent);
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Horizontal scroll wrapper */
+.horizontal-scroll-wrapper {
+  position: relative;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #9ca3af #f3f4f6;
+}
+
+/* Add scroll hint animation */
+@keyframes scrollHint {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(-10px);
+  }
+}
+
+.scroll-hint {
+  animation: scrollHint 2s ease-in-out infinite;
+}

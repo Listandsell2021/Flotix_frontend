@@ -1,0 +1,60 @@
+{
+  "title": "User Management",
+  "driversTitle": "Drivers",
+  "subtitle": "Manage system users and permissions",
+  "driversSubtitle": "Manage and track your fleet drivers",
+  "addUser": "Add User",
+  "addDriver": "Add Driver",
+  "filters": {
+    "all": "All Users",
+    "active": "Active",
+    "inactive": "Inactive",
+    "suspended": "Suspended",
+    "search": "Search users...",
+    "byRole": "Filter by Role"
+  },
+  "table": {
+    "name": "Name",
+    "email": "Email",
+    "role": "Role",
+    "systemRole": "System Role",
+    "customRoles": "Custom Roles",
+    "status": "Status",
+    "lastActive": "Last Active",
+    "assignedVehicle": "Assigned Vehicle",
+    "actions": "Actions",
+    "noData": "No users found"
+  },
+  "roles": {
+    "superAdmin": "Super Admin",
+    "admin": "Admin",
+    "manager": "Manager",
+    "driver": "Driver",
+    "viewer": "Viewer"
+  },
+  "form": {
+    "title": "Add New User",
+    "editTitle": "Edit User",
+    "name": "Full Name",
+    "email": "Email Address",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "role": "System Role",
+    "customRole": "Custom Role",
+    "assignVehicle": "Assign Vehicle",
+    "status": "Status",
+    "submit": "Create User",
+    "save": "Save Changes",
+    "cancel": "Cancel",
+    "assignRoles": "Assign Roles"
+  },
+  "messages": {
+    "createSuccess": "User created successfully",
+    "updateSuccess": "User updated successfully",
+    "deleteSuccess": "User deleted successfully",
+    "passwordReset": "Password reset email sent",
+    "roleAssigned": "Role assigned successfully",
+    "error": "An error occurred",
+    "confirmDelete": "Are you sure you want to delete this user?"
+  }
+}

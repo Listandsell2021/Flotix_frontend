@@ -65,28 +65,30 @@ const StatCard: React.FC<StatCardProps> = ({
 
   return (
     <Card className={cn("group relative hover:shadow-large hover:-translate-y-1 transition-all duration-300 border-0 bg-white/70 backdrop-blur-md overflow-hidden hover:bg-white/80", className)}>
-      <CardContent className="p-6 relative z-10">
+      <CardContent className="p-4 sm:p-6 relative z-10">
         <div className="flex items-start justify-between">
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-sm font-semibold text-secondary-600 uppercase tracking-wide group-hover:text-secondary-700 transition-colors duration-300">{title}</h3>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center justify-between mb-3 sm:mb-4">
+              <h3 className="text-xs sm:text-sm font-semibold text-secondary-600 uppercase tracking-wide group-hover:text-secondary-700 transition-colors duration-300 truncate pr-2">{title}</h3>
               {icon && (
-                <div className="p-3 bg-gradient-to-br from-primary-100 to-primary-50 rounded-xl group-hover:from-primary-200 group-hover:to-primary-100 transition-all duration-500 shadow-soft group-hover:shadow-glow group-hover:scale-110 group-hover:rotate-3">
+                <div className="p-2 sm:p-3 bg-gradient-to-br from-primary-100 to-primary-50 rounded-xl group-hover:from-primary-200 group-hover:to-primary-100 transition-all duration-500 shadow-soft group-hover:shadow-glow group-hover:scale-110 group-hover:rotate-3 flex-shrink-0">
                   <div className="text-primary-600 group-hover:animate-bounce-gentle">
-                    {icon}
+                    {React.cloneElement(icon as React.ReactElement, {
+                      className: "w-4 h-4 sm:w-6 sm:h-6"
+                    })}
                   </div>
                 </div>
               )}
             </div>
-            
-            <div className="mb-4">
-              <p className="text-3xl font-bold text-secondary-900 tracking-tight group-hover:text-primary-700 transition-colors duration-300 animate-counter-up">{value}</p>
+
+            <div className="mb-2 sm:mb-4">
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-secondary-900 tracking-tight group-hover:text-primary-700 transition-colors duration-300 animate-counter-up truncate">{value}</p>
             </div>
 
             {change && (
-              <div className="flex items-center space-x-3 mb-2">
+              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:space-x-3 mb-2">
                 <div className={cn(
-                  "inline-flex items-center space-x-1.5 px-2.5 py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105",
+                  "inline-flex items-center space-x-1 sm:space-x-1.5 px-2 sm:px-2.5 py-1 sm:py-1.5 rounded-lg text-xs font-medium transition-all duration-300 hover:scale-105 self-start",
                   change.trend === 'up' && "bg-success-100 text-success-700 hover:bg-success-200",
                   change.trend === 'down' && "bg-accent-100 text-accent-700 hover:bg-accent-200",
                   change.trend === 'neutral' && "bg-secondary-100 text-secondary-700 hover:bg-secondary-200"
@@ -94,12 +96,12 @@ const StatCard: React.FC<StatCardProps> = ({
                   {getTrendIcon(change.trend)}
                   <span>{formatChange(change.value)}</span>
                 </div>
-                <span className="text-sm text-secondary-500 font-medium">{change.label}</span>
+                <span className="text-xs sm:text-sm text-secondary-500 font-medium">{change.label}</span>
               </div>
             )}
 
             {description && (
-              <p className="text-sm text-secondary-500 leading-relaxed">{description}</p>
+              <p className="text-xs sm:text-sm text-secondary-500 leading-relaxed">{description}</p>
             )}
           </div>
         </div>

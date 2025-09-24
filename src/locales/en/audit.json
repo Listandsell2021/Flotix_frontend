@@ -1,0 +1,25 @@
+{
+  "audit": {
+    "title": "Audit Logs",
+    "description": "Track all system activities and user actions for compliance",
+    "loading": "Loading audit logs...",
+    "error_title": "Error Loading Audit Logs",
+    "error_message": "Failed to load audit logs",
+    "filter": "Filter",
+    "export": "Export",
+    "stats": {
+      "total": "Total Events",
+      "create": "Create Actions",
+      "update": "Update Actions",
+      "delete": "Delete Actions"
+    },
+    "recent_activity": "Recent Activity",
+    "unknown_user": "Unknown User",
+    "unknown_ip": "Unknown",
+    "module": "Module",
+    "no_logs_title": "No audit logs found",
+    "no_logs_subtitle": "Audit logs will appear here as users interact with the system.",
+    "refresh": "Refresh",
+    "details": "Details"
+  }
+}

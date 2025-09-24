@@ -86,7 +86,7 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
       </nav>
 
       {/* Footer Section */}
-      <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-secondary-100/50">
+      {/* <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-secondary-100/50">
         <div className="group bg-gradient-to-r from-primary-50 to-primary-100/50 hover:from-primary-100 hover:to-primary-200/50 rounded-xl p-4 hover:shadow-soft cursor-pointer">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center group-hover:bg-primary-600 shadow-soft group-hover:shadow-medium">
@@ -100,11 +100,10 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
             </div>
           </div>
           
-          {/* Decorative elements */}
           <div className="absolute top-1 right-1 w-1 h-1 bg-primary-300 rounded-full opacity-0 group-hover:opacity-100"></div>
           <div className="absolute bottom-1 right-3 w-0.5 h-0.5 bg-primary-400 rounded-full opacity-0 group-hover:opacity-100"></div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

@@ -1,0 +1,66 @@
+{
+  "title": "Rollenverwaltung",
+  "subtitle": "Benutzerdefinierte Rollen und Berechtigungen verwalten",
+  "addRole": "Rolle erstellen",
+  "filters": {
+    "all": "Alle Rollen",
+    "system": "Systemrollen",
+    "custom": "Benutzerdefinierte Rollen",
+    "search": "Rollen suchen..."
+  },
+  "table": {
+    "name": "Rollenname",
+    "displayName": "Anzeigename",
+    "description": "Beschreibung",
+    "permissions": "Berechtigungen",
+    "assignedUsers": "Zugewiesene Benutzer",
+    "createdAt": "Erstellt",
+    "actions": "Aktionen",
+    "noData": "Keine Rollen gefunden"
+  },
+  "permissions": {
+    "title": "Berechtigungen",
+    "expenses": {
+      "view": "Ausgaben anzeigen",
+      "create": "Ausgaben erstellen",
+      "edit": "Ausgaben bearbeiten",
+      "delete": "Ausgaben löschen"
+    },
+    "vehicles": {
+      "view": "Fahrzeuge anzeigen",
+      "create": "Fahrzeuge erstellen",
+      "edit": "Fahrzeuge bearbeiten",
+      "delete": "Fahrzeuge löschen"
+    },
+    "users": {
+      "view": "Benutzer anzeigen",
+      "create": "Benutzer erstellen",
+      "edit": "Benutzer bearbeiten",
+      "delete": "Benutzer löschen"
+    },
+    "reports": {
+      "view": "Berichte anzeigen",
+      "export": "Berichte exportieren"
+    }
+  },
+  "form": {
+    "title": "Neue Rolle erstellen",
+    "editTitle": "Rolle bearbeiten",
+    "roleName": "Rollenname",
+    "displayName": "Anzeigename",
+    "description": "Beschreibung",
+    "selectPermissions": "Berechtigungen auswählen",
+    "submit": "Rolle erstellen",
+    "save": "Änderungen speichern",
+    "cancel": "Abbrechen"
+  },
+  "messages": {
+    "createSuccess": "Rolle erfolgreich erstellt",
+    "updateSuccess": "Rolle erfolgreich aktualisiert",
+    "deleteSuccess": "Rolle erfolgreich gelöscht",
+    "assignSuccess": "Rolle erfolgreich zugewiesen",
+    "error": "Ein Fehler ist aufgetreten",
+    "confirmDelete": "Möchten Sie diese Rolle wirklich löschen?",
+    "hasUsers": "Diese Rolle hat zugewiesene Benutzer"
+  }
+}

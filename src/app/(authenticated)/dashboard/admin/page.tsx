@@ -2,16 +2,19 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useTranslation } from 'react-i18next';
 import { reportsApi } from '@/lib/api';
 import StatCard from '@/components/dashboard/StatCard';
 import RecentExpenses from '@/components/dashboard/RecentExpenses';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
-import { formatCurrency, formatNumber } from '@/lib/utils';
-import type { DashboardKPIs } from '@fleetflow/types';
+import { formatCurrency as utilFormatCurrency, formatNumber } from '@/lib/utils';
+import { formatCurrency, formatDate } from '@/lib/i18n';
+import type { DashboardKPIs } from "../../../types"
 
 export default function AdminDashboard() {
+  const { t } = useTranslation(['dashboard', 'common']);
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -65,7 +68,7 @@ export default function AdminDashboard() {
       <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <Spinner size="lg" />
-            <p className="mt-4 text-gray-600">Loading dashboard data...</p>
+            <p className="mt-4 text-gray-600">{t('dashboard:loading')}</p>
           </div>
         </div>
     );
@@ -79,7 +82,7 @@ export default function AdminDashboard() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <h3 className="text-sm font-medium text-red-800">Error Loading Dashboard</h3>
+              <h3 className="text-sm font-medium text-red-800">{t('dashboard:error')}</h3>
               <p className="text-sm text-red-700 mt-1">{error}</p>
           </div>
         </div>
@@ -88,28 +91,28 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 lg:space-y-8">
         {/* Header */}
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
-            <p className="text-gray-600 mt-2">Overview of your fleet expenses and performance</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('dashboard:title')}</h1>
+            <p className="text-gray-600 mt-1 sm:mt-2">{t('dashboard:welcome')}</p>
           </div>
-          <div className="flex space-x-3">
+          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
             <Link href="/role-management">
-              <Button variant="outline">
+              <Button variant="outline" className="w-full sm:w-auto justify-center">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                Manage Roles
+                {t('common:navigation.roles')}
               </Button>
             </Link>
             <Link href="/user-management">
-              <Button>
+              <Button className="w-full sm:w-auto justify-center">
                 <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                 </svg>
-                Manage Users
+                {t('common:navigation.users')}
               </Button>
             </Link>
           </div>
@@ -118,13 +121,13 @@ export default function AdminDashboard() {
         {kpis && (
           <>
             {/* KPI Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
               <StatCard
-                title="Total Spend (This Month)"
+                title={t('dashboard:kpi.totalExpenses')}
                 value={formatCurrency(kpis.totalSpendThisMonth)}
                 change={kpis.monthOverMonthTrend ? {
                   value: kpis.monthOverMonthTrend.percentageChange || 0,
-                  label: 'vs last month',
+                  label: t('dashboard:kpi.fromLastMonth'),
                   trend: (kpis.monthOverMonthTrend.percentageChange || 0) >= 0 ? 'up' : 'down'
                 } : undefined}
                 icon={
@@ -135,7 +138,7 @@ export default function AdminDashboard() {
               />
 
               <StatCard
-                title="Fuel Expenses"
+                title={t('dashboard:kpi.fuel')}
                 value={formatCurrency(kpis.fuelVsMiscSplit?.fuel || 0)}
                 description={kpis.fuelVsMiscSplit && (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc) > 0
                   ? `${Math.round((kpis.fuelVsMiscSplit.fuel / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`
@@ -148,7 +151,7 @@ export default function AdminDashboard() {
               />
 
               <StatCard
-                title="Miscellaneous"
+                title={t('dashboard:kpi.misc')}
                 value={formatCurrency(kpis.fuelVsMiscSplit?.misc || 0)}
                 description={kpis.fuelVsMiscSplit && (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc) > 0
                   ? `${Math.round((kpis.fuelVsMiscSplit.misc / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`
@@ -161,9 +164,9 @@ export default function AdminDashboard() {
               />
 
               <StatCard
-                title="Active Drivers"
+                title={t('dashboard:kpi.totalDrivers')}
                 value={formatNumber(kpis.topDriversBySpend?.length || 0)}
-                description="Drivers with expenses this month"
+                description={t('dashboard:kpi.thisMonth')}
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
@@ -173,7 +176,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* Grid Layout for detailed sections */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
               {/* Top Drivers */}
               <Card>
                 <CardHeader>
@@ -181,16 +184,16 @@ export default function AdminDashboard() {
                     <svg className="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
                     </svg>
-                    Top Drivers by Spend
+                    {t('dashboard:charts.topDrivers')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
                   {kpis.topDriversBySpend && kpis.topDriversBySpend.length > 0 ? (
-                    <div className="space-y-4">
+                    <div className="space-y-3 sm:space-y-4">
                       {kpis.topDriversBySpend.map((driver, index) => (
-                        <div key={driver.driverId} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg transition-colors">
-                          <div className="flex items-center space-x-3">
-                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${
+                        <div key={driver.driverId} className="flex items-center justify-between p-2 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors">
+                          <div className="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                            <div className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center font-semibold text-xs sm:text-sm flex-shrink-0 ${
                               index === 0 ? 'bg-yellow-100 text-yellow-800' :
                               index === 1 ? 'bg-gray-100 text-gray-600' :
                               index === 2 ? 'bg-orange-100 text-orange-600' :
@@ -198,13 +201,13 @@ export default function AdminDashboard() {
                             }`}>
                               {index + 1}
                             </div>
-                            <div>
-                              <p className="font-medium text-gray-900">{driver.driverName}</p>
-                              <p className="text-xs text-gray-500">Driver ID: {driver.driverId.slice(-6)}</p>
+                            <div className="min-w-0">
+                              <p className="font-medium text-gray-900 text-sm sm:text-base truncate">{driver.driverName}</p>
+                              <p className="text-xs text-gray-500">ID: {driver.driverId.slice(-6)}</p>
                             </div>
                           </div>
-                          <div className="text-right">
-                            <p className="font-semibold text-gray-900">
+                          <div className="text-right flex-shrink-0">
+                            <p className="font-semibold text-gray-900 text-sm sm:text-base">
                               {formatCurrency(driver.totalSpend)}
                             </p>
                           </div>
@@ -214,7 +217,7 @@ export default function AdminDashboard() {
                   ) : (
                     <div className="text-center py-8">
                       <div className="text-gray-400 text-4xl mb-4">👥</div>
-                      <p className="text-gray-500">No expense data available</p>
+                      <p className="text-gray-500">{t('dashboard:charts.noData')}</p>
                     </div>
                   )}
                 </CardContent>
@@ -225,57 +228,6 @@ export default function AdminDashboard() {
             </div>
 
             {/* Quick Actions */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <button className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors text-left">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-5 h-5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Add Driver</p>
-                        <p className="text-sm text-gray-500">Create new driver account</p>
-                      </div>
-                    </div>
-                  </button>
-
-                  {/* HIDDEN: Export functionality - Re-enable when backend ready */}
-                  {/* <button className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors text-left">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">Export Data</p>
-                        <p className="text-sm text-gray-500">Download expense reports</p>
-                      </div>
-                    </div>
-                  </button> */}
-
-                  <button className="p-4 border border-gray-200 rounded-lg hover:border-primary-300 hover:bg-primary-50 transition-colors text-left">
-                    <div className="flex items-center space-x-3">
-                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                        </svg>
-                      </div>
-                      <div>
-                        <p className="font-medium text-gray-900">View Reports</p>
-                        <p className="text-sm text-gray-500">Detailed analytics</p>
-                      </div>
-                    </div>
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
           </>
         )}
       </div>

@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useRouter } from 'next/navigation';
 import { usersApi, vehiclesApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -8,7 +9,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { TableSkeleton, CardSkeleton } from '@/components/ui/skeleton';
-import type { User, Vehicle, UserStatus } from '@fleetflow/types';
+import type { User, Vehicle, UserStatus } from "../../../types"
 
 // Extend User type to handle populated vehicle data
 interface UserWithVehicle extends Omit<User, 'assignedVehicleId'> {
@@ -16,6 +17,7 @@ interface UserWithVehicle extends Omit<User, 'assignedVehicleId'> {
 }
 
 export default function DriversPage() {
+  const { t } = useTranslation('users');
   const router = useRouter();
   const [drivers, setDrivers] = useState<UserWithVehicle[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -422,14 +424,14 @@ export default function DriversPage() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Drivers</h1>
-            <p className="text-gray-600 mt-2">Manage your fleet drivers and their accounts</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('driversTitle')}</h1>
+            <p className="text-gray-600 mt-2">{t('driversSubtitle')}</p>
           </div>
           <Button onClick={() => setShowAddModal(true)}>
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
-            Add Driver
+            {t('addDriver')}
           </Button>
         </div>
 
@@ -439,7 +441,7 @@ export default function DriversPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Drivers</p>
+                  <p className="text-sm font-medium text-gray-600">{t('stats.totalDrivers', 'Total Drivers')}</p>
                   <p className="text-2xl font-bold text-gray-900">{totalDrivers}</p>
                 </div>
                 <div className="w-12 h-12 bg-primary-100 rounded-lg flex items-center justify-center">
@@ -455,7 +457,7 @@ export default function DriversPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Active Drivers</p>
+                  <p className="text-sm font-medium text-gray-600">{t('stats.activeDrivers', 'Active Drivers')}</p>
                   <p className="text-2xl font-bold text-green-600">
                     {drivers.filter(d => d.status === 'ACTIVE').length}
                   </p>
@@ -473,7 +475,7 @@ export default function DriversPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Inactive Drivers</p>
+                  <p className="text-sm font-medium text-gray-600">{t('stats.inactiveDrivers', 'Inactive Drivers')}</p>
                   <p className="text-2xl font-bold text-gray-600">
                     {drivers.filter(d => d.status !== 'ACTIVE').length}
                   </p>
@@ -567,9 +569,9 @@ export default function DriversPage() {
                   onChange={(e) => handleFilterChange('vehicle', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">All Drivers</option>
-                  <option value="assigned">With Vehicle</option>
-                  <option value="unassigned">Without Vehicle</option>
+                  <option value="">{t('filters.allDrivers', 'All Drivers')}</option>
+                  <option value="assigned">{t('filters.withVehicle', 'With Vehicle')}</option>
+                  <option value="unassigned">{t('filters.withoutVehicle', 'Without Vehicle')}</option>
                 </select>
               </div>
 
@@ -652,9 +654,13 @@ export default function DriversPage() {
         <Card>
           <CardHeader>
             <div className="flex justify-between items-center">
-              <CardTitle>All Drivers</CardTitle>
+              <CardTitle>{t('table.allDrivers', 'All Drivers')}</CardTitle>
               <div className="text-sm text-gray-600">
-                Showing {((currentPage - 1) * pageSize) + 1}-{Math.min(currentPage * pageSize, totalDrivers)} of {totalDrivers} drivers
+                {t('table.showingDrivers', 'Showing {{start}}-{{end}} of {{total}} drivers', {
+                  start: ((currentPage - 1) * pageSize) + 1,
+                  end: Math.min(currentPage * pageSize, totalDrivers),
+                  total: totalDrivers
+                })}
               </div>
             </div>
           </CardHeader>

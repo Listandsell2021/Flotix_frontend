@@ -1,0 +1,60 @@
+{
+  "title": "Benutzerverwaltung",
+  "driversTitle": "Fahrer",
+  "subtitle": "Systembenutzer und Berechtigungen verwalten",
+  "driversSubtitle": "Verwalten und verfolgen Sie Ihre Flottenfahrer",
+  "addUser": "Benutzer hinzufügen",
+  "addDriver": "Fahrer hinzufügen",
+  "filters": {
+    "all": "Alle Benutzer",
+    "active": "Aktiv",
+    "inactive": "Inaktiv",
+    "suspended": "Gesperrt",
+    "search": "Benutzer suchen...",
+    "byRole": "Nach Rolle filtern"
+  },
+  "table": {
+    "name": "Name",
+    "email": "E-Mail",
+    "role": "Rolle",
+    "systemRole": "Systemrolle",
+    "customRoles": "Benutzerdefinierte Rollen",
+    "status": "Status",
+    "lastActive": "Zuletzt aktiv",
+    "assignedVehicle": "Zugewiesenes Fahrzeug",
+    "actions": "Aktionen",
+    "noData": "Keine Benutzer gefunden"
+  },
+  "roles": {
+    "superAdmin": "Super Admin",
+    "admin": "Administrator",
+    "manager": "Manager",
+    "driver": "Fahrer",
+    "viewer": "Betrachter"
+  },
+  "form": {
+    "title": "Neuen Benutzer hinzufügen",
+    "editTitle": "Benutzer bearbeiten",
+    "name": "Vollständiger Name",
+    "email": "E-Mail-Adresse",
+    "password": "Passwort",
+    "confirmPassword": "Passwort bestätigen",
+    "role": "Systemrolle",
+    "customRole": "Benutzerdefinierte Rolle",
+    "assignVehicle": "Fahrzeug zuweisen",
+    "status": "Status",
+    "submit": "Benutzer erstellen",
+    "save": "Änderungen speichern",
+    "cancel": "Abbrechen",
+    "assignRoles": "Rollen zuweisen"
+  },
+  "messages": {
+    "createSuccess": "Benutzer erfolgreich erstellt",
+    "updateSuccess": "Benutzer erfolgreich aktualisiert",
+    "deleteSuccess": "Benutzer erfolgreich gelöscht",
+    "passwordReset": "Passwort-Reset-E-Mail gesendet",
+    "roleAssigned": "Rolle erfolgreich zugewiesen",
+    "error": "Ein Fehler ist aufgetreten",
+    "confirmDelete": "Möchten Sie diesen Benutzer wirklich löschen?"
+  }
+}

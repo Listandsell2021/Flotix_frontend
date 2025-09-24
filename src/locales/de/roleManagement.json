@@ -1,0 +1,45 @@
+{
+  "title": "Rollenverwaltung",
+  "subtitle": "Benutzerrollen und Berechtigungen verwalten",
+  "buttons": {
+    "createRole": "Rolle erstellen",
+    "cancel": "Abbrechen",
+    "retry": "Wiederholen",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "updateRole": "Rolle aktualisieren"
+  },
+  "loading": "Rollenverwaltung wird geladen...",
+  "error": {
+    "title": "Fehler beim Laden der Rollen",
+    "generic": "Rollen konnten nicht geladen werden"
+  },
+  "systemRole": "System",
+  "systemRoleNote": "Systemrolle (schreibgeschützt)",
+  "created": "Erstellt: {{date}}",
+  "permissions": {
+    "title": "Berechtigungen ({{count}})",
+    "more": "+{{count}} weitere",
+    "selectAtLeastOne": "Wählen Sie mindestens eine Berechtigung für diese Rolle. Berechtigungen bestimmen, welche Aktionen Benutzer mit dieser Rolle ausführen können.",
+    "category": "{{category}} Berechtigungen"
+  },
+  "modals": {
+    "createTitle": "Neue Rolle erstellen",
+    "editTitle": "Rolle bearbeiten: {{name}}",
+    "fields": {
+      "roleName": "Rollenname (Intern)",
+      "roleNameHint": "Verwenden Sie nur Großbuchstaben und Unterstriche (z. B. FLEET_MANAGER, EXPENSE_APPROVER)",
+      "displayName": "Anzeigename",
+      "description": "Beschreibung"
+    },
+    "placeholders": {
+      "roleName": "z. B. FLEET_MANAGER",
+      "displayName": "z. B. Fuhrparkmanager",
+      "description": "Beschreiben Sie, wofür diese Rolle gedacht ist..."
+    }
+  },
+  "confirm": {
+    "delete": "Sind Sie sicher, dass Sie diese Rolle löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
+    "forceDelete": "{{message}} Möchten Sie diese Rolle zwangsweise löschen und alle Zuweisungen entfernen?"
+  }
+}

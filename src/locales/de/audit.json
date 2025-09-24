@@ -1,0 +1,25 @@
+{
+  "audit": {
+    "title": "Audit-Protokolle",
+    "description": "Verfolge alle Systemaktivitäten und Benutzeraktionen zur Einhaltung der Vorschriften",
+    "loading": "Audit-Protokolle werden geladen...",
+    "error_title": "Fehler beim Laden der Audit-Protokolle",
+    "error_message": "Audit-Protokolle konnten nicht geladen werden",
+    "filter": "Filtern",
+    "export": "Exportieren",
+    "stats": {
+      "total": "Gesamtereignisse",
+      "create": "Erstellte Aktionen",
+      "update": "Aktualisierte Aktionen",
+      "delete": "Gelöschte Aktionen"
+    },
+    "recent_activity": "Letzte Aktivität",
+    "unknown_user": "Unbekannter Benutzer",
+    "unknown_ip": "Unbekannt",
+    "module": "Modul",
+    "no_logs_title": "Keine Audit-Protokolle gefunden",
+    "no_logs_subtitle": "Audit-Protokolle erscheinen hier, sobald Benutzer mit dem System interagieren.",
+    "refresh": "Aktualisieren",
+    "details": "Details"
+  }
+}
