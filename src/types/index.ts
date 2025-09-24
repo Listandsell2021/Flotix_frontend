@@ -161,9 +161,11 @@ export interface CreateExpenseRequest {
 export interface Role {
   _id: string;
   name: string;
+  displayName?: string;
   description?: string;
   permissions: string[];
   isSystem: boolean;
+  companyId?: string;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -216,10 +218,11 @@ export interface AuditLog {
   module: AuditModule;
   status: AuditStatus;
   resourceId?: string;
-  details: Record<string, any>;
+  details: string | Record<string, any>;
   ipAddress: string;
   userAgent: string;
   timestamp: Date;
+  role?: UserRole;
 }
 
 // API Response Types
@@ -438,6 +441,19 @@ export enum Permission {
   // System permissions
   SYSTEM_ADMIN = 'SYSTEM_ADMIN',
   AUDIT_READ = 'AUDIT_READ',
+
+  // Additional permissions referenced in frontend
+  USER_MANAGE_ROLES = 'USER_MANAGE_ROLES',
+  USER_ASSIGN_ROLE = 'USER_ASSIGN_ROLE',
+  DRIVER_CREATE = 'DRIVER_CREATE',
+  DRIVER_READ = 'DRIVER_READ',
+  DRIVER_UPDATE = 'DRIVER_UPDATE',
+  DRIVER_DELETE = 'DRIVER_DELETE',
+  EXPENSE_EXPORT = 'EXPENSE_EXPORT',
+  DASHBOARD_VIEW = 'DASHBOARD_VIEW',
+  SYSTEM_SETTINGS = 'SYSTEM_SETTINGS',
+  AUDIT_LOG_VIEW = 'AUDIT_LOG_VIEW',
+  ROLE_MANAGEMENT = 'ROLE_MANAGEMENT',
 }
 
 export interface PermissionDetails {
@@ -486,6 +502,7 @@ export interface UserWithVehicle extends User {
 export interface ExpenseWithDriver extends Expense {
   driver?: User;
   vehicleId?: string;
+  vehicle?: Vehicle;
 }
 
 export interface RoleWithUsers extends Role {
