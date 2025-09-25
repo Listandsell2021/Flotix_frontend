@@ -53,7 +53,7 @@ export default function RoleManagementPage() {
       ]);
 
       if (rolesResponse.data.success) {
-        setRoles(rolesResponse.data.data.data || []);
+        setRoles(rolesResponse.data.data || []);
       }
 
       if (permissionsResponse.data.success) {
