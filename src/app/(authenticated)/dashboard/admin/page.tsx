@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
-import { reportsApi } from '@/lib/api';
+import { reportsApi, expensesApi } from '@/lib/api';
 import StatCard from '@/components/dashboard/StatCard';
 import RecentExpenses from '@/components/dashboard/RecentExpenses';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
@@ -11,13 +11,15 @@ import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency as utilFormatCurrency, formatNumber } from '@/lib/utils';
 import { formatCurrency, formatDate } from '@/lib/i18n';
-import type { DashboardKPIs } from "../../../types"
+import type { DashboardKPIs } from '@/types';
 
 export default function AdminDashboard() {
   const { t } = useTranslation(['dashboard', 'common']);
   const [kpis, setKpis] = useState<DashboardKPIs | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [recentExpenses, setRecentExpenses] = useState<any[]>([]);
+  const [totalExpenses, setTotalExpenses] = useState(0);
 
   useEffect(() => {
     loadDashboardData();
@@ -25,11 +27,35 @@ export default function AdminDashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const response = await reportsApi.getDashboard();
-      if (response.success) {
-        setKpis(response.data);
+      const [dashboardResponse, expensesResponse] = await Promise.all([
+        reportsApi.getDashboard(),
+        expensesApi.getExpenses({ limit: 3, sortBy: 'createdAt', sortOrder: 'desc' })
+      ]);
+
+      if (dashboardResponse.success) {
+        setKpis(dashboardResponse.data);
       } else {
-        setError(response.message || 'Failed to load dashboard data');
+        setError(dashboardResponse.message || 'Failed to load dashboard data');
+      }
+
+      if (expensesResponse.success && expensesResponse.data) {
+        // Map the expense data to match the RecentExpenses component interface
+        const mappedExpenses = (expensesResponse.data.data || []).map((expense: any) => ({
+          id: expense._id,
+          driverName: expense.driverId?.name || 'Unknown Driver',
+          amount: expense.amountFinal || 0,
+          currency: expense.currency || 'EUR',
+          type: expense.type,
+          category: expense.category,
+          merchant: expense.merchant,
+          date: expense.date || expense.createdAt,
+          status: 'approved' // Default status since this system doesn't have approval workflow
+        }));
+        setRecentExpenses(mappedExpenses);
+
+        // Set total expenses count from pagination
+        const total = expensesResponse.data.pagination?.total || expensesResponse.data.data?.length || 0;
+        setTotalExpenses(total);
       }
     } catch (err: any) {
       setError(err.message || 'Failed to load dashboard data');
@@ -38,30 +64,6 @@ export default function AdminDashboard() {
     }
   };
 
-
-  const mockRecentExpenses = [
-    {
-      id: '1',
-      driverName: 'John Driver',
-      amount: 85.50,
-      currency: 'EUR',
-      type: 'FUEL' as const,
-      merchant: 'Shell Gas Station',
-      date: new Date().toISOString(),
-      status: 'approved' as const
-    },
-    {
-      id: '2',
-      driverName: 'Sarah Wilson',
-      amount: 25.00,
-      currency: 'EUR',
-      type: 'MISC' as const,
-      category: 'Parking',
-      merchant: 'Downtown Parking',
-      date: new Date(Date.now() - 86400000).toISOString(),
-      status: 'pending' as const
-    }
-  ];
 
   if (loading) {
     return (
@@ -97,24 +99,6 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('dashboard:title')}</h1>
             <p className="text-gray-600 mt-1 sm:mt-2">{t('dashboard:welcome')}</p>
-          </div>
-          <div className="flex flex-col sm:flex-row gap-2 sm:gap-3">
-            <Link href="/role-management">
-              <Button variant="outline" className="w-full sm:w-auto justify-center">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.031 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-                </svg>
-                {t('common:navigation.roles')}
-              </Button>
-            </Link>
-            <Link href="/user-management">
-              <Button className="w-full sm:w-auto justify-center">
-                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
-                </svg>
-                {t('common:navigation.users')}
-              </Button>
-            </Link>
           </div>
         </div>
 
@@ -224,7 +208,7 @@ export default function AdminDashboard() {
               </Card>
 
               {/* Recent Expenses */}
-              <RecentExpenses expenses={mockRecentExpenses} />
+              <RecentExpenses expenses={recentExpenses} totalExpenses={totalExpenses} loading={loading} />
             </div>
 
             {/* Quick Actions */}

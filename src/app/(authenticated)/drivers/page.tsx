@@ -9,7 +9,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { TableSkeleton, CardSkeleton } from '@/components/ui/skeleton';
-import type { User, Vehicle, UserStatus } from "../../../types"
+import type { User, Vehicle, UserStatus } from '@/types';
 
 // Extend User type to handle populated vehicle data
 interface UserWithVehicle extends Omit<User, 'assignedVehicleId'> {
@@ -810,8 +810,14 @@ export default function DriversPage() {
 
         {/* Add Driver Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20"
+            onClick={() => setShowAddModal(false)}
+          >
+            <div
+              className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Add New Driver</h3>
                 <button
@@ -920,8 +926,18 @@ export default function DriversPage() {
 
         {/* Edit Driver Modal */}
         {showEditModal && selectedDriver && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20"
+            onClick={() => {
+              setShowEditModal(false);
+              setSelectedDriver(null);
+              setError('');
+            }}
+          >
+            <div
+              className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Edit Driver</h3>
                 <button
@@ -1039,8 +1055,18 @@ export default function DriversPage() {
 
         {/* Delete Confirmation Modal */}
         {showDeleteModal && driverToDelete && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20"
+            onClick={() => {
+              setShowDeleteModal(false);
+              setDriverToDelete(null);
+              setError('');
+            }}
+          >
+            <div
+              className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex items-center mb-4">
                 <div className="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
                   <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

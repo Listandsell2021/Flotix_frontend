@@ -8,7 +8,7 @@ import RecentExpenses from '@/components/dashboard/RecentExpenses';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency, formatNumber } from '@/lib/utils';
-import type { DashboardKPIs, Vehicle } from "../../../types"
+import type { DashboardKPIs, Vehicle } from '@/types';
 
 export default function Dashboard() {
   const router = useRouter();

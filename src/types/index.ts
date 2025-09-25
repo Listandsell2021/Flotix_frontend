@@ -1,4 +1,4 @@
-// User Types
+// User & Auth Types
 export enum UserRole {
   SUPER_ADMIN = 'SUPER_ADMIN',
   ADMIN = 'ADMIN',
@@ -7,63 +7,127 @@ export enum UserRole {
   VIEWER = 'VIEWER'
 }
 
+// Permission Types
+export enum Permission {
+  // Company Management
+  COMPANY_CREATE = 'COMPANY_CREATE',
+  COMPANY_READ = 'COMPANY_READ',
+  COMPANY_UPDATE = 'COMPANY_UPDATE',
+  COMPANY_DELETE = 'COMPANY_DELETE',
+  
+  // User Management
+  USER_CREATE = 'USER_CREATE',
+  USER_READ = 'USER_READ',
+  USER_UPDATE = 'USER_UPDATE',
+  USER_DELETE = 'USER_DELETE',
+  USER_ASSIGN_ROLE = 'USER_ASSIGN_ROLE',
+  
+  // Driver Management
+  DRIVER_CREATE = 'DRIVER_CREATE',
+  DRIVER_READ = 'DRIVER_READ',
+  DRIVER_UPDATE = 'DRIVER_UPDATE',
+  DRIVER_DELETE = 'DRIVER_DELETE',
+  
+  // Vehicle Management
+  VEHICLE_CREATE = 'VEHICLE_CREATE',
+  VEHICLE_READ = 'VEHICLE_READ',
+  VEHICLE_UPDATE = 'VEHICLE_UPDATE',
+  VEHICLE_DELETE = 'VEHICLE_DELETE',
+  VEHICLE_ASSIGN = 'VEHICLE_ASSIGN',
+  
+  // Expense Management
+  EXPENSE_CREATE = 'EXPENSE_CREATE',
+  EXPENSE_READ = 'EXPENSE_READ',
+  EXPENSE_UPDATE = 'EXPENSE_UPDATE',
+  EXPENSE_DELETE = 'EXPENSE_DELETE',
+  EXPENSE_APPROVE = 'EXPENSE_APPROVE',
+  EXPENSE_EXPORT = 'EXPENSE_EXPORT',
+  
+  // Reports & Analytics
+  REPORT_VIEW = 'REPORT_VIEW',
+  REPORT_EXPORT = 'REPORT_EXPORT',
+  DASHBOARD_VIEW = 'DASHBOARD_VIEW',
+  
+  // System Management
+  SYSTEM_SETTINGS = 'SYSTEM_SETTINGS',
+  AUDIT_LOG_VIEW = 'AUDIT_LOG_VIEW',
+  ROLE_MANAGEMENT = 'ROLE_MANAGEMENT'
+}
+
+type CompanyIdType = string | { _id?: string; id?: string } | null;
+
+export interface Role {
+  _id: string;
+  name: string;
+  displayName: string;
+  description: string;
+  permissions: Permission[];
+  isSystem: boolean; // System roles cannot be deleted
+  companyId?: CompanyIdType; // Custom roles are company-specific
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+export interface CreateRoleRequest {
+  name: string;
+  displayName: string;
+  description: string;
+  permissions: Permission[];
+  companyId?: string;
+}
+
+export interface RoleAssignment {
+  userId: string;
+  roleId: string;
+  assignedBy: string;
+  assignedAt: Date;
+  expiresAt?: Date;
+}
+
 export enum UserStatus {
   ACTIVE = 'ACTIVE',
   INACTIVE = 'INACTIVE',
   SUSPENDED = 'SUSPENDED'
 }
 
+
 export interface User {
   _id: string;
   name: string;
   email: string;
-  password?: string;
-  role: UserRole;
+  passwordHash: string;
+  role: UserRole; // Primary role for backward compatibility
+  roles?: string[]; // Multiple custom roles
+  permissions?: Permission[]; // Computed permissions from all roles
+  companyId?: CompanyIdType;
+  assignedVehicleId?: string;
   status: UserStatus;
+  createdAt: Date;
+  updatedAt: Date;
+  lastActive?: Date;
+}
+
+export interface CreateUserRequest {
+  name: string;
+  email: string;
+  password: string;
+  role: UserRole;
   companyId?: string;
   assignedVehicleId?: string;
-  lastLogin?: Date;
-  lastActive?: Date;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-// Company Types
-export enum CompanyStatus {
-  ACTIVE = 'ACTIVE',
-  SUSPENDED = 'SUSPENDED',
-  CANCELLED = 'CANCELLED'
-}
-
-export enum CompanyPlan {
-  STARTER = 'STARTER',
-  PROFESSIONAL = 'PROFESSIONAL',
-  ENTERPRISE = 'ENTERPRISE'
-}
-
-export interface Company {
-  _id: string;
-  name: string;
-  plan: CompanyPlan;
-  status: CompanyStatus;
-  driverLimit: number;
-  renewalDate: Date;
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 // Vehicle Types
+export enum VehicleStatus {
+  ACTIVE = 'ACTIVE',
+  MAINTENANCE = 'MAINTENANCE',
+  RETIRED = 'RETIRED'
+}
+
 export enum VehicleType {
   CAR = 'CAR',
   TRUCK = 'TRUCK',
   VAN = 'VAN',
   MOTORCYCLE = 'MOTORCYCLE'
-}
-
-export enum VehicleStatus {
-  ACTIVE = 'ACTIVE',
-  MAINTENANCE = 'MAINTENANCE',
-  RETIRED = 'RETIRED'
 }
 
 export interface Vehicle {
@@ -76,9 +140,9 @@ export interface Vehicle {
   vin?: string;
   type: VehicleType;
   status: VehicleStatus;
-  currentOdometer: number;
-  assignedDriverId?: string;
-  assignedDriverIds?: string[];
+  currentOdometer: number; // in kilometers
+  assignedDriverId?: string; // Primary driver (for backward compatibility)
+  assignedDriverIds?: string[]; // Multiple drivers
   fuelType?: string;
   color?: string;
   purchaseDate?: Date;
@@ -100,8 +164,31 @@ export interface CreateVehicleRequest {
 }
 
 export interface AssignVehicleRequest {
-  driverId?: string;
-  driverIds?: string[];
+  driverId: string;
+}
+
+// Company Types
+export enum CompanyStatus {
+  ACTIVE = 'ACTIVE',
+  SUSPENDED = 'SUSPENDED',
+  CANCELLED = 'CANCELLED'
+}
+
+export enum CompanyPlan {
+  STARTER = 'STARTER',
+  PROFESSIONAL = 'PROFESSIONAL',
+  ENTERPRISE = 'ENTERPRISE'
+}
+
+export interface Company {
+  _id: string;
+  name: string;
+  plan: CompanyPlan;
+  status: CompanyStatus;
+  driverLimit: number;
+  createdAt: Date;
+  updatedAt: Date;
+  renewalDate: Date;
 }
 
 // Expense Types
@@ -119,37 +206,31 @@ export enum ExpenseCategory {
 
 export interface Expense {
   _id: string;
-  companyId: string;
   driverId: string;
+  companyId: string;
+  vehicleId?: string;
   type: ExpenseType;
-  amountFinal: number;
+  amountExtracted?: number; // OCR extracted amount
+  amountFinal: number; // Final amount (user confirmed/edited)
   currency: string;
   receiptUrl: string;
-  merchant?: string;
   category?: ExpenseCategory;
   notes?: string;
-  kilometers?: number;
-  odometerReading?: number;
+  merchant?: string;
+  kilometers?: number; // Distance traveled in kilometers
+  odometerReading?: number; // Current odometer reading after trip
   date: Date;
   createdAt: Date;
   updatedAt: Date;
-
-  // OCR related fields
-  amountOcr?: number;
-  merchantOcr?: string;
-  dateOcr?: Date;
-  ocrConfidence?: number;
-  isEditedAfterOcr?: boolean;
-  editedAt?: Date;
+  canEdit: boolean;
 }
 
 export interface CreateExpenseRequest {
-  driverId?: string;
+  driverId?: string; // Optional: used when admin creates expense for a driver
   type: ExpenseType;
   amountFinal: number;
   currency: string;
   receiptUrl: string;
-  merchant?: string;
   category?: ExpenseCategory;
   notes?: string;
   kilometers?: number;
@@ -157,25 +238,13 @@ export interface CreateExpenseRequest {
   date: Date;
 }
 
-// Role Types
-export interface Role {
-  _id: string;
-  name: string;
-  displayName?: string;
-  description?: string;
-  permissions: string[];
-  isSystem: boolean;
-  companyId?: string;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface RoleAssignment {
-  _id: string;
-  userId: string;
-  roleId: string;
-  assignedBy: string;
-  assignedAt: Date;
+// OCR Types
+export interface OCRResult {
+  merchant: string | null;
+  date: string | null; // YYYY-MM-DD format
+  currency: string | null; // ISO 4217
+  amount: number | null;
+  confidence: number; // 0-1
 }
 
 // Audit Log Types
@@ -183,57 +252,49 @@ export enum AuditAction {
   CREATE = 'CREATE',
   UPDATE = 'UPDATE',
   DELETE = 'DELETE',
-  VIEW = 'VIEW',
   EXPORT = 'EXPORT',
   LOGIN = 'LOGIN',
-  LOGOUT = 'LOGOUT',
-  PASSWORD_CHANGE = 'PASSWORD_CHANGE',
-  ASSIGN = 'ASSIGN',
-  UNASSIGN = 'UNASSIGN'
+  LOGOUT = 'LOGOUT'
 }
 
 export enum AuditModule {
   USER = 'USER',
   COMPANY = 'COMPANY',
-  VEHICLE = 'VEHICLE',
   EXPENSE = 'EXPENSE',
-  ROLE = 'ROLE',
-  AUTH = 'AUTH',
   REPORT = 'REPORT',
-  SYSTEM = 'SYSTEM'
+  AUTH = 'AUTH',
+  VEHICLE = 'VEHICLE'
 }
 
 export enum AuditStatus {
   SUCCESS = 'SUCCESS',
-  FAILED = 'FAILED',
-  PENDING = 'PENDING'
+  FAILED = 'FAILED'
 }
 
 export interface AuditLog {
   _id: string;
+  timestamp: Date;
   userId: string;
-  userEmail: string;
+  role: UserRole;
   companyId?: string;
   action: AuditAction;
   module: AuditModule;
+  referenceIds: Record<string, string>;
   status: AuditStatus;
-  resourceId?: string;
-  details: string | Record<string, any>;
-  ipAddress: string;
-  userAgent: string;
-  timestamp: Date;
-  role?: UserRole;
+  details?: string;
+  ipAddress?: string;
+  userAgent?: string;
 }
 
 // API Response Types
 export interface ApiResponse<T = any> {
   success: boolean;
   data?: T;
-  message: string;
-  errors?: Array<{ field: string; message: string }>;
+  message?: string;
+  error?: string;
 }
 
-export interface PaginatedResponse<T = any> {
+export interface PaginatedResponse<T> {
   data: T[];
   pagination: {
     page: number;
@@ -244,14 +305,11 @@ export interface PaginatedResponse<T = any> {
 }
 
 // Auth Types
-export interface LoginRequest {
+export interface JWTPayload {
+  userId: string;
   email: string;
-  password: string;
-}
-
-export interface LoginResponse {
-  user: User;
-  tokens: AuthTokens;
+  role: UserRole;
+  companyId?: string;
 }
 
 export interface AuthTokens {
@@ -259,54 +317,28 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
-export interface RefreshTokenRequest {
-  refreshToken: string;
-}
-
-export interface JWTPayload {
-  userId: string;
-  email: string;
-  role: UserRole;
-  companyId?: string;
-  iat?: number;
-  exp?: number;
-}
-
-export interface CreateUserRequest {
-  name: string;
+export interface LoginRequest {
   email: string;
   password: string;
-  role: UserRole;
-  companyId?: string;
-  assignedVehicleId?: string;
 }
 
-export interface CreateRoleRequest {
-  name: string;
-  displayName: string;
-  description?: string;
-  permissions: string[];
+export interface LoginResponse {
+  user: Omit<User, 'passwordHash'>;
+  tokens: AuthTokens;
 }
 
-// Firebase Types
-export interface FirebaseConfig {
-  projectId: string;
-  privateKey: string;
-  clientEmail: string;
-  storageBucket: string;
+// Filter/Search Types
+export interface ExpenseFilters {
+  dateFrom?: string;
+  dateTo?: string;
+  type?: ExpenseType;
+  driverId?: string;
+  category?: ExpenseCategory;
+  amountMin?: number;
+  amountMax?: number;
+  search?: string; // merchant/notes search
 }
 
-// OCR Types
-export interface OcrResult {
-  merchant?: string;
-  amount?: number;
-  date?: Date;
-  currency?: string;
-  confidence: number;
-  rawText: string;
-}
-
-// Report Types
 export interface ReportFilters {
   dateFrom: string;
   dateTo: string;
@@ -316,201 +348,39 @@ export interface ReportFilters {
   groupBy?: 'driver' | 'category' | 'month' | 'type';
 }
 
-export interface DashboardStats {
-  totalExpenses: number;
-  totalAmount: number;
-  monthlyAmount: number;
-  fuelExpenses: number;
-  miscExpenses: number;
-  activeDrivers: number;
-  totalVehicles: number;
-  assignedVehicles: number;
-}
-
+// Dashboard/Analytics Types
 export interface DashboardKPIs {
-  totalExpenses: number;
-  totalAmount: number;
-  monthlySpend: number;
-  totalSpendThisMonth?: number;
-  monthOverMonthTrend?: number;
-  averagePerExpense: number;
-  fuelVsMisc: {
+  totalSpendThisMonth: number;
+  fuelVsMiscSplit: {
     fuel: number;
     misc: number;
   };
-  fuelVsMiscSplit?: {
-    fuel: number;
-    misc: number;
+  topDriversBySpend: Array<{
+    driverId: string;
+    driverName: string;
+    totalSpend: number;
+  }>;
+  monthOverMonthTrend: {
+    currentMonth: number;
+    previousMonth: number;
+    percentageChange: number;
   };
-  topDrivers: Array<{
-    driverId: string;
-    driverName: string;
-    totalAmount: number;
-    expenseCount: number;
-  }>;
-  topDriversBySpend?: Array<{
-    driverId: string;
-    driverName: string;
-    totalAmount: number;
-    expenseCount: number;
-  }>;
-  monthlyTrend: Array<{
-    month: string;
-    amount: number;
-    count: number;
-  }>;
 }
 
 export interface ReportData {
   summary: {
     totalAmount: number;
-    totalExpenses: number;
-    averageAmount: number;
+    expenseCount: number;
+    avgExpenseAmount: number;
   };
   breakdown: Array<{
-    category: string;
-    amount: number;
+    label: string;
+    value: number;
     count: number;
-    percentage: number;
   }>;
-  timeline: Array<{
+  chartData: Array<{
     date: string;
     amount: number;
     count: number;
   }>;
-}
-
-export interface ExpenseFilters {
-  dateFrom?: string;
-  dateTo?: string;
-  type?: ExpenseType;
-  category?: ExpenseCategory;
-  driverId?: string;
-  amountMin?: number;
-  amountMax?: number;
-  search?: string;
-  page?: number;
-  limit?: number;
-  sortBy?: string;
-  sortOrder?: 'asc' | 'desc';
-}
-
-// Express Request Extensions
-export interface AuthenticatedRequest {
-  user: {
-    userId: string;
-    email: string;
-    role: UserRole;
-    companyId?: string;
-  };
-}
-
-// Permission Types
-export enum Permission {
-  // User permissions
-  USER_CREATE = 'USER_CREATE',
-  USER_READ = 'USER_READ',
-  USER_UPDATE = 'USER_UPDATE',
-  USER_DELETE = 'USER_DELETE',
-  USER_MANAGE_ROLES = 'USER_MANAGE_ROLES',
-
-  // Company permissions
-  COMPANY_CREATE = 'COMPANY_CREATE',
-  COMPANY_READ = 'COMPANY_READ',
-  COMPANY_UPDATE = 'COMPANY_UPDATE',
-  COMPANY_DELETE = 'COMPANY_DELETE',
-
-  // Vehicle permissions
-  VEHICLE_CREATE = 'VEHICLE_CREATE',
-  VEHICLE_READ = 'VEHICLE_READ',
-  VEHICLE_UPDATE = 'VEHICLE_UPDATE',
-  VEHICLE_DELETE = 'VEHICLE_DELETE',
-  VEHICLE_ASSIGN = 'VEHICLE_ASSIGN',
-
-  // Expense permissions
-  EXPENSE_CREATE = 'EXPENSE_CREATE',
-  EXPENSE_READ = 'EXPENSE_READ',
-  EXPENSE_UPDATE = 'EXPENSE_UPDATE',
-  EXPENSE_DELETE = 'EXPENSE_DELETE',
-  EXPENSE_APPROVE = 'EXPENSE_APPROVE',
-
-  // Report permissions
-  REPORT_VIEW = 'REPORT_VIEW',
-  REPORT_EXPORT = 'REPORT_EXPORT',
-
-  // System permissions
-  SYSTEM_ADMIN = 'SYSTEM_ADMIN',
-  AUDIT_READ = 'AUDIT_READ',
-
-  // Additional permissions referenced in frontend
-  USER_MANAGE_ROLES = 'USER_MANAGE_ROLES',
-  USER_ASSIGN_ROLE = 'USER_ASSIGN_ROLE',
-  DRIVER_CREATE = 'DRIVER_CREATE',
-  DRIVER_READ = 'DRIVER_READ',
-  DRIVER_UPDATE = 'DRIVER_UPDATE',
-  DRIVER_DELETE = 'DRIVER_DELETE',
-  EXPENSE_EXPORT = 'EXPENSE_EXPORT',
-  DASHBOARD_VIEW = 'DASHBOARD_VIEW',
-  SYSTEM_SETTINGS = 'SYSTEM_SETTINGS',
-  AUDIT_LOG_VIEW = 'AUDIT_LOG_VIEW',
-  ROLE_MANAGEMENT = 'ROLE_MANAGEMENT',
-}
-
-export interface PermissionDetails {
-  id: string;
-  name: string;
-  description: string;
-  resource: string;
-  action: string;
-}
-
-// Validation Types
-export interface ValidationError {
-  field: string;
-  message: string;
-  code?: string;
-}
-
-// Configuration Types
-export interface AppConfig {
-  port: number;
-  nodeEnv: string;
-  mongoUri: string;
-  jwtAccessSecret: string;
-  jwtRefreshSecret: string;
-  jwtAccessExpiresIn: string;
-  jwtRefreshExpiresIn: string;
-  allowedOrigins: string[];
-  openaiApiKey: string;
-  openaiModel: string;
-  firebase: FirebaseConfig;
-  maxFileSize: number;
-  allowedFileTypes: string[];
-  expenseEditTimeLimit: number;
-  defaultDriverLimit: number;
-  exportMaxRecords: number;
-  rateLimitWindowMs: number;
-  rateLimitMaxRequests: number;
-}
-
-// Extended types for frontend specific interfaces
-export interface UserWithVehicle extends User {
-  vehicle?: Vehicle;
-  assignedVehicle?: Vehicle;
-}
-
-export interface ExpenseWithDriver extends Expense {
-  driver?: User;
-  vehicleId?: string;
-  vehicle?: Vehicle;
-}
-
-export interface RoleWithUsers extends Role {
-  displayName?: string;
-  users?: User[];
-}
-
-export interface AuditLogWithUser extends AuditLog {
-  user?: User;
-  role?: UserRole;
 }

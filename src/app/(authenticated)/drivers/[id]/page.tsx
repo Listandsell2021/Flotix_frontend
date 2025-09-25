@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency } from '@/lib/utils';
-import type { User, Vehicle } from "../../../../types"
+import type { User, Vehicle } from '@/types';
 
 export default function DriverDetailsPage() {
   const params = useParams();
@@ -411,7 +411,7 @@ export default function DriverDetailsPage() {
 
         {/* Receipt Photo Modal */}
         {showPhotoModal && selectedExpense && (
-          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 pt-20">
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Receipt Photo</h3>

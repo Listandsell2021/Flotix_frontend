@@ -6,7 +6,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
 import { api } from "@/lib/api";
-import type { AuditLog, User } from "../../../types"
+import type { AuditLog, User } from "@/types";
 import { useTranslation } from "react-i18next";
 
 interface AuditLogWithUser extends Omit<AuditLog, "userId"> {

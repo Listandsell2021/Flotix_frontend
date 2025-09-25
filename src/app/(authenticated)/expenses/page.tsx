@@ -9,7 +9,7 @@ import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
 import { TableSkeleton, CardSkeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
-import type { Expense, User, Vehicle } from "../../../types"
+import type { Expense, User, Vehicle } from "@/types";
 
 // Expense with populated driver info
 interface ExpenseWithDriver extends Omit<Expense, "driverId"> {
@@ -54,6 +54,7 @@ export default function ExpensesPage() {
     category: "",
     notes: "",
     kilometers: 0,
+    odometerReading: 0,
     date: "",
   });
   const [showAddExpenseModal, setShowAddExpenseModal] = useState(false);
@@ -70,7 +71,7 @@ export default function ExpensesPage() {
     type: "MISC",
     category: "",
     notes: "",
-    kilometers: 0,
+    odometerReading: 0,
     date: new Date().toISOString().split("T")[0],
     receiptFile: null as File | null,
     receiptUrl: "",
@@ -79,6 +80,7 @@ export default function ExpensesPage() {
   const [ocrResult, setOcrResult] = useState<any>(null);
   const [creatingExpense, setCreatingExpense] = useState(false);
   const [driverSearchQuery, setDriverSearchQuery] = useState("");
+  const [showDriverDropdown, setShowDriverDropdown] = useState(false);
   const [exportingData, setExportingData] = useState(false);
 
   useEffect(() => {
@@ -163,6 +165,7 @@ export default function ExpensesPage() {
         category: selectedExpense.category || "",
         notes: selectedExpense.notes || "",
         kilometers: selectedExpense.kilometers || 0,
+        odometerReading: selectedExpense.odometerReading || 0,
         date: new Date(selectedExpense.date).toISOString().split("T")[0],
       });
     }
@@ -268,6 +271,11 @@ export default function ExpensesPage() {
         updateData.kilometers = editFormData.kilometers;
       }
 
+      // Only include odometerReading if it has a value
+      if (editFormData.odometerReading && editFormData.odometerReading > 0) {
+        updateData.odometerReading = editFormData.odometerReading;
+      }
+
       console.log("Updating expense with data:", updateData);
 
       const response = await expensesApi.updateExpense(
@@ -366,16 +374,6 @@ export default function ExpensesPage() {
         const vehicleData = driver.assignedVehicleId as any;
         console.log("Vehicle data from populated field:", vehicleData);
         setSelectedDriverVehicle(vehicleData);
-        // Set current odometer as default kilometers if available
-        if (
-          vehicleData.currentOdometer !== undefined &&
-          vehicleData.currentOdometer !== null
-        ) {
-          setAddFormData((prev) => ({
-            ...prev,
-            kilometers: vehicleData.currentOdometer,
-          }));
-        }
       } else {
         // assignedVehicleId is just an ID string, fetch the vehicle data
         try {
@@ -388,16 +386,6 @@ export default function ExpensesPage() {
           if (response.success && response.data) {
             console.log("Vehicle data from API:", response.data);
             setSelectedDriverVehicle(response.data);
-            // Set current odometer as default kilometers
-            if (
-              response.data.currentOdometer !== undefined &&
-              response.data.currentOdometer !== null
-            ) {
-              setAddFormData((prev) => ({
-                ...prev,
-                kilometers: response.data.currentOdometer,
-              }));
-            }
           }
         } catch (err: any) {
           console.error("Failed to load driver vehicle:", err);
@@ -447,8 +435,8 @@ export default function ExpensesPage() {
         (expenseData as any).notes = addFormData.notes.trim();
       }
 
-      if (addFormData.kilometers && addFormData.kilometers > 0) {
-        (expenseData as any).kilometers = addFormData.kilometers;
+      if (addFormData.odometerReading && addFormData.odometerReading > 0) {
+        (expenseData as any).odometerReading = addFormData.odometerReading;
       }
 
       const response = await expensesApi.createExpense(expenseData);
@@ -483,7 +471,7 @@ export default function ExpensesPage() {
       type: "MISC",
       category: "",
       notes: "",
-      kilometers: 0,
+      odometerReading: 0,
       date: new Date().toISOString().split("T")[0],
       receiptFile: null,
       receiptUrl: "",
@@ -1644,7 +1632,7 @@ export default function ExpensesPage() {
 
       {/* Expense Details Modal */}
       {showExpenseModal && selectedExpense && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 pt-20">
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
@@ -1935,6 +1923,33 @@ export default function ExpensesPage() {
                   )}
                 </div>
 
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Odometer Reading
+                  </label>
+                  {isEditMode ? (
+                    <input
+                      type="number"
+                      step="1"
+                      value={editFormData.odometerReading}
+                      onChange={(e) =>
+                        setEditFormData({
+                          ...editFormData,
+                          odometerReading: parseInt(e.target.value) || 0,
+                        })
+                      }
+                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      placeholder="Enter odometer reading (optional)"
+                    />
+                  ) : selectedExpense.odometerReading ? (
+                    <div className="text-gray-900">
+                      {selectedExpense.odometerReading.toLocaleString()} km
+                    </div>
+                  ) : (
+                    <div className="text-gray-500">No odometer reading recorded</div>
+                  )}
+                </div>
+
                 {(isEditMode || selectedExpense.notes) && (
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -2164,8 +2179,48 @@ export default function ExpensesPage() {
 
       {/* Add Expense Modal */}
       {showAddExpenseModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 pt-20"
+          onClick={() => {
+            if (!creatingExpense) {
+              setShowAddExpenseModal(false);
+              resetAddForm();
+            }
+          }}
+        >
+          <div
+            className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-y-auto relative"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Loading overlay */}
+            {creatingExpense && (
+              <div className="absolute inset-0 bg-white bg-opacity-90 flex items-center justify-center z-10 rounded-lg">
+                <div className="text-center">
+                  <svg
+                    className="animate-spin h-8 w-8 text-primary-600 mx-auto mb-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
+                    <path
+                      className="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    />
+                  </svg>
+                  <p className="text-primary-600 font-medium">Creating expense...</p>
+                  <p className="text-sm text-gray-500 mt-1">Please wait while we process your request</p>
+                </div>
+              </div>
+            )}
             {/* Modal Header */}
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
@@ -2208,56 +2263,84 @@ export default function ExpensesPage() {
                   <span className="text-red-500">{t("modal.required")}</span>
                 </label>
 
-                {/* Search Input */}
-                <div className="mb-3">
+                {/* Autocomplete Dropdown */}
+                <div className="relative">
                   <input
                     type="text"
                     placeholder={t("modal.searchDrivers")}
                     value={driverSearchQuery}
                     onChange={(e) => {
                       setDriverSearchQuery(e.target.value);
+                      setShowDriverDropdown(true);
                       loadDrivers(e.target.value);
                     }}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                    onFocus={() => setShowDriverDropdown(true)}
+                    onBlur={() => {
+                      // Delay hiding to allow click on dropdown items
+                      setTimeout(() => setShowDriverDropdown(false), 150);
+                    }}
+                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 pr-10"
+                    required
                   />
-                </div>
 
-                {loadingDrivers ? (
-                  <div className="flex items-center py-2">
-                    <Spinner size="sm" />
-                    <span className="ml-2 text-gray-500">
-                      {t("modal.loadingDrivers")}
-                    </span>
-                  </div>
-                ) : (
-                  <>
-                    <select
-                      value={addFormData.driverId}
-                      onChange={(e) => handleDriverSelection(e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      required
-                    >
-                      <option value="">{t("modal.chooseDriver")}</option>
-                      {drivers.map((driver) => (
-                        <option key={driver._id} value={driver._id}>
-                          {driver.name} ({driver.email})
-                        </option>
-                      ))}
-                    </select>
-                    {drivers.length === 0 && !loadingDrivers && (
-                      <p className="text-sm text-red-500 mt-1">
-                        {driverSearchQuery
-                          ? `No drivers found matching "${driverSearchQuery}"`
-                          : "No drivers found. Please check if drivers exist in the system."}
-                      </p>
-                    )}
-                    <p className="text-sm text-gray-500 mt-1">
-                      Found {drivers.length} driver
-                      {drivers.length !== 1 ? "s" : ""}
-                      {driverSearchQuery && ` matching "${driverSearchQuery}"`}
-                    </p>
-                  </>
-                )}
+                  {/* Loading indicator */}
+                  {loadingDrivers && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
+                      <Spinner size="sm" />
+                    </div>
+                  )}
+
+                  {/* Dropdown icon */}
+                  {!loadingDrivers && (
+                    <div className="absolute right-3 top-1/2 transform -translate-y-1/2 pointer-events-none">
+                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </div>
+                  )}
+
+                  {/* Dropdown results */}
+                  {showDriverDropdown && (driverSearchQuery || drivers.length > 0) && (
+                    <div className="absolute z-50 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                      {loadingDrivers ? (
+                        <div className="p-3 text-center text-gray-500">
+                          <Spinner size="sm" className="inline mr-2" />
+                          {t("modal.loadingDrivers")}
+                        </div>
+                      ) : drivers.length > 0 ? (
+                        <>
+                          {drivers.map((driver) => (
+                            <button
+                              key={driver._id}
+                              type="button"
+                              onClick={() => {
+                                handleDriverSelection(driver._id);
+                                setDriverSearchQuery(`${driver.name} (${driver.email})`);
+                                setShowDriverDropdown(false);
+                              }}
+                              className={`w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors ${
+                                addFormData.driverId === driver._id ? 'bg-primary-50 border-l-4 border-primary-500' : ''
+                              }`}
+                            >
+                              <div className="font-medium text-gray-900">{driver.name}</div>
+                              <div className="text-sm text-gray-500">{driver.email}</div>
+                            </button>
+                          ))}
+                          <div className="px-3 py-2 text-xs text-gray-500 border-t bg-gray-50">
+                            Found {drivers.length} driver{drivers.length !== 1 ? "s" : ""}
+                            {driverSearchQuery && ` matching "${driverSearchQuery}"`}
+                          </div>
+                        </>
+                      ) : (
+                        <div className="p-3 text-center text-red-500 text-sm">
+                          {driverSearchQuery
+                            ? `No drivers found matching "${driverSearchQuery}"`
+                            : "No drivers found. Please check if drivers exist in the system."}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Driver & Vehicle Info */}
@@ -2312,8 +2395,28 @@ export default function ExpensesPage() {
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Receipt Image (Optional)
                       {ocrProcessing && (
-                        <span className="ml-2 text-blue-600 text-sm">
-                          🔄 Processing with OCR...
+                        <span className="ml-2 inline-flex items-center text-blue-600 text-sm">
+                          <svg
+                            className="animate-spin -ml-1 mr-1 h-4 w-4 text-blue-600"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                          >
+                            <circle
+                              className="opacity-25"
+                              cx="12"
+                              cy="12"
+                              r="10"
+                              stroke="currentColor"
+                              strokeWidth="4"
+                            />
+                            <path
+                              className="opacity-75"
+                              fill="currentColor"
+                              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                            />
+                          </svg>
+                          Processing with OCR...
                         </span>
                       )}
                     </label>
@@ -2504,25 +2607,42 @@ export default function ExpensesPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Kilometers
+                        Odometer Reading
                       </label>
+                      {selectedDriverVehicle && (
+                        <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                          <div className="flex items-center justify-between text-sm">
+                            <span className="font-medium text-blue-900">
+                              {selectedDriverVehicle.make} {selectedDriverVehicle.model} ({selectedDriverVehicle.licensePlate})
+                            </span>
+                            <span className="text-blue-700">
+                              Current: {selectedDriverVehicle.currentOdometer?.toLocaleString() || "0"} km
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
                       <input
                         type="number"
                         step="1"
-                        value={addFormData.kilometers}
+                        min="0"
+                        value={addFormData.odometerReading}
                         onChange={(e) =>
                           setAddFormData({
                             ...addFormData,
-                            kilometers: parseInt(e.target.value) || 0,
+                            odometerReading: parseInt(e.target.value) || 0,
                           })
                         }
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                         placeholder={
                           selectedDriverVehicle?.currentOdometer
                             ? `Current: ${selectedDriverVehicle.currentOdometer.toLocaleString()} km`
-                            : "Enter kilometers"
+                            : "Enter odometer reading"
                         }
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Enter the current odometer reading. This value will be stored for both the expense kilometers and vehicle odometer.
+                      </p>
                     </div>
 
                     <div className="md:col-span-2">
@@ -2567,7 +2687,30 @@ export default function ExpensesPage() {
                     !addFormData.merchant ||
                     !addFormData.amountFinal
                   }
+                  className="relative"
                 >
+                  {creatingExpense && (
+                    <svg
+                      className="animate-spin -ml-1 mr-2 h-4 w-4 text-white"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      />
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      />
+                    </svg>
+                  )}
                   {creatingExpense ? "Creating..." : t("modal.createExpense")}
                 </Button>
               )}

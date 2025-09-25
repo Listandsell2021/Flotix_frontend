@@ -12,7 +12,7 @@ import type {
   User,
   CreateVehicleRequest,
   VehicleType,
-} from "../../../types"
+} from "@/types";
 
 // Extended type for vehicle with populated driver(s)
 interface VehicleWithDriver
@@ -609,8 +609,8 @@ export default function VehiclesPage() {
 
       {/* Assign Vehicle Modal */}
       {showAssignModal && selectedVehicle && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 pt-20">
+          <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
                 {selectedVehicle.assignedDriverId ? "Reassign" : "Assign"}{" "}
@@ -733,7 +733,7 @@ export default function VehiclesPage() {
 
       {/* Edit Vehicle Modal */}
       {showEditModal && selectedVehicle && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 pt-20">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
@@ -942,7 +942,7 @@ export default function VehiclesPage() {
 
       {/* View Vehicle Modal */}
       {showViewModal && selectedVehicle && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 pt-20">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
@@ -1110,7 +1110,7 @@ export default function VehiclesPage() {
 
       {/* Create Vehicle Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 pt-20">
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">

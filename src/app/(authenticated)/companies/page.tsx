@@ -425,8 +425,14 @@ export default function CompaniesPage() {
 
         {/* Add Company Modal */}
         {showAddModal && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-16"
+            onClick={() => setShowAddModal(false)}
+          >
+            <div
+              className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Add New Company & Admin</h3>
                 <button
@@ -552,8 +558,14 @@ export default function CompaniesPage() {
 
         {/* View Company Modal */}
         {showViewModal && selectedCompany && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-16"
+            onClick={() => setShowViewModal(false)}
+          >
+            <div
+              className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Company Details</h3>
                 <button
@@ -650,8 +662,14 @@ export default function CompaniesPage() {
 
         {/* Edit Company Modal */}
         {showEditModal && selectedCompany && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-16"
+            onClick={() => setShowEditModal(false)}
+          >
+            <div
+              className="bg-white rounded-lg p-6 w-full max-w-2xl mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
               <div className="flex justify-between items-center mb-4">
                 <h3 className="text-lg font-semibold text-gray-900">Edit Company</h3>
                 <button

@@ -6,7 +6,7 @@ import { authApi } from '@/lib/api';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import { Card, CardContent, CardHeader } from '@/components/ui/Card';
-import type { LoginRequest } from "../../types"
+import type { LoginRequest } from '@/types';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -63,7 +63,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-primary-50 to-primary-100 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full">
+      <div className="max-w-2xl w-full">
         <Card shadow="lg" className="backdrop-blur-sm bg-white/95">
           <CardHeader className="text-center pb-8">
             <div className="mx-auto h-16 w-16 flex items-center justify-center rounded-2xl bg-gradient-to-br from-primary-600 to-primary-700 shadow-lg mb-6">

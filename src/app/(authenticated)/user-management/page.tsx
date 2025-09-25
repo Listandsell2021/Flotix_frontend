@@ -7,8 +7,8 @@ import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
 import { formatDate } from "@/lib/utils";
 import { api, authApi } from "@/lib/api";
-import type { Role, User } from "../../../types"
-import { UserRole } from "../../../types"
+import type { Role, User } from "@/types";
+import { UserRole } from "@/types";
 import { useTranslation } from "react-i18next";
 
 interface UserWithRoles extends User {
@@ -592,8 +592,14 @@ export default function UserManagement() {
 
       {/* Create User Modal */}
       {showCreateModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 pt-24 z-50"
+          onClick={() => setShowCreateModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-2xl w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-lg font-semibold text-secondary-900 mb-4">
               {t("form.createTitle")}
             </h3>
@@ -885,8 +891,14 @@ export default function UserManagement() {
 
       {/* Assign Roles Modal */}
       {showAssignModal && selectedUser && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-          <div className="bg-white rounded-lg max-w-md w-full p-6">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center p-4 pt-24 z-50"
+          onClick={() => setShowAssignModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg max-w-2xl w-full p-6"
+            onClick={(e) => e.stopPropagation()}
+          >
             <h3 className="text-lg font-semibold text-secondary-900 mb-4">
               {t("assignRoles.title", { name: selectedUser.name })}
             </h3>

@@ -12,6 +12,7 @@ import enRoles from "@/locales/en/roles.json";
 import enProfile from "@/locales/en/profile.json";
 import enUserManagement from "@/locales/en/userManagement.json";
 import enAudit from "@/locales/en/audit.json";
+import enSidebar from "@/locales/en/sidebar.json";
 
 import deCommon from "@/locales/de/common.json";
 import deDashboard from "@/locales/de/dashboard.json";
@@ -22,6 +23,7 @@ import deRoles from "@/locales/de/roles.json";
 import deProfile from "@/locales/de/profile.json";
 import deUserManagement from "@/locales/de/userManagement.json";
 import deAudit from "@/locales/de/audit.json";
+import deSidebar from "@/locales/de/sidebar.json";
 
 const resources = {
   en: {
@@ -34,6 +36,7 @@ const resources = {
     profile: enProfile,
     userManagement: enUserManagement,
     audit: enAudit,
+    sidebar: enSidebar,
   },
   de: {
     common: deCommon,
@@ -45,6 +48,7 @@ const resources = {
     profile: deProfile,
     userManagement: deUserManagement,
     audit: deAudit,
+    sidebar: deSidebar,
   },
 };
 
@@ -68,6 +72,7 @@ i18n
       "profile",
       "userManagement",
       "audit",
+      "sidebar",
     ],
 
     // Language detection options

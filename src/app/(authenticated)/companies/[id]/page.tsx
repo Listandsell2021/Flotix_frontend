@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency, formatDate } from '@/lib/utils';
-import type { User, Expense, Vehicle } from "../../../../types"
+import type { User, Expense, Vehicle } from '@/types';
 
 interface Company {
   _id: string;
@@ -629,8 +629,14 @@ export default function CompanyDetailsPage() {
 
       {/* Driver Details Modal */}
       {showDriverModal && selectedDriver && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20"
+          onClick={() => setShowDriverModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Driver Details</h2>
               <Button variant="outline" size="sm" onClick={() => setShowDriverModal(false)}>
@@ -681,8 +687,14 @@ export default function CompanyDetailsPage() {
 
       {/* Vehicle Details Modal */}
       {showVehicleModal && selectedVehicle && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20"
+          onClick={() => setShowVehicleModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Vehicle Details</h2>
               <Button variant="outline" size="sm" onClick={() => setShowVehicleModal(false)}>
@@ -772,8 +784,14 @@ export default function CompanyDetailsPage() {
 
       {/* Expense Details Modal */}
       {showExpenseModal && selectedExpense && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+        <div
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 pt-20"
+          onClick={() => setShowExpenseModal(false)}
+        >
+          <div
+            className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-xl font-semibold">Expense Details</h2>
               <Button variant="outline" size="sm" onClick={() => setShowExpenseModal(false)}>

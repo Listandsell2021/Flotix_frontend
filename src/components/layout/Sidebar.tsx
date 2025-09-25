@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 interface SidebarItem {
@@ -20,6 +21,7 @@ interface SidebarProps {
 
 const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
   const pathname = usePathname();
+  const { t } = useTranslation('sidebar');
 
   return (
     <div className={cn("layout-stable fixed left-0 top-0 z-40 w-64 h-screen bg-white/95 backdrop-blur-xl border-r border-secondary-200/50 shadow-large", className)}>
@@ -35,8 +37,8 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
             </svg>
           </div>
           <div>
-            <h1 className="text-lg font-bold text-secondary-900 group-hover:text-primary-700">Flotix</h1>
-            <p className="text-xs text-secondary-500 group-hover:text-secondary-600">Fleet Management</p>
+            <h1 className="text-lg font-bold text-secondary-900 group-hover:text-primary-700">{t('branding.title')}</h1>
+            <p className="text-xs text-secondary-500 group-hover:text-secondary-600">{t('branding.subtitle')}</p>
           </div>
         </Link>
       </div>
@@ -66,7 +68,11 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
                   >
                     {item.icon}
                   </span>
-                  <span className="font-medium">{item.name}</span>
+                  <span className="font-medium">
+                    {userRole === 'SUPER_ADMIN'
+                      ? t(`superAdmin.${item.name}`, item.name)
+                      : t(`admin.${item.name}`, item.name)}
+                  </span>
                   {isActive && (
                     <div className="ml-auto flex items-center space-x-1">
                       <span className="w-1.5 h-1.5 bg-white rounded-full"></span>

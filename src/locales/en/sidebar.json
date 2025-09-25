@@ -4,10 +4,22 @@
     "Expenses": "Expenses",
     "Drivers": "Drivers",
     "Vehicles": "Vehicles",
+    "Reports": "Reports",
     "Audit Logs": "Audit Logs",
     "Role Management": "Role Management",
     "User Management": "User Management",
     "Profile": "Profile"
   },
-  "superAdmin": {}
+  "superAdmin": {
+    "Dashboard": "Dashboard",
+    "Companies": "Companies",
+    "Role Management": "Role Management",
+    "User Management": "User Management",
+    "System Users": "System Users",
+    "Profile": "Profile"
+  },
+  "branding": {
+    "title": "Flotix",
+    "subtitle": "Fleet Management"
+  }
 }

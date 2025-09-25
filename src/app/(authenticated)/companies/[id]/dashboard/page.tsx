@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
 import { formatCurrency, formatNumber, formatDate } from '@/lib/utils';
-import type { DashboardKPIs, Vehicle, User, Expense } from "../../../../types"
+import type { DashboardKPIs, Vehicle, User, Expense } from '@/types';
 
 interface Company {
   _id: string;

@@ -4,10 +4,22 @@
     "Expenses": "Ausgaben",
     "Drivers": "Fahrer",
     "Vehicles": "Fahrzeuge",
+    "Reports": "Berichte",
     "Audit Logs": "Prüfprotokolle",
     "Role Management": "Rollenverwaltung",
     "User Management": "Benutzerverwaltung",
     "Profile": "Profil"
   },
-  "superAdmin": {}
+  "superAdmin": {
+    "Dashboard": "Übersicht",
+    "Companies": "Unternehmen",
+    "Role Management": "Rollenverwaltung",
+    "User Management": "Benutzerverwaltung",
+    "System Users": "Systembenutzer",
+    "Profile": "Profil"
+  },
+  "branding": {
+    "title": "Flotix",
+    "subtitle": "Fuhrparkverwaltung"
+  }
 }

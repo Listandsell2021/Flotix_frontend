@@ -8,7 +8,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Spinner from "@/components/ui/Spinner";
 import { formatDate } from "@/lib/utils";
-import type { User } from "../../../types"
+import type { User } from "@/types";
 
 export default function ProfilePage() {
   const { t } = useTranslation("profile");
