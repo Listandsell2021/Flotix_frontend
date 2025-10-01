@@ -1593,8 +1593,7 @@ export default function ExpensesPage() {
                   variant="outline"
                   onClick={() => {
                     setSearchQuery("");
-                    setDateFromFilter("");
-                    setDateToFilter("");
+                    setDateRangeFilter(null);
                     setTypeFilter("");
                   }}
                 >
