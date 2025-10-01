@@ -206,13 +206,15 @@ export default function UserManagement() {
       return;
     }
 
-    if (
-      createFormData.roleType === "custom" &&
-      createFormData.assignedRoleIds.length === 0
-    ) {
-      setError(t("errors.selectCustomRole"));
-
-      return;
+    if (createFormData.roleType === "custom") {
+      if (!createFormData.role) {
+        setError("Please select a base system role");
+        return;
+      }
+      if (createFormData.assignedRoleIds.length === 0) {
+        setError(t("errors.selectCustomRole"));
+        return;
+      }
     }
 
     if (
@@ -241,12 +243,12 @@ export default function UserManagement() {
           }),
         };
       } else {
-        // Creating user with custom role - assign DRIVER as default system role
+        // Creating user with custom role - use selected base system role
         userData = {
           name: createFormData.name,
           email: createFormData.email,
           password: createFormData.password,
-          role: UserRole.DRIVER, // Default system role when using custom roles
+          role: createFormData.role, // Use the selected base system role
           ...(createFormData.companyId && {
             companyId: createFormData.companyId,
           }),
@@ -780,6 +782,44 @@ export default function UserManagement() {
                 </div>
               ) : (
                 <div>
+                  {/* System Role Selector for Custom Roles */}
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-secondary-700 mb-1">
+                      {t("roles.baseSystemRole")}
+                    </label>
+                    <div className="text-xs text-secondary-500 mb-2">
+                      Select base system role (required for system access)
+                    </div>
+                    <select
+                      required
+                      className="w-full px-3 py-2 border border-secondary-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
+                      value={createFormData.role}
+                      onChange={(e) =>
+                        setCreateFormData({
+                          ...createFormData,
+                          role: e.target.value as UserRole,
+                        })
+                      }
+                    >
+                      <option value="">
+                        -- Select Base Role --
+                      </option>
+                      {currentUser?.role === "SUPER_ADMIN" ? (
+                        <>
+                          <option value={UserRole.MANAGER}>Manager</option>
+                          <option value={UserRole.VIEWER}>Viewer</option>
+                          <option value={UserRole.DRIVER}>Driver</option>
+                        </>
+                      ) : (
+                        <>
+                          <option value={UserRole.MANAGER}>Manager</option>
+                          <option value={UserRole.VIEWER}>Viewer</option>
+                          <option value={UserRole.DRIVER}>Driver</option>
+                        </>
+                      )}
+                    </select>
+                  </div>
+
                   <label className="block text-sm font-medium text-secondary-700 mb-2">
                     {t("roles.selectCustomRole")}
                   </label>

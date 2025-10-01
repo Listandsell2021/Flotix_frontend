@@ -46,8 +46,8 @@ export default function Home() {
           <div className="flex justify-between items-center h-20">
             <div className="flex items-center space-x-4 animate-slide-in-left cursor-pointer group">
               <div className="relative hover-lift">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg hover-glow transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 animate-pulse-enhanced">
-                  <Truck className="w-7 h-7 text-white group-hover:scale-110 transition-transform duration-300" />
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg hover-glow transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 p-2">
+                  <img src="/logo.svg" alt="Flotix Logo" className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300" />
                 </div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-ping"></div>
                 <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-green-400 to-emerald-500 rounded-full animate-pulse-enhanced"></div>
@@ -728,8 +728,8 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div>
               <div className="flex items-center space-x-3 mb-6">
-                <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <Truck className="w-7 h-7 text-white" />
+                <div className="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-lg p-2">
+                  <img src="/logo.svg" alt="Flotix Logo" className="w-full h-full object-contain" />
                 </div>
                 <span className="text-2xl font-bold bg-gradient-to-r from-white to-blue-200 bg-clip-text text-transparent">Flotix</span>
               </div>
