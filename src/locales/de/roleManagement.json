@@ -12,16 +12,56 @@
   "loading": "Rollenverwaltung wird geladen...",
   "error": {
     "title": "Fehler beim Laden der Rollen",
-    "generic": "Rollen konnten nicht geladen werden"
+    "generic": "Rollen konnten nicht geladen werden",
+    "fillAllFields": "Bitte füllen Sie alle erforderlichen Felder aus",
+    "selectPermission": "Bitte wählen Sie mindestens eine Berechtigung aus",
+    "invalidNameFormat": "Rollenname darf nur Großbuchstaben und Unterstriche enthalten (z. B. FLEET_MANAGER)",
+    "createFailed": "Rolle konnte nicht erstellt werden",
+    "updateFailed": "Rolle konnte nicht aktualisiert werden",
+    "deleteFailed": "Rolle konnte nicht gelöscht werden"
   },
   "systemRole": "System",
   "systemRoleNote": "Systemrolle (schreibgeschützt)",
-  "created": "Erstellt: {{date}}",
+  "created": "Erstellt",
   "permissions": {
     "title": "Berechtigungen ({{count}})",
     "more": "+{{count}} weitere",
     "selectAtLeastOne": "Wählen Sie mindestens eine Berechtigung für diese Rolle. Berechtigungen bestimmen, welche Aktionen Benutzer mit dieser Rolle ausführen können.",
-    "category": "{{category}} Berechtigungen"
+    "category": "{{category}} Berechtigungen",
+    "label": "Berechtigungen",
+    "required": "Berechtigungen *",
+    "descriptions": {
+      "COMPANY_CREATE": "Neue Unternehmen erstellen",
+      "COMPANY_READ": "Unternehmensinformationen anzeigen",
+      "COMPANY_UPDATE": "Unternehmensdetails bearbeiten",
+      "COMPANY_DELETE": "Unternehmen löschen",
+      "USER_CREATE": "Neue Benutzer erstellen",
+      "USER_READ": "Benutzerinformationen anzeigen",
+      "USER_UPDATE": "Benutzerdetails bearbeiten",
+      "USER_DELETE": "Benutzer löschen",
+      "USER_ASSIGN_ROLE": "Rollen an Benutzer zuweisen",
+      "DRIVER_CREATE": "Neue Fahrer erstellen",
+      "DRIVER_READ": "Fahrerinformationen anzeigen",
+      "DRIVER_UPDATE": "Fahrerdetails bearbeiten",
+      "DRIVER_DELETE": "Fahrer löschen",
+      "VEHICLE_CREATE": "Neue Fahrzeuge hinzufügen",
+      "VEHICLE_READ": "Fahrzeuginformationen anzeigen",
+      "VEHICLE_UPDATE": "Fahrzeugdetails bearbeiten",
+      "VEHICLE_DELETE": "Fahrzeuge löschen",
+      "VEHICLE_ASSIGN": "Fahrzeuge an Fahrer zuweisen",
+      "EXPENSE_CREATE": "Neue Ausgaben erstellen",
+      "EXPENSE_READ": "Ausgaben anzeigen",
+      "EXPENSE_UPDATE": "Ausgaben bearbeiten",
+      "EXPENSE_DELETE": "Ausgaben löschen",
+      "EXPENSE_APPROVE": "Ausgaben genehmigen",
+      "EXPENSE_EXPORT": "Ausgabendaten exportieren",
+      "REPORT_VIEW": "Berichte anzeigen",
+      "REPORT_EXPORT": "Berichte exportieren",
+      "DASHBOARD_VIEW": "Auf Dashboard zugreifen",
+      "SYSTEM_SETTINGS": "Systemeinstellungen verwalten",
+      "AUDIT_LOG_VIEW": "Audit-Protokolle anzeigen",
+      "ROLE_MANAGEMENT": "Rollen und Berechtigungen verwalten"
+    }
   },
   "modals": {
     "createTitle": "Neue Rolle erstellen",
@@ -40,6 +80,13 @@
   },
   "confirm": {
     "delete": "Sind Sie sicher, dass Sie diese Rolle löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden.",
-    "forceDelete": "{{message}} Möchten Sie diese Rolle zwangsweise löschen und alle Zuweisungen entfernen?"
+    "forceDelete": "Möchten Sie diese Rolle zwangsweise löschen und alle Zuweisungen entfernen?"
+  },
+  "systemRoleDescriptions": {
+    "SYSTEM_SUPER_ADMIN": "Vollständiger Systemzugriff mit allen Berechtigungen",
+    "SYSTEM_ADMIN": "Unternehmensadministrator mit vollständigen Unternehmensverwaltungsberechtigungen",
+    "SYSTEM_MANAGER": "Fuhrparkmanager mit Fahrer- und Fahrzeugverwaltungsberechtigungen",
+    "SYSTEM_DRIVER": "Fahrer mit Ausgabenverwaltungsberechtigungen",
+    "SYSTEM_VIEWER": "Nur-Lese-Zugriff auf Flottendaten und Berichte"
   }
 }

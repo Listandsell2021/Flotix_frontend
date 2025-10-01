@@ -8,6 +8,7 @@ import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
 import Toast from "@/components/ui/Toast";
+import DatePicker from "@/components/ui/DatePicker";
 import { useToast } from "@/hooks/useToast";
 import { TableSkeleton, CardSkeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
@@ -31,8 +32,7 @@ export default function ExpensesPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
-  const [dateFromFilter, setDateFromFilter] = useState("");
-  const [dateToFilter, setDateToFilter] = useState("");
+  const [dateRangeFilter, setDateRangeFilter] = useState<{ start: string; end: string } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [typeFilter, setTypeFilter] = useState<string>("");
@@ -96,8 +96,7 @@ export default function ExpensesPage() {
   }, [
     expenses,
     searchQuery,
-    dateFromFilter,
-    dateToFilter,
+    dateRangeFilter,
     typeFilter,
     sortBy,
     sortOrder,
@@ -108,7 +107,7 @@ export default function ExpensesPage() {
   // Reset to first page when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchQuery, dateFromFilter, dateToFilter, typeFilter]);
+  }, [searchQuery, dateRangeFilter, typeFilter]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -187,8 +186,8 @@ export default function ExpensesPage() {
     const params: any = {};
     if (searchQuery.trim()) params.search = searchQuery.trim();
     if (typeFilter) params.type = typeFilter;
-    if (dateFromFilter) params.dateFrom = dateFromFilter;
-    if (dateToFilter) params.dateTo = dateToFilter;
+    if (dateRangeFilter?.start) params.dateFrom = dateRangeFilter.start;
+    if (dateRangeFilter?.end) params.dateTo = dateRangeFilter.end;
     if (sortBy) params.sortBy = sortBy;
     if (sortOrder) params.sortOrder = sortOrder;
     // Add pagination if needed
@@ -539,12 +538,12 @@ export default function ExpensesPage() {
         exportFilters.search = searchQuery.trim();
       }
 
-      if (dateFromFilter) {
-        exportFilters.dateFrom = dateFromFilter;
+      if (dateRangeFilter?.start) {
+        exportFilters.dateFrom = dateRangeFilter.start;
       }
 
-      if (dateToFilter) {
-        exportFilters.dateTo = dateToFilter;
+      if (dateRangeFilter?.end) {
+        exportFilters.dateTo = dateRangeFilter.end;
       }
 
       if (typeFilter) {
@@ -566,12 +565,12 @@ export default function ExpensesPage() {
       const dateStr = now.toISOString().split("T")[0];
       let filename = `expenses_export_${dateStr}`;
 
-      if (dateFromFilter && dateToFilter) {
-        filename += `_${dateFromFilter}_to_${dateToFilter}`;
-      } else if (dateFromFilter) {
-        filename += `_from_${dateFromFilter}`;
-      } else if (dateToFilter) {
-        filename += `_until_${dateToFilter}`;
+      if (dateRangeFilter?.start && dateRangeFilter?.end) {
+        filename += `_${dateRangeFilter.start}_to_${dateRangeFilter.end}`;
+      } else if (dateRangeFilter?.start) {
+        filename += `_from_${dateRangeFilter.start}`;
+      } else if (dateRangeFilter?.end) {
+        filename += `_until_${dateRangeFilter.end}`;
       }
 
       if (typeFilter) {
@@ -837,41 +836,27 @@ export default function ExpensesPage() {
               </div>
             </div>
 
-            {/* Date Filters - Now in same row */}
+            {/* Date Range Filter */}
             <div className="flex flex-wrap items-end gap-4">
-              <div className="flex flex-col min-w-[140px]">
-                <label className="text-sm font-medium text-gray-700 mb-2">
-                  {t("filters.fromDate")}
-                </label>
-                <input
-                  type="date"
-                  className="px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  value={dateFromFilter}
-                  onChange={(e) => setDateFromFilter(e.target.value)}
-                />
-              </div>
-              <div className="flex flex-col min-w-[140px]">
-                <label className="text-sm font-medium text-gray-700 mb-2">
-                  {t("filters.toDate")}
-                </label>
-                <input
-                  type="date"
-                  className="px-3 py-3 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                  value={dateToFilter}
-                  onChange={(e) => setDateToFilter(e.target.value)}
+              <div className="min-w-[280px]">
+                <DatePicker
+                  mode="range"
+                  value={dateRangeFilter}
+                  onChange={(value) => setDateRangeFilter(value as { start: string; end: string } | null)}
+                  label={t("filters.fromDate") + " - " + t("filters.toDate")}
+                  placeholder={t("filters.fromDate") + " - " + t("filters.toDate")}
+                  className="py-3"
                 />
               </div>
               {/* Clear Filters Button */}
               {(searchQuery ||
-                dateFromFilter ||
-                dateToFilter ||
+                dateRangeFilter ||
                 typeFilter) && (
                 <div className="flex">
                   <button
                     onClick={() => {
                       setSearchQuery("");
-                      setDateFromFilter("");
-                      setDateToFilter("");
+                      setDateRangeFilter(null);
                       setTypeFilter("");
                     }}
                     className="h-12 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center shadow-sm hover:shadow-md"
@@ -1679,7 +1664,7 @@ export default function ExpensesPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Merchant
+                    {t("modal.merchantLabel")}
                   </label>
                   {isEditMode ? (
                     <input
@@ -1695,42 +1680,44 @@ export default function ExpensesPage() {
                     />
                   ) : (
                     <div className="text-gray-900 font-medium">
-                      {selectedExpense.merchant || "Unknown Merchant"}
+                      {selectedExpense.merchant || t("modal.unknownMerchant")}
                     </div>
                   )}
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Date
-                  </label>
                   {isEditMode ? (
-                    <input
-                      type="date"
+                    <DatePicker
+                      mode="single"
                       value={editFormData.date}
-                      onChange={(e) =>
+                      onChange={(value) =>
                         setEditFormData({
                           ...editFormData,
-                          date: e.target.value,
+                          date: value as string,
                         })
                       }
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                      label={t("modal.dateLabel")}
                     />
                   ) : (
-                    <div className="text-gray-900">
-                      {new Date(selectedExpense.date).toLocaleDateString(
-                        "de-DE",
-                        {
-                          day: "2-digit",
-                          month: "2-digit",
-                          year: "numeric",
-                        }
-                      )}
-                    </div>
+                    <>
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        {t("modal.dateLabel")}
+                      </label>
+                      <div className="text-gray-900">
+                        {new Date(selectedExpense.date).toLocaleDateString(
+                          i18n.language === 'de' ? "de-DE" : "en-US",
+                          {
+                            day: "2-digit",
+                            month: "2-digit",
+                            year: "numeric",
+                          }
+                        )}
+                      </div>
+                    </>
                   )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Amount
+                    {t("modal.amountLabel")}
                   </label>
                   {isEditMode ? (
                     <input
@@ -1753,7 +1740,7 @@ export default function ExpensesPage() {
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Type
+                    {t("modal.typeLabel")}
                   </label>
                   {isEditMode ? (
                     <select
@@ -1766,18 +1753,18 @@ export default function ExpensesPage() {
                       }
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     >
-                      <option value="FUEL">FUEL</option>
-                      <option value="MISC">MISC</option>
+                      <option value="FUEL">{t("types.FUEL")}</option>
+                      <option value="MISC">{t("types.MISC")}</option>
                     </select>
                   ) : (
                     <Badge className={getTypeColor(selectedExpense.type)}>
-                      {selectedExpense.type}
+                      {t(`types.${selectedExpense.type}`)}
                     </Badge>
                   )}
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Driver
+                    {t("modal.driver")}
                   </label>
                   <div className="text-gray-900">
                     {typeof selectedExpense.driverId === "object" &&
@@ -1785,12 +1772,12 @@ export default function ExpensesPage() {
                       ? selectedExpense.driverId.name
                       : typeof selectedExpense.driverId === "string"
                       ? `ID: ${selectedExpense.driverId.slice(-6)}`
-                      : "Unknown"}
+                      : t("modal.unknown")}
                   </div>
                 </div>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Currency
+                    {t("modal.currencyLabel")}
                   </label>
                   {isEditMode ? (
                     <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-900">
@@ -1918,7 +1905,7 @@ export default function ExpensesPage() {
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Odometer Reading
+                    {t("modal.odometerReading")}
                   </label>
                   {isEditMode ? (
                     <input
@@ -1939,14 +1926,14 @@ export default function ExpensesPage() {
                       {selectedExpense.odometerReading.toLocaleString()} km
                     </div>
                   ) : (
-                    <div className="text-gray-500">No odometer reading recorded</div>
+                    <div className="text-gray-500">{t("modal.noOdometerReading")}</div>
                   )}
                 </div>
 
                 {(isEditMode || selectedExpense.notes) && (
                   <div className="md:col-span-2">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Notes
+                      {t("modal.notes")}
                     </label>
                     {isEditMode ? (
                       <textarea
@@ -1977,13 +1964,13 @@ export default function ExpensesPage() {
                 (selectedExpense as any).confidence) && (
                 <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    OCR Details
+                    {t('ocrDetails')}
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                     {(selectedExpense as any).amountOcr && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          OCR Amount
+                          {t('ocrAmount')}
                         </label>
                         <div className="text-gray-600">
                           {formatCurrency((selectedExpense as any).amountOcr)}
@@ -1993,7 +1980,7 @@ export default function ExpensesPage() {
                     {(selectedExpense as any).confidence && (
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                          OCR Confidence
+                          {t('ocrConfidence')}
                         </label>
                         <div className="text-gray-600">
                           {Math.round(
@@ -2011,7 +1998,7 @@ export default function ExpensesPage() {
               {selectedExpense.receiptUrl && (
                 <div className="border-t border-gray-200 pt-6">
                   <h3 className="text-lg font-medium text-gray-900 mb-4">
-                    Receipt Image
+                    {t('modal.receiptImage')}
                   </h3>
                   <div
                     className="aspect-w-16 aspect-h-9 bg-gray-100 rounded-lg overflow-hidden relative cursor-pointer group"
@@ -2043,7 +2030,7 @@ export default function ExpensesPage() {
                             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                           />
                         </svg>
-                        <p>Receipt image unavailable</p>
+                        <p>{t('modal.receiptUnavailable')}</p>
                       </div>
                     </div>
                     {/* Overlay hint */}
@@ -2074,12 +2061,12 @@ export default function ExpensesPage() {
               {/* Timestamps */}
               <div className="border-t border-gray-200 pt-6">
                 <h3 className="text-lg font-medium text-gray-900 mb-4">
-                  Timestamps
+                  {t('modal.timestamps')}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Created
+                      {t('modal.created')}
                     </label>
                     <div className="text-gray-600">
                       {new Date(selectedExpense.createdAt).toLocaleString()}
@@ -2087,7 +2074,7 @@ export default function ExpensesPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Last Updated
+                      {t('modal.lastUpdated')}
                     </label>
                     <div className="text-gray-600">
                       {new Date(selectedExpense.updatedAt).toLocaleString()}
@@ -2474,30 +2461,34 @@ export default function ExpensesPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
-                        {t("modal.dateLabel")} <span className="text-red-500">{t("modal.requiredField")}</span>
-                        {ocrResult && ocrResult.date && (
-                          <span className="ml-2 text-xs text-blue-600">
-                            {t("modal.ocrExtractedLabel")}
-                          </span>
-                        )}
-                      </label>
-                      <input
-                        type="date"
-                        value={addFormData.date}
-                        onChange={(e) =>
-                          setAddFormData({
-                            ...addFormData,
-                            date: e.target.value,
-                          })
-                        }
-                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                          ocrResult && ocrResult.date
-                            ? "border-blue-200 bg-blue-50"
-                            : "border-gray-200"
-                        }`}
-                        required
-                      />
+                      <div className="flex items-center gap-2">
+                        <DatePicker
+                          mode="single"
+                          value={addFormData.date}
+                          onChange={(value) =>
+                            setAddFormData({
+                              ...addFormData,
+                              date: value as string,
+                            })
+                          }
+                          label={
+                            <span>
+                              {t("modal.dateLabel")} <span className="text-red-500">{t("modal.requiredField")}</span>
+                              {ocrResult && ocrResult.date && (
+                                <span className="ml-2 text-xs text-blue-600">
+                                  {t("modal.ocrExtractedLabel")}
+                                </span>
+                              )}
+                            </span>
+                          }
+                          required
+                          className={
+                            ocrResult && ocrResult.date
+                              ? "border-blue-200 bg-blue-50"
+                              : ""
+                          }
+                        />
+                      </div>
                     </div>
 
                     <div>

@@ -788,7 +788,7 @@ export default function UserManagement() {
                       {t("roles.baseSystemRole")}
                     </label>
                     <div className="text-xs text-secondary-500 mb-2">
-                      Select base system role (required for system access)
+                      {t("roles.baseSystemRoleHint")}
                     </div>
                     <select
                       required
@@ -802,7 +802,7 @@ export default function UserManagement() {
                       }
                     >
                       <option value="">
-                        -- Select Base Role --
+                        -- {t("roles.selectSystemRole")} --
                       </option>
                       {currentUser?.role === "SUPER_ADMIN" ? (
                         <>

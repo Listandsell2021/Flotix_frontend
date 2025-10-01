@@ -41,6 +41,8 @@
     "customInfo": "Custom Roles: Additional roles created in Role Management for specialized permissions (e.g., FLEET_MANAGER)",
     "selectSystemRole": "Select System Role",
     "selectCustomRole": "Select Custom Role",
+    "baseSystemRole": "Base System Role",
+    "baseSystemRoleHint": "Select base system role (required for system access)",
     "noCustom": "No custom roles available",
     "noCustomHint": "Create custom roles in the Role Management page first, then refresh this page.",
     "customInstruction": "Custom roles provide additional permissions beyond the base system role. Create custom roles on the Role Management page."

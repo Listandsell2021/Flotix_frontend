@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
@@ -16,6 +17,7 @@ interface RoleWithUsers extends Role {
 }
 
 export default function RoleManagementPage() {
+  const { t } = useTranslation('roleManagement');
   const [roles, setRoles] = useState<RoleWithUsers[]>([]);
   const [permissions, setPermissions] = useState<{all: Permission[], grouped: Record<string, Permission[]>} | null>(null);
   const [currentUser, setCurrentUser] = useState<any>(null);
@@ -77,18 +79,18 @@ export default function RoleManagementPage() {
 
     // Validation
     if (!createFormData.name || !createFormData.displayName || !createFormData.description) {
-      setError('Please fill in all required fields');
+      setError(t('error.fillAllFields'));
       return;
     }
 
     if (createFormData.permissions.length === 0) {
-      setError('Please select at least one permission');
+      setError(t('error.selectPermission'));
       return;
     }
 
     // Validate name format (uppercase letters and underscores only)
     if (!/^[A-Z_]+$/.test(createFormData.name)) {
-      setError('Role name must contain only uppercase letters and underscores (e.g., FLEET_MANAGER)');
+      setError(t('error.invalidNameFormat'));
       return;
     }
 
@@ -123,10 +125,10 @@ export default function RoleManagementPage() {
         });
         await loadData();
       } else {
-        setError(response.data.message || 'Failed to create role');
+        setError(response.data.message || t('error.createFailed'));
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to create role');
+      setError(err.response?.data?.message || err.message || t('error.createFailed'));
     }
   };
 
@@ -143,15 +145,15 @@ export default function RoleManagementPage() {
         setSelectedRole(null);
         await loadData();
       } else {
-        setError(response.data.message || 'Failed to update role');
+        setError(response.data.message || t('error.updateFailed'));
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to update role');
+      setError(err.response?.data?.message || err.message || t('error.updateFailed'));
     }
   };
 
   const handleDeleteRole = async (roleId: string, forceDelete: boolean = false) => {
-    if (!forceDelete && !confirm('Are you sure you want to delete this role? This action cannot be undone.')) {
+    if (!forceDelete && !confirm(t('confirm.delete'))) {
       return;
     }
 
@@ -163,15 +165,15 @@ export default function RoleManagementPage() {
         await loadData();
         setError(''); // Clear any previous errors
       } else {
-        setError(response.data.message || 'Failed to delete role');
+        setError(response.data.message || t('error.deleteFailed'));
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'Failed to delete role';
+      const errorMessage = err.response?.data?.message || err.message || t('error.deleteFailed');
 
       // If role has assignments, ask if user wants to force delete
       if (errorMessage.includes('assigned to') && errorMessage.includes('user(s)')) {
         const forceConfirm = confirm(
-          `${errorMessage}\n\nDo you want to force delete this role and remove all assignments?`
+          `${errorMessage}\n\n${t('confirm.forceDelete')}`
         );
 
         if (forceConfirm) {
@@ -212,39 +214,17 @@ export default function RoleManagementPage() {
   };
 
   const getPermissionDescription = (permission: Permission): string => {
-    const descriptions: Record<Permission, string> = {
-      [Permission.COMPANY_CREATE]: 'Create new companies',
-      [Permission.COMPANY_READ]: 'View company information',
-      [Permission.COMPANY_UPDATE]: 'Edit company details',
-      [Permission.COMPANY_DELETE]: 'Delete companies',
-      [Permission.USER_CREATE]: 'Create new users',
-      [Permission.USER_READ]: 'View user information',
-      [Permission.USER_UPDATE]: 'Edit user details',
-      [Permission.USER_DELETE]: 'Delete users',
-      [Permission.USER_ASSIGN_ROLE]: 'Assign roles to users',
-      [Permission.DRIVER_CREATE]: 'Create new drivers',
-      [Permission.DRIVER_READ]: 'View driver information',
-      [Permission.DRIVER_UPDATE]: 'Edit driver details',
-      [Permission.DRIVER_DELETE]: 'Delete drivers',
-      [Permission.VEHICLE_CREATE]: 'Add new vehicles',
-      [Permission.VEHICLE_READ]: 'View vehicle information',
-      [Permission.VEHICLE_UPDATE]: 'Edit vehicle details',
-      [Permission.VEHICLE_DELETE]: 'Delete vehicles',
-      [Permission.VEHICLE_ASSIGN]: 'Assign vehicles to drivers',
-      [Permission.EXPENSE_CREATE]: 'Create new expenses',
-      [Permission.EXPENSE_READ]: 'View expenses',
-      [Permission.EXPENSE_UPDATE]: 'Edit expenses',
-      [Permission.EXPENSE_DELETE]: 'Delete expenses',
-      [Permission.EXPENSE_APPROVE]: 'Approve expenses',
-      [Permission.EXPENSE_EXPORT]: 'Export expense data',
-      [Permission.REPORT_VIEW]: 'View reports',
-      [Permission.REPORT_EXPORT]: 'Export reports',
-      [Permission.DASHBOARD_VIEW]: 'Access dashboard',
-      [Permission.SYSTEM_SETTINGS]: 'Manage system settings',
-      [Permission.AUDIT_LOG_VIEW]: 'View audit logs',
-      [Permission.ROLE_MANAGEMENT]: 'Manage roles and permissions'
-    };
-    return descriptions[permission] || permission;
+    return t(`permissions.descriptions.${permission}`, { defaultValue: permission });
+  };
+
+  const getRoleDescription = (role: RoleWithUsers): string => {
+    // If it's a system role, try to translate using predefined translations
+    if (role.isSystem && role.name) {
+      const translatedDesc = t(`systemRoleDescriptions.${role.name}`, { defaultValue: '' });
+      if (translatedDesc) return translatedDesc;
+    }
+    // Otherwise return the description from database (for custom roles)
+    return role.description;
   };
 
   if (loading) {
@@ -252,7 +232,7 @@ export default function RoleManagementPage() {
       <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <Spinner size="lg" />
-            <p className="mt-4 text-gray-600">Loading role management...</p>
+            <p className="mt-4 text-gray-600">{t('loading')}</p>
           </div>
         </div>
     );
@@ -266,12 +246,12 @@ export default function RoleManagementPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <h3 className="text-sm font-medium text-red-800">Error Loading Roles</h3>
+              <h3 className="text-sm font-medium text-red-800">{t('error.title')}</h3>
               <p className="text-sm text-red-700 mt-1">{error}</p>
             </div>
           </div>
           <Button onClick={loadData} className="mt-4">
-            Retry
+            {t('buttons.retry')}
           </Button>
         </div>
     );
@@ -282,14 +262,14 @@ export default function RoleManagementPage() {
         {/* Header */}
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Role Management</h1>
-            <p className="text-gray-600 mt-2">Manage user roles and permissions</p>
+            <h1 className="text-3xl font-bold text-gray-900">{t('title')}</h1>
+            <p className="text-gray-600 mt-2">{t('subtitle')}</p>
           </div>
-          <Button 
+          <Button
             onClick={() => setShowCreateModal(true)}
             className="bg-primary-600 hover:bg-primary-700 text-white"
           >
-            Create Role
+            {t('buttons.createRole')}
           </Button>
         </div>
 
@@ -304,11 +284,11 @@ export default function RoleManagementPage() {
                       {role.displayName}
                       {role.isSystem && (
                         <Badge variant="secondary" className="text-xs">
-                          System
+                          {t('systemRole')}
                         </Badge>
                       )}
                     </CardTitle>
-                    <p className="text-sm text-gray-500 mt-1">{role.description}</p>
+                    <p className="text-sm text-gray-500 mt-1">{getRoleDescription(role)}</p>
                   </div>
                   <div className="flex space-x-2">
                     {!role.isSystem && (
@@ -318,7 +298,7 @@ export default function RoleManagementPage() {
                           size="sm"
                           onClick={() => handleEditRole(role)}
                         >
-                          Edit
+                          {t('buttons.edit')}
                         </Button>
                         <Button
                           variant="outline"
@@ -326,12 +306,12 @@ export default function RoleManagementPage() {
                           onClick={() => handleDeleteRole(role._id, false)}
                           className="text-red-600 hover:text-red-700"
                         >
-                          Delete
+                          {t('buttons.delete')}
                         </Button>
                       </>
                     )}
                     {role.isSystem && (
-                      <span className="text-xs text-gray-500 italic">System role (read-only)</span>
+                      <span className="text-xs text-gray-500 italic">{t('systemRoleNote')}</span>
                     )}
                   </div>
                 </div>
@@ -340,7 +320,7 @@ export default function RoleManagementPage() {
                 <div className="space-y-4">
                   <div>
                     <p className="text-sm font-medium text-gray-700 mb-2">
-                      Permissions ({role.permissions.length})
+                      {t('permissions.title', { count: role.permissions.length })}
                     </p>
                     <div className="flex flex-wrap gap-1">
                       {role.permissions.slice(0, 6).map((permission) => (
@@ -350,13 +330,13 @@ export default function RoleManagementPage() {
                       ))}
                       {role.permissions.length > 6 && (
                         <Badge variant="default" className="text-xs">
-                          +{role.permissions.length - 6} more
+                          {t('permissions.more', { count: role.permissions.length - 6 })}
                         </Badge>
                       )}
                     </div>
                   </div>
                   <div className="text-xs text-gray-500">
-                    Created: {formatDate(new Date(role.createdAt))}
+                    {t('created')}: {formatDate(new Date(role.createdAt))}
                   </div>
                 </div>
               </CardContent>
@@ -370,10 +350,10 @@ export default function RoleManagementPage() {
             <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Create New Role</h2>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <h2 className="text-xl font-semibold">{t('modals.createTitle')}</h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setShowCreateModal(false)}
                   >
                     ✕
@@ -383,7 +363,7 @@ export default function RoleManagementPage() {
                 <form onSubmit={handleCreateRole} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Role Name (Internal)
+                      {t('modals.fields.roleName')}
                     </label>
                     <input
                       type="text"
@@ -394,55 +374,55 @@ export default function RoleManagementPage() {
                         setCreateFormData(prev => ({ ...prev, name: value }));
                       }}
                       className="w-full p-2 border border-gray-300 rounded-md"
-                      placeholder="e.g., FLEET_MANAGER"
+                      placeholder={t('modals.placeholders.roleName')}
                       pattern="[A-Z_]+"
                       title="Only uppercase letters and underscores allowed"
                       required
                     />
                     <p className="text-xs text-gray-500 mt-1">
-                      Use uppercase letters and underscores only (e.g., FLEET_MANAGER, EXPENSE_APPROVER)
+                      {t('modals.fields.roleNameHint')}
                     </p>
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Display Name
+                      {t('modals.fields.displayName')}
                     </label>
                     <input
                       type="text"
                       value={createFormData.displayName}
                       onChange={(e) => setCreateFormData(prev => ({ ...prev, displayName: e.target.value }))}
                       className="w-full p-2 border border-gray-300 rounded-md"
-                      placeholder="e.g., Fleet Manager"
+                      placeholder={t('modals.placeholders.displayName')}
                       required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
+                      {t('modals.fields.description')}
                     </label>
                     <textarea
                       value={createFormData.description}
                       onChange={(e) => setCreateFormData(prev => ({ ...prev, description: e.target.value }))}
                       className="w-full p-2 border border-gray-300 rounded-md"
                       rows={3}
-                      placeholder="Describe what this role is for..."
+                      placeholder={t('modals.placeholders.description')}
                       required
                     />
                   </div>
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Permissions <span className="text-red-500">*</span>
+                      {t('permissions.required')}
                     </label>
                     <p className="text-xs text-gray-500 mb-3">
-                      Select at least one permission for this role. Permissions determine what actions users with this role can perform.
+                      {t('permissions.selectAtLeastOne')}
                     </p>
                     {permissions && Object.entries(permissions.grouped).map(([category, perms]) => (
                       <div key={category} className="mb-4">
                         <h4 className="font-medium text-gray-800 mb-2 capitalize">
-                          {category} Permissions
+                          {t('permissions.category', { category })}
                         </h4>
                         <div className="space-y-2">
                           {perms.map((permission) => (
@@ -472,14 +452,14 @@ export default function RoleManagementPage() {
                         setError('');
                       }}
                     >
-                      Cancel
+                      {t('buttons.cancel')}
                     </Button>
                     <Button
                       type="submit"
                       className="bg-primary-600 hover:bg-primary-700 text-white"
                       disabled={!createFormData.name || !createFormData.displayName || !createFormData.description || createFormData.permissions.length === 0}
                     >
-                      Create Role
+                      {t('buttons.createRole')}
                     </Button>
                   </div>
                 </form>
@@ -494,10 +474,10 @@ export default function RoleManagementPage() {
             <div className="bg-white rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="p-6">
                 <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Edit Role: {selectedRole.displayName}</h2>
-                  <Button 
-                    variant="outline" 
-                    size="sm" 
+                  <h2 className="text-xl font-semibold">{t('modals.editTitle', { name: selectedRole.displayName })}</h2>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => setShowEditModal(false)}
                   >
                     ✕
@@ -507,7 +487,7 @@ export default function RoleManagementPage() {
                 <form onSubmit={handleUpdateRole} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Display Name
+                      {t('modals.fields.displayName')}
                     </label>
                     <input
                       type="text"
@@ -521,7 +501,7 @@ export default function RoleManagementPage() {
 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Description
+                      {t('modals.fields.description')}
                     </label>
                     <textarea
                       value={editFormData.description}
@@ -536,12 +516,12 @@ export default function RoleManagementPage() {
                   {!selectedRole.isSystem && permissions && (
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Permissions
+                        {t('permissions.label')}
                       </label>
                       {Object.entries(permissions.grouped).map(([category, perms]) => (
                         <div key={category} className="mb-4">
                           <h4 className="font-medium text-gray-800 mb-2 capitalize">
-                            {category} Permissions
+                            {t('permissions.category', { category })}
                           </h4>
                           <div className="space-y-2">
                             {perms.map((permission) => (
@@ -564,19 +544,19 @@ export default function RoleManagementPage() {
                   )}
 
                   <div className="flex justify-end space-x-2 pt-4">
-                    <Button 
-                      type="button" 
-                      variant="outline" 
+                    <Button
+                      type="button"
+                      variant="outline"
                       onClick={() => setShowEditModal(false)}
                     >
-                      Cancel
+                      {t('buttons.cancel')}
                     </Button>
-                    <Button 
-                      type="submit" 
+                    <Button
+                      type="submit"
                       className="bg-primary-600 hover:bg-primary-700 text-white"
                       disabled={selectedRole.isSystem}
                     >
-                      Update Role
+                      {t('buttons.updateRole')}
                     </Button>
                   </div>
                 </form>

@@ -12,16 +12,56 @@
   "loading": "Loading role management...",
   "error": {
     "title": "Error Loading Roles",
-    "generic": "Failed to load roles"
+    "generic": "Failed to load roles",
+    "fillAllFields": "Please fill in all required fields",
+    "selectPermission": "Please select at least one permission",
+    "invalidNameFormat": "Role name must contain only uppercase letters and underscores (e.g., FLEET_MANAGER)",
+    "createFailed": "Failed to create role",
+    "updateFailed": "Failed to update role",
+    "deleteFailed": "Failed to delete role"
   },
   "systemRole": "System",
   "systemRoleNote": "System role (read-only)",
-  "created": "Created: {{date}}",
+  "created": "Created",
   "permissions": {
     "title": "Permissions ({{count}})",
     "more": "+{{count}} more",
     "selectAtLeastOne": "Select at least one permission for this role. Permissions determine what actions users with this role can perform.",
-    "category": "{{category}} Permissions"
+    "category": "{{category}} Permissions",
+    "label": "Permissions",
+    "required": "Permissions *",
+    "descriptions": {
+      "COMPANY_CREATE": "Create new companies",
+      "COMPANY_READ": "View company information",
+      "COMPANY_UPDATE": "Edit company details",
+      "COMPANY_DELETE": "Delete companies",
+      "USER_CREATE": "Create new users",
+      "USER_READ": "View user information",
+      "USER_UPDATE": "Edit user details",
+      "USER_DELETE": "Delete users",
+      "USER_ASSIGN_ROLE": "Assign roles to users",
+      "DRIVER_CREATE": "Create new drivers",
+      "DRIVER_READ": "View driver information",
+      "DRIVER_UPDATE": "Edit driver details",
+      "DRIVER_DELETE": "Delete drivers",
+      "VEHICLE_CREATE": "Add new vehicles",
+      "VEHICLE_READ": "View vehicle information",
+      "VEHICLE_UPDATE": "Edit vehicle details",
+      "VEHICLE_DELETE": "Delete vehicles",
+      "VEHICLE_ASSIGN": "Assign vehicles to drivers",
+      "EXPENSE_CREATE": "Create new expenses",
+      "EXPENSE_READ": "View expenses",
+      "EXPENSE_UPDATE": "Edit expenses",
+      "EXPENSE_DELETE": "Delete expenses",
+      "EXPENSE_APPROVE": "Approve expenses",
+      "EXPENSE_EXPORT": "Export expense data",
+      "REPORT_VIEW": "View reports",
+      "REPORT_EXPORT": "Export reports",
+      "DASHBOARD_VIEW": "Access dashboard",
+      "SYSTEM_SETTINGS": "Manage system settings",
+      "AUDIT_LOG_VIEW": "View audit logs",
+      "ROLE_MANAGEMENT": "Manage roles and permissions"
+    }
   },
   "modals": {
     "createTitle": "Create New Role",
@@ -40,6 +80,13 @@
   },
   "confirm": {
     "delete": "Are you sure you want to delete this role? This action cannot be undone.",
-    "forceDelete": "{{message}} Do you want to force delete this role and remove all assignments?"
+    "forceDelete": "Do you want to force delete this role and remove all assignments?"
+  },
+  "systemRoleDescriptions": {
+    "SYSTEM_SUPER_ADMIN": "Full system access with all permissions",
+    "SYSTEM_ADMIN": "Company administrator with full company management permissions",
+    "SYSTEM_MANAGER": "Fleet manager with driver and vehicle management permissions",
+    "SYSTEM_DRIVER": "Driver with expense management permissions",
+    "SYSTEM_VIEWER": "Read-only access to fleet data and reports"
   }
 }

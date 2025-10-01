@@ -9,6 +9,7 @@ import enExpenses from "@/locales/en/expenses.json";
 import enVehicles from "@/locales/en/vehicles.json";
 import enUsers from "@/locales/en/users.json";
 import enRoles from "@/locales/en/roles.json";
+import enRoleManagement from "@/locales/en/roleManagement.json";
 import enProfile from "@/locales/en/profile.json";
 import enUserManagement from "@/locales/en/userManagement.json";
 import enAudit from "@/locales/en/audit.json";
@@ -20,6 +21,7 @@ import deExpenses from "@/locales/de/expenses.json";
 import deVehicles from "@/locales/de/vehicles.json";
 import deUsers from "@/locales/de/users.json";
 import deRoles from "@/locales/de/roles.json";
+import deRoleManagement from "@/locales/de/roleManagement.json";
 import deProfile from "@/locales/de/profile.json";
 import deUserManagement from "@/locales/de/userManagement.json";
 import deAudit from "@/locales/de/audit.json";
@@ -33,6 +35,7 @@ const resources = {
     vehicles: enVehicles,
     users: enUsers,
     roles: enRoles,
+    roleManagement: enRoleManagement,
     profile: enProfile,
     userManagement: enUserManagement,
     audit: enAudit,
@@ -45,6 +48,7 @@ const resources = {
     vehicles: deVehicles,
     users: deUsers,
     roles: deRoles,
+    roleManagement: deRoleManagement,
     profile: deProfile,
     userManagement: deUserManagement,
     audit: deAudit,
@@ -70,6 +74,7 @@ i18n
       "vehicles",
       "users",
       "roles",
+      "roleManagement",
       "profile",
       "userManagement",
       "audit",

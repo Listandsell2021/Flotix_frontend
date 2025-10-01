@@ -41,9 +41,11 @@
     "customInfo": "Benutzerdefinierte Rollen: Zusätzliche Rollen, die in der Rollenverwaltung für spezielle Berechtigungen erstellt wurden (z. B. FLEET_MANAGER)",
     "selectSystemRole": "Systemrolle auswählen",
     "selectCustomRole": "Benutzerdefinierte Rolle auswählen",
+    "baseSystemRole": "Basissystemrolle",
+    "baseSystemRoleHint": "Basissystemrolle auswählen (erforderlich für Systemzugriff)",
     "noCustom": "Keine benutzerdefinierten Rollen verfügbar",
     "noCustomHint": "Erstellen Sie zuerst benutzerdefinierte Rollen in der Rollenverwaltung und aktualisieren Sie dann diese Seite.",
-    "customInstruction": "Benutzerdefinierte Rollen bieten zusätzliche Berechtigungen über die Basissystemrolle hinaus. Erstellen Sie benutzerdefinierte Rollen auf der Seite „Rollenverwaltung“."
+    "customInstruction": "Benutzerdefinierte Rollen bieten zusätzliche Berechtigungen über die Basissystemrolle hinaus. Erstellen Sie benutzerdefinierte Rollen auf der Seite 'Rollenverwaltung'."
   },
   "form": {
     "name": "Name",

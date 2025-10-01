@@ -15,6 +15,24 @@ const I18nProvider: React.FC<I18nProviderProps> = ({ children }) => {
     if (savedLanguage && (savedLanguage === 'en' || savedLanguage === 'de')) {
       i18n.changeLanguage(savedLanguage);
     }
+
+    // Update HTML lang attribute when language changes
+    const updateHtmlLang = () => {
+      if (typeof document !== 'undefined') {
+        document.documentElement.lang = i18n.language;
+      }
+    };
+
+    // Set initial lang
+    updateHtmlLang();
+
+    // Listen for language changes
+    i18n.on('languageChanged', updateHtmlLang);
+
+    // Cleanup
+    return () => {
+      i18n.off('languageChanged', updateHtmlLang);
+    };
   }, []);
 
   return <I18nextProvider i18n={i18n}>{children}</I18nextProvider>;
