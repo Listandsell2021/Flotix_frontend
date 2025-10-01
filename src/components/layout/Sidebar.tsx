@@ -31,10 +31,12 @@ const Sidebar: React.FC<SidebarProps> = ({ items, className, userRole }) => {
       {/* Logo Section */}
       <div className="relative flex items-center px-6 py-5 border-b border-secondary-100/50">
         <Link href={userRole === 'SUPER_ADMIN' ? '/dashboard/super-admin' : '/dashboard/admin'} className="group flex items-center space-x-3">
-          <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-xl flex items-center justify-center shadow-medium">
-            <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
+          <div className="w-10 h-10 bg-white rounded-xl flex items-center justify-center shadow-medium p-1">
+            <img
+              src="/logo.svg"
+              alt="Flotix Logo"
+              className="w-8 h-8 object-contain"
+            />
           </div>
           <div>
             <h1 className="text-lg font-bold text-secondary-900 group-hover:text-primary-700">{t('branding.title')}</h1>

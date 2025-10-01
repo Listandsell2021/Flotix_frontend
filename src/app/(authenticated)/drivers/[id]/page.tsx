@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 import { usersApi, expensesApi, vehiclesApi } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
@@ -11,6 +12,7 @@ import { formatCurrency } from '@/lib/utils';
 import type { User, Vehicle } from '@/types';
 
 export default function DriverDetailsPage() {
+  const { t } = useTranslation('users');
   const params = useParams();
   const router = useRouter();
   const driverId = params.id as string;
@@ -50,10 +52,10 @@ export default function DriverDetailsPage() {
           }
         }
       } else {
-        setError('Driver not found');
+        setError(t('driverDetails.driverNotFound'));
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load driver data');
+      setError(err.message || t('driverDetails.failedToLoadDriverData'));
     } finally {
       setLoading(false);
     }
@@ -102,7 +104,7 @@ export default function DriverDetailsPage() {
         <div className="flex items-center justify-center h-64">
           <div className="text-center">
             <Spinner size="lg" />
-            <p className="mt-4 text-gray-600">Loading driver details...</p>
+            <p className="mt-4 text-gray-600">{t('driverDetails.loadingDriverDetails')}</p>
           </div>
         </div>
       </div>
@@ -118,13 +120,13 @@ export default function DriverDetailsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <h3 className="text-sm font-medium text-red-800">Error</h3>
+              <h3 className="text-sm font-medium text-red-800">{t('driverDetails.error')}</h3>
               <p className="text-sm text-red-700 mt-1">{error}</p>
             </div>
           </div>
           <div className="mt-4">
             <Button variant="outline" onClick={() => router.back()}>
-              Go Back
+              {t('driverDetails.goBack')}
             </Button>
           </div>
         </div>
@@ -146,11 +148,11 @@ export default function DriverDetailsPage() {
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
               </svg>
-              Back to Drivers
+              {t('driverDetails.backToDrivers')}
             </Button>
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Driver Details</h1>
-              <p className="text-gray-600 mt-1">Complete overview of {driver.name}'s account and expenses</p>
+              <h1 className="text-3xl font-bold text-gray-900">{t('driverDetails.title')}</h1>
+              <p className="text-gray-600 mt-1">{t('driverDetails.completeOverview', { name: driver.name })}</p>
             </div>
           </div>
         </div>
@@ -164,7 +166,7 @@ export default function DriverDetailsPage() {
                   {driver.name.charAt(0).toUpperCase()}
                 </span>
               </div>
-              Driver Information
+              {t('driverDetails.driverInformation')}
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -174,17 +176,17 @@ export default function DriverDetailsPage() {
                 <p className="text-gray-600">{driver.email}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('driverDetails.status')}</label>
                 <Badge variant={getStatusColor(driver.status)}>
                   {driver.status}
                 </Badge>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Role</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('driverDetails.role')}</label>
                 <p className="text-gray-900">{driver.role}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Joined</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">{t('driverDetails.joined')}</label>
                 <p className="text-gray-900">{new Date(driver.createdAt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}</p>
               </div>
             </div>
@@ -192,7 +194,7 @@ export default function DriverDetailsPage() {
             {/* Vehicle Information */}
             {assignedVehicle && (
               <div className="mt-6 pt-6 border-t border-gray-200">
-                <h4 className="font-semibold text-gray-900 mb-4">Assigned Vehicle</h4>
+                <h4 className="font-semibold text-gray-900 mb-4">{t('driverDetails.assignedVehicle')}</h4>
                 <div className="bg-blue-50 rounded-lg p-4">
                   <div className="flex items-center space-x-4">
                     <div className="text-4xl">
@@ -207,14 +209,14 @@ export default function DriverDetailsPage() {
                           <p className="font-semibold text-gray-900">
                             {assignedVehicle.make} {assignedVehicle.model} ({assignedVehicle.year})
                           </p>
-                          <p className="text-sm text-gray-600">License: {assignedVehicle.licensePlate}</p>
+                          <p className="text-sm text-gray-600">{t('driverDetails.license')}: {assignedVehicle.licensePlate}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Current Odometer</p>
+                          <p className="text-sm text-gray-600">{t('driverDetails.currentOdometer')}</p>
                           <p className="font-semibold text-gray-900">{assignedVehicle.currentOdometer.toLocaleString()} km</p>
                         </div>
                         <div>
-                          <p className="text-sm text-gray-600">Vehicle Details</p>
+                          <p className="text-sm text-gray-600">{t('driverDetails.vehicleDetails')}</p>
                           <p className="text-sm text-gray-900">
                             {assignedVehicle.type} • {assignedVehicle.fuelType || 'N/A'}
                             {assignedVehicle.color && ` • ${assignedVehicle.color}`}
@@ -235,7 +237,7 @@ export default function DriverDetailsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Total Expenses</p>
+                  <p className="text-sm font-medium text-gray-600">{t('driverDetails.totalExpenses')}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {formatCurrency(totalExpenses, expenses[0]?.currency || 'EUR')}
                   </p>
@@ -246,7 +248,7 @@ export default function DriverDetailsPage() {
                   </svg>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 mt-1">{expenses.length} total expenses</p>
+              <p className="text-sm text-gray-500 mt-1">{t('driverDetails.totalExpensesCount', { count: expenses.length })}</p>
             </CardContent>
           </Card>
 
@@ -254,7 +256,7 @@ export default function DriverDetailsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Fuel Expenses</p>
+                  <p className="text-sm font-medium text-gray-600">{t('driverDetails.fuelExpenses')}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {formatCurrency(
                       fuelExpenses.reduce((sum, e) => sum + (e.amountFinal || 0), 0),
@@ -266,7 +268,7 @@ export default function DriverDetailsPage() {
                   <span className="text-2xl">⛽</span>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 mt-1">{fuelExpenses.length} fuel expenses</p>
+              <p className="text-sm text-gray-500 mt-1">{t('driverDetails.fuelExpensesCount', { count: fuelExpenses.length })}</p>
             </CardContent>
           </Card>
 
@@ -274,7 +276,7 @@ export default function DriverDetailsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Other Expenses</p>
+                  <p className="text-sm font-medium text-gray-600">{t('driverDetails.otherExpenses')}</p>
                   <p className="text-2xl font-bold text-gray-900">
                     {formatCurrency(
                       miscExpenses.reduce((sum, e) => sum + (e.amountFinal || 0), 0),
@@ -286,7 +288,7 @@ export default function DriverDetailsPage() {
                   <span className="text-2xl">📄</span>
                 </div>
               </div>
-              <p className="text-sm text-gray-500 mt-1">{miscExpenses.length} other expenses</p>
+              <p className="text-sm text-gray-500 mt-1">{t('driverDetails.otherExpensesCount', { count: miscExpenses.length })}</p>
             </CardContent>
           </Card>
 
@@ -294,7 +296,7 @@ export default function DriverDetailsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">Assigned Vehicle</p>
+                  <p className="text-sm font-medium text-gray-600">{t('driverDetails.assignedVehicle')}</p>
                   {assignedVehicle ? (
                     <>
                       <p className="text-xl font-bold text-blue-600">
@@ -306,8 +308,8 @@ export default function DriverDetailsPage() {
                     </>
                   ) : (
                     <>
-                      <p className="text-xl font-bold text-gray-400">No Vehicle</p>
-                      <p className="text-sm text-gray-500 mt-1">Not assigned to any vehicle</p>
+                      <p className="text-xl font-bold text-gray-400">{t('driverDetails.noVehicle')}</p>
+                      <p className="text-sm text-gray-500 mt-1">{t('driverDetails.notAssignedToVehicle')}</p>
                     </>
                   )}
                 </div>
@@ -333,14 +335,14 @@ export default function DriverDetailsPage() {
         {/* Expenses List */}
         <Card>
           <CardHeader>
-            <CardTitle>All Expenses ({expenses.length})</CardTitle>
+            <CardTitle>{t('driverDetails.allExpenses', { count: expenses.length })}</CardTitle>
           </CardHeader>
           <CardContent>
             {loadingExpenses ? (
               <div className="flex items-center justify-center py-12">
                 <div className="text-center">
                   <Spinner size="lg" />
-                  <p className="mt-4 text-gray-600">Loading expenses...</p>
+                  <p className="mt-4 text-gray-600">{t('driverDetails.loadingExpenses')}</p>
                 </div>
               </div>
             ) : expenses.length > 0 ? (
@@ -355,7 +357,7 @@ export default function DriverDetailsPage() {
                       </div>
                       <div>
                         <h3 className="font-semibold text-gray-900">
-                          {expense.merchant || `${expense.type} Expense`}
+                          {expense.merchant || t('driverDetails.expenseType', { type: expense.type })}
                         </h3>
                         <p className="text-sm text-gray-500">
                           {new Date(expense.date || expense.createdAt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })} • {expense.type}
@@ -366,7 +368,7 @@ export default function DriverDetailsPage() {
                         {assignedVehicle && (
                           <p className="text-xs text-blue-600 mt-1">
                             🚗 {assignedVehicle.make} {assignedVehicle.model}
-                            {expense.odometerReading && ` • Odometer: ${expense.odometerReading.toLocaleString()} km`}
+                            {expense.odometerReading && ` • ${t('driverDetails.odometer')}: ${expense.odometerReading.toLocaleString()} km`}
                           </p>
                         )}
                         {expense.notes && (
@@ -393,7 +395,7 @@ export default function DriverDetailsPage() {
                         <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
                         </svg>
-                        View Receipt
+                        {t('driverDetails.viewReceipt')}
                       </Button>
                     </div>
                   </div>
@@ -402,8 +404,8 @@ export default function DriverDetailsPage() {
             ) : (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-6xl mb-4">📄</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No expenses found</h3>
-                <p className="text-gray-500">This driver hasn't submitted any expenses yet.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('driverDetails.noExpensesFound')}</h3>
+                <p className="text-gray-500">{t('driverDetails.noExpensesMessage')}</p>
               </div>
             )}
           </CardContent>
@@ -414,7 +416,7 @@ export default function DriverDetailsPage() {
           <div className="fixed inset-0 bg-black bg-opacity-75 flex items-start justify-center z-50 p-4 pt-20">
             <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Receipt Photo</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('driverDetails.receiptPhoto')}</h3>
                 <button
                   onClick={() => setShowPhotoModal(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -427,49 +429,49 @@ export default function DriverDetailsPage() {
 
               <div className="space-y-4">
                 <div className="bg-gray-50 p-4 rounded-lg">
-                  <h4 className="font-semibold text-gray-900 mb-2">Expense Details</h4>
+                  <h4 className="font-semibold text-gray-900 mb-2">{t('driverDetails.expenseDetails')}</h4>
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <span className="text-gray-600">Merchant:</span>
-                      <span className="ml-2 text-gray-900">{selectedExpense.merchant || 'N/A'}</span>
+                      <span className="text-gray-600">{t('driverDetails.merchant')}:</span>
+                      <span className="ml-2 text-gray-900">{selectedExpense.merchant || t('driverDetails.na')}</span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Amount:</span>
+                      <span className="text-gray-600">{t('driverDetails.amount')}:</span>
                       <span className="ml-2 text-gray-900 font-semibold">
                         {formatCurrency(selectedExpense.amountFinal, selectedExpense.currency)}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Date:</span>
+                      <span className="text-gray-600">{t('driverDetails.date')}:</span>
                       <span className="ml-2 text-gray-900">
                         {new Date(selectedExpense.date || selectedExpense.createdAt).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                       </span>
                     </div>
                     <div>
-                      <span className="text-gray-600">Type:</span>
+                      <span className="text-gray-600">{t('driverDetails.type')}:</span>
                       <span className="ml-2 text-gray-900">{selectedExpense.type}</span>
                     </div>
                     {selectedExpense.category && (
                       <div>
-                        <span className="text-gray-600">Category:</span>
+                        <span className="text-gray-600">{t('driverDetails.category')}:</span>
                         <span className="ml-2 text-gray-900">{selectedExpense.category}</span>
                       </div>
                     )}
                     {selectedExpense.kilometers && (
                       <div>
-                        <span className="text-gray-600">Kilometers:</span>
+                        <span className="text-gray-600">{t('driverDetails.kilometers')}:</span>
                         <span className="ml-2 text-gray-900">{selectedExpense.kilometers} km</span>
                       </div>
                     )}
                     {selectedExpense.odometerReading && (
                       <div>
-                        <span className="text-gray-600">Odometer Reading:</span>
+                        <span className="text-gray-600">{t('driverDetails.odometerReading')}:</span>
                         <span className="ml-2 text-gray-900">{selectedExpense.odometerReading.toLocaleString()} km</span>
                       </div>
                     )}
                     {assignedVehicle && (
                       <div>
-                        <span className="text-gray-600">Vehicle:</span>
+                        <span className="text-gray-600">{t('driverDetails.vehicle')}:</span>
                         <span className="ml-2 text-gray-900">
                           {assignedVehicle.make} {assignedVehicle.model} ({assignedVehicle.licensePlate})
                         </span>
@@ -478,7 +480,7 @@ export default function DriverDetailsPage() {
                   </div>
                   {selectedExpense.notes && (
                     <div className="mt-3">
-                      <span className="text-gray-600">Notes:</span>
+                      <span className="text-gray-600">{t('driverDetails.notes')}:</span>
                       <p className="mt-1 text-gray-900">{selectedExpense.notes}</p>
                     </div>
                   )}
@@ -487,7 +489,7 @@ export default function DriverDetailsPage() {
                 <div className="text-center">
                   <img
                     src={selectedExpense.receiptUrl}
-                    alt="Receipt"
+                    alt={t('driverDetails.receipt')}
                     className="max-w-full h-auto rounded-lg shadow-lg"
                     onError={(e) => {
                       const target = e.target as HTMLImageElement;
@@ -498,8 +500,8 @@ export default function DriverDetailsPage() {
                         <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
                         </svg>
-                        <p class="text-gray-500">Unable to load receipt image</p>
-                        <p class="text-sm text-gray-400 mt-1">The image may have been moved or deleted</p>
+                        <p class="text-gray-500">${t('driverDetails.unableToLoadReceipt')}</p>
+                        <p class="text-sm text-gray-400 mt-1">${t('driverDetails.imageMayBeDeleted')}</p>
                       `;
                       target.parentNode?.appendChild(errorDiv);
                     }}
@@ -508,7 +510,7 @@ export default function DriverDetailsPage() {
 
                 <div className="flex justify-end space-x-3">
                   <Button variant="outline" onClick={() => setShowPhotoModal(false)}>
-                    Close
+                    {t('driverDetails.close')}
                   </Button>
                   <Button 
                     onClick={() => window.open(selectedExpense.receiptUrl, '_blank')}
@@ -516,7 +518,7 @@ export default function DriverDetailsPage() {
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>
-                    Open in New Tab
+                    {t('driverDetails.openInNewTab')}
                   </Button>
                 </div>
               </div>

@@ -35,14 +35,14 @@ export default function AdminDashboard() {
       if (dashboardResponse.success) {
         setKpis(dashboardResponse.data);
       } else {
-        setError(dashboardResponse.message || 'Failed to load dashboard data');
+        setError(dashboardResponse.message || t('error'));
       }
 
       if (expensesResponse.success && expensesResponse.data) {
         // Map the expense data to match the RecentExpenses component interface
         const mappedExpenses = (expensesResponse.data.data || []).map((expense: any) => ({
           id: expense._id,
-          driverName: expense.driverId?.name || 'Unknown Driver',
+          driverName: expense.driverId?.name || t('unknownDriver'),
           amount: expense.amountFinal || 0,
           currency: expense.currency || 'EUR',
           type: expense.type,
@@ -58,7 +58,7 @@ export default function AdminDashboard() {
         setTotalExpenses(total);
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load dashboard data');
+      setError(err.message || t('error'));
     } finally {
       setLoading(false);
     }

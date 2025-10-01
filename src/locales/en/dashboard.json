@@ -38,5 +38,6 @@
     "viewAll": "View All Expenses"
   },
   "loading": "Loading dashboard...",
-  "error": "Failed to load dashboard data"
+  "error": "Failed to load dashboard data",
+  "unknownDriver": "Unknown Driver"
 }

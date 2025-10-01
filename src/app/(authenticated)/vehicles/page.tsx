@@ -6,6 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
+import Toast from "@/components/ui/Toast";
+import { useToast } from "@/hooks/useToast";
 import { vehiclesApi, usersApi } from "@/lib/api";
 import type {
   Vehicle,
@@ -35,7 +37,8 @@ interface VehicleWithDriver
 }
 
 export default function VehiclesPage() {
-  const { t } = useTranslation("vehicles");
+  const { t } = useTranslation(["vehicles", "common"]);
+  const toast = useToast();
   const [vehicles, setVehicles] = useState<VehicleWithDriver[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -83,10 +86,10 @@ export default function VehiclesPage() {
         });
         setVehicles(response.data.data || []);
       } else {
-        setError("Failed to load vehicles");
+        setError(t("errors.failedToLoadVehicles"));
       }
     } catch (err: any) {
-      setError(err.message || "Failed to load vehicles");
+      setError(err.message || t("errors.failedToLoadVehicles"));
     } finally {
       setLoading(false);
     }
@@ -105,7 +108,7 @@ export default function VehiclesPage() {
 
   const handleAssignVehicle = async () => {
     if (!selectedVehicle || selectedDriverIds.length === 0) {
-      alert("Please select at least one driver");
+      toast.warning(t("common:alerts.pleaseSelectDriver"));
       return;
     }
 
@@ -120,12 +123,12 @@ export default function VehiclesPage() {
         setShowAssignModal(false);
         setSelectedVehicle(null);
         setSelectedDriverIds([]);
-        alert("Vehicle assigned successfully!");
+        toast.success(t("common:alerts.vehicleAssignedSuccess"));
       } else {
-        alert(response.message || "Failed to assign vehicle");
+        toast.error(response.message || t("common:alerts.failedToAssignVehicle"));
       }
     } catch (err: any) {
-      alert(err.message || "Failed to assign vehicle");
+      toast.error(err.message || t("common:alerts.failedToAssignVehicle"));
     } finally {
       setUpdating(false);
     }
@@ -152,12 +155,12 @@ export default function VehiclesPage() {
         await loadVehicles();
         setShowEditModal(false);
         setSelectedVehicle(null);
-        alert("Vehicle updated successfully!");
+        toast.success(t("common:alerts.vehicleUpdatedSuccess"));
       } else {
-        alert(response.message || "Failed to update vehicle");
+        toast.error(response.message || t("common:alerts.failedToUpdateVehicle"));
       }
     } catch (err: any) {
-      alert(err.message || "Failed to update vehicle");
+      toast.error(err.message || t("common:alerts.failedToUpdateVehicle"));
     } finally {
       setUpdating(false);
     }
@@ -165,7 +168,7 @@ export default function VehiclesPage() {
 
   const handleCreateVehicle = async () => {
     if (!formData.make || !formData.model || !formData.licensePlate) {
-      alert("Please fill in all required fields");
+      toast.warning(t("common:alerts.fillRequiredFields"));
       return;
     }
 
@@ -193,12 +196,12 @@ export default function VehiclesPage() {
           fuelType: "",
           color: "",
         });
-        alert("Vehicle created successfully!");
+        toast.success(t("common:alerts.vehicleCreatedSuccess"));
       } else {
-        alert(response.message || "Failed to create vehicle");
+        toast.error(response.message || t("common:alerts.failedToCreateVehicle"));
       }
     } catch (err: any) {
-      alert(err.message || "Failed to create vehicle");
+      toast.error(err.message || t("common:alerts.failedToCreateVehicle"));
     } finally {
       setCreating(false);
     }
@@ -237,7 +240,7 @@ export default function VehiclesPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <Spinner size="lg" />
-          <p className="mt-4 text-gray-600">Loading vehicles...</p>
+          <p className="mt-4 text-gray-600">{t("loading")}</p>
         </div>
       </div>
     );
@@ -286,40 +289,22 @@ export default function VehiclesPage() {
           <h1 className="text-3xl font-bold text-gray-900">{t("title")}</h1>
           <p className="text-gray-600 mt-2">{t("subtitle")}</p>
         </div>
-        <div className="flex space-x-3">
-          <Button variant="outline">
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            {t("importVehicles", "Import Vehicles")}
-          </Button>
-          <Button onClick={() => setShowCreateModal(true)}>
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 4v16m8-8H4"
-              />
-            </svg>
-            {t("addVehicle")}
-          </Button>
-        </div>
+        <Button onClick={() => setShowCreateModal(true)}>
+          <svg
+            className="w-4 h-4 mr-2"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+          {t("addVehicle")}
+        </Button>
       </div>
 
       {/* Stats Cards */}
@@ -329,13 +314,13 @@ export default function VehiclesPage() {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                  {t("stats.totalVehicles", "Total Vehicles")}
+                  {t("stats.totalVehicles")}
                 </p>
                 <div className="flex items-baseline mt-3 space-x-2">
                   <p className="text-4xl font-bold text-gray-900">
                     {vehicles.length}
                   </p>
-                  <p className="text-sm text-gray-500">vehicles</p>
+                  <p className="text-sm text-gray-500">{t("vehiclesText")}</p>
                 </div>
               </div>
               <div className="w-16 h-16 bg-gradient-to-br from-primary-100 to-primary-200 rounded-2xl flex items-center justify-center shadow-sm">
@@ -350,13 +335,13 @@ export default function VehiclesPage() {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                  {t("stats.activeVehicles", "Active Vehicles")}
+                  {t("stats.activeVehicles")}
                 </p>
                 <div className="flex items-baseline mt-3 space-x-2">
                   <p className="text-4xl font-bold text-green-600">
                     {activeVehicles.length}
                   </p>
-                  <p className="text-sm text-gray-500">operational</p>
+                  <p className="text-sm text-gray-500">{t("stats.operational")}</p>
                 </div>
               </div>
               <div className="w-16 h-16 bg-gradient-to-br from-green-100 to-green-200 rounded-2xl flex items-center justify-center shadow-sm">
@@ -383,13 +368,13 @@ export default function VehiclesPage() {
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <p className="text-sm font-semibold text-gray-500 uppercase tracking-wider">
-                  {t("stats.assigned", "Assigned")}
+                  {t("stats.assigned")}
                 </p>
                 <div className="flex items-baseline mt-3 space-x-2">
                   <p className="text-4xl font-bold text-blue-600">
                     {assignedVehicles.length}
                   </p>
-                  <p className="text-sm text-gray-500">to drivers</p>
+                  <p className="text-sm text-gray-500">{t("stats.toDrivers")}</p>
                 </div>
                 <div className="mt-3 flex items-center">
                   <div className="flex-1 bg-gray-200 rounded-full h-2">
@@ -405,7 +390,7 @@ export default function VehiclesPage() {
                     />
                   </div>
                   <span className="ml-3 text-xs font-medium text-gray-600">
-                    {vehicles.length - assignedVehicles.length} available
+                    {vehicles.length - assignedVehicles.length} {t("available")}
                   </span>
                 </div>
               </div>
@@ -434,16 +419,8 @@ export default function VehiclesPage() {
         <CardHeader>
           <CardTitle className="flex items-center justify-between">
             <span>
-              {t("table.allVehicles", "All Vehicles")} ({vehicles.length})
+              {t("table.allVehicles")} ({vehicles.length})
             </span>
-            <div className="flex space-x-2">
-              <Button variant="outline" size="sm">
-                Filter
-              </Button>
-              <Button variant="outline" size="sm">
-                Sort
-              </Button>
-            </div>
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -492,14 +469,14 @@ export default function VehiclesPage() {
                             .map((driver) =>
                               typeof driver === "object"
                                 ? driver.name
-                                : "Unknown"
+                                : t("table.unknown")
                             )
                             .join(", ");
                           return (
                             <p className="text-sm text-gray-600 mt-1">
                               {vehicle.assignedDriverIds.length > 1
-                                ? "Drivers"
-                                : "Driver"}
+                                ? t("table.drivers")
+                                : t("table.driver")}
                               : {driverNames}
                             </p>
                           );
@@ -510,7 +487,7 @@ export default function VehiclesPage() {
                               Driver:{" "}
                               {typeof vehicle.assignedDriverId === "object"
                                 ? vehicle.assignedDriverId.name
-                                : "Unknown"}
+                                : t("table.unknown")}
                             </p>
                           );
                         }
@@ -535,7 +512,7 @@ export default function VehiclesPage() {
                           setShowAssignModal(true);
                         }}
                       >
-                        {vehicle.assignedDriverId ? "Reassign" : "Assign"}
+                        {vehicle.assignedDriverId ? t("table.reassign") : t("table.assign")}
                       </Button>
                       <Button
                         variant="outline"
@@ -556,7 +533,7 @@ export default function VehiclesPage() {
                           setShowEditModal(true);
                         }}
                       >
-                        Edit
+                        {t("actions.edit")}
                       </Button>
                       <Button
                         variant="outline"
@@ -570,7 +547,7 @@ export default function VehiclesPage() {
                           setShowViewModal(true);
                         }}
                       >
-                        View
+                        {t("actions.view")}
                       </Button>
                     </div>
                   </div>
@@ -581,10 +558,10 @@ export default function VehiclesPage() {
             <div className="text-center py-12">
               <div className="text-gray-400 text-6xl mb-4">🚗</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No vehicles found
+                {t("noVehiclesFound")}
               </h3>
               <p className="text-gray-500 mb-6">
-                Start by adding your first vehicle to the fleet.
+                {t("noVehiclesMessage")}
               </p>
               <Button onClick={() => setShowCreateModal(true)}>
                 <svg
@@ -600,7 +577,7 @@ export default function VehiclesPage() {
                     d="M12 4v16m8-8H4"
                   />
                 </svg>
-                Add First Vehicle
+                {t("addFirstVehicle")}
               </Button>
             </div>
           )}
@@ -613,8 +590,8 @@ export default function VehiclesPage() {
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                {selectedVehicle.assignedDriverId ? "Reassign" : "Assign"}{" "}
-                Vehicle
+                {selectedVehicle.assignedDriverId ? t("table.reassign") : t("table.assign")}{" "}
+                {t("modal.vehicle")}
               </h3>
               <button
                 onClick={() => {
@@ -642,7 +619,7 @@ export default function VehiclesPage() {
 
             <div className="mb-4">
               <p className="text-sm text-gray-600 mb-3">
-                Vehicle: {selectedVehicle.make} {selectedVehicle.model} (
+                {t("modal.vehicle")}: {selectedVehicle.make} {selectedVehicle.model} (
                 {selectedVehicle.licensePlate})
               </p>
 
@@ -650,11 +627,11 @@ export default function VehiclesPage() {
                 selectedVehicle.assignedDriverIds.length > 0 && (
                   <div className="mb-3 p-3 bg-blue-50 rounded-md">
                     <p className="text-sm text-blue-900">
-                      Currently assigned to:{" "}
+                      {t("modal.currentlyAssignedTo")}:{" "}
                       <strong>
                         {selectedVehicle.assignedDriverIds
                           .map((driver) =>
-                            typeof driver === "object" ? driver.name : "Driver"
+                            typeof driver === "object" ? driver.name : t("table.driver")
                           )
                           .join(", ")}
                       </strong>
@@ -663,7 +640,7 @@ export default function VehiclesPage() {
                 )}
 
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Select Drivers (Multiple Selection Allowed)
+                {t("modal.selectDrivers")}
               </label>
               <div className="max-h-48 overflow-y-auto border border-gray-300 rounded-md p-2">
                 {drivers.map((driver) => (
@@ -704,7 +681,7 @@ export default function VehiclesPage() {
               </div>
               {selectedDriverIds.length > 0 && (
                 <p className="text-sm text-gray-600 mt-2">
-                  {selectedDriverIds.length} driver(s) selected
+                  {selectedDriverIds.length} {t("modal.driversSelected")}
                 </p>
               )}
             </div>
@@ -718,13 +695,13 @@ export default function VehiclesPage() {
                   setSelectedDriverIds([]);
                 }}
               >
-                Cancel
+                {t("actions.cancel")}
               </Button>
               <Button
                 onClick={handleAssignVehicle}
                 disabled={updating || selectedDriverIds.length === 0}
               >
-                {updating ? "Assigning..." : "Assign"}
+                {updating ? t("modal.assigning") : t("modal.assign")}
               </Button>
             </div>
           </div>
@@ -737,7 +714,7 @@ export default function VehiclesPage() {
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Edit Vehicle
+                {t("modal.editVehicle")}
               </h3>
               <button
                 onClick={() => {
@@ -765,7 +742,7 @@ export default function VehiclesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Make <span className="text-red-500">*</span>
+                  {t("form.make")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -780,7 +757,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Model <span className="text-red-500">*</span>
+                  {t("form.model")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -795,7 +772,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Year <span className="text-red-500">*</span>
+                  {t("form.year")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -816,7 +793,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  License Plate <span className="text-red-500">*</span>
+                  {t("form.licensePlate")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -834,7 +811,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  VIN
+                  {t("form.vin")}
                 </label>
                 <input
                   type="text"
@@ -852,7 +829,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Vehicle Type <span className="text-red-500">*</span>
+                  {t("form.type")} <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.type}
@@ -865,16 +842,16 @@ export default function VehiclesPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   required
                 >
-                  <option value="CAR">Car</option>
-                  <option value="TRUCK">Truck</option>
-                  <option value="VAN">Van</option>
-                  <option value="MOTORCYCLE">Motorcycle</option>
+                  <option value="CAR">{t("vehicleTypes.CAR")}</option>
+                  <option value="TRUCK">{t("vehicleTypes.TRUCK")}</option>
+                  <option value="VAN">{t("vehicleTypes.VAN")}</option>
+                  <option value="MOTORCYCLE">{t("vehicleTypes.MOTORCYCLE")}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Current Odometer (km) <span className="text-red-500">*</span>
+                  {t("form.currentOdometerLabel")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -893,7 +870,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Fuel Type
+                  {t("form.fuelType")}
                 </label>
                 <input
                   type="text"
@@ -902,13 +879,13 @@ export default function VehiclesPage() {
                     setFormData({ ...formData, fuelType: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="e.g., Gasoline, Diesel, Electric"
+                  placeholder={t("form.fuelTypePlaceholder")}
                 />
               </div>
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Color
+                  {t("form.color")}
                 </label>
                 <input
                   type="text"
@@ -917,7 +894,7 @@ export default function VehiclesPage() {
                     setFormData({ ...formData, color: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  placeholder="e.g., White, Black, Silver"
+                  placeholder={t("form.colorPlaceholder")}
                 />
               </div>
             </div>
@@ -930,10 +907,10 @@ export default function VehiclesPage() {
                   setSelectedVehicle(null);
                 }}
               >
-                Cancel
+                {t("actions.cancel")}
               </Button>
               <Button onClick={handleUpdateVehicle} disabled={updating}>
-                {updating ? "Updating..." : "Update Vehicle"}
+                {updating ? t("modal.updating") : t("modal.updateVehicle")}
               </Button>
             </div>
           </div>
@@ -946,7 +923,7 @@ export default function VehiclesPage() {
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Vehicle Details
+                {t("modal.vehicleDetails")}
               </h3>
               <button
                 onClick={() => {
@@ -974,7 +951,7 @@ export default function VehiclesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Make & Model
+                  {t("modal.makeModel")}
                 </label>
                 <p className="text-gray-900">
                   {selectedVehicle.make} {selectedVehicle.model}
@@ -983,37 +960,37 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Year
+                  {t("form.year")}
                 </label>
                 <p className="text-gray-900">{selectedVehicle.year}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  License Plate
+                  {t("form.licensePlate")}
                 </label>
                 <p className="text-gray-900">{selectedVehicle.licensePlate}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  VIN
+                  {t("form.vin")}
                 </label>
                 <p className="text-gray-900">
-                  {selectedVehicle.vin || "Not provided"}
+                  {selectedVehicle.vin || t("table.notProvided")}
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Type
+                  {t("form.type")}
                 </label>
                 <p className="text-gray-900">{selectedVehicle.type}</p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Status
+                  {t("table.status")}
                 </label>
                 <Badge variant={getStatusColor(selectedVehicle.status)}>
                   {selectedVehicle.status}
@@ -1022,7 +999,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Current Odometer
+                  {t("form.currentOdometer")}
                 </label>
                 <p className="text-gray-900">
                   {selectedVehicle.currentOdometer.toLocaleString()} km
@@ -1031,25 +1008,25 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Fuel Type
+                  {t("form.fuelType")}
                 </label>
                 <p className="text-gray-900">
-                  {selectedVehicle.fuelType || "Not specified"}
+                  {selectedVehicle.fuelType || t("table.notSpecified")}
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Color
+                  {t("form.color")}
                 </label>
                 <p className="text-gray-900">
-                  {selectedVehicle.color || "Not specified"}
+                  {selectedVehicle.color || t("table.notSpecified")}
                 </p>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-500">
-                  Assigned Driver
+                  {t("modal.assignedDriver")}
                 </label>
                 <p className="text-gray-900">
                   {(() => {
@@ -1066,7 +1043,7 @@ export default function VehiclesPage() {
                           .map((driver) =>
                             typeof driver === "object" && driver.name
                               ? driver.name
-                              : "Unknown"
+                              : t("table.unknown")
                           )
                           .join(", ");
                       }
@@ -1076,16 +1053,16 @@ export default function VehiclesPage() {
                       return typeof selectedVehicle.assignedDriverId ===
                         "object"
                         ? selectedVehicle.assignedDriverId.name
-                        : "Unknown";
+                        : t("table.unknown");
                     }
-                    return "Not assigned";
+                    return t("table.notAssigned");
                   })()}
                 </p>
               </div>
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-500">
-                  Created At
+                  {t("modal.createdAt")}
                 </label>
                 <p className="text-gray-900">
                   {new Date(selectedVehicle.createdAt).toLocaleDateString()}{" "}
@@ -1101,7 +1078,7 @@ export default function VehiclesPage() {
                   setSelectedVehicle(null);
                 }}
               >
-                Close
+                {t("actions.close")}
               </Button>
             </div>
           </div>
@@ -1114,7 +1091,7 @@ export default function VehiclesPage() {
           <div className="bg-white rounded-lg p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-semibold text-gray-900">
-                Add New Vehicle
+                {t("modal.addNewVehicle")}
               </h3>
               <button
                 onClick={() => setShowCreateModal(false)}
@@ -1139,7 +1116,7 @@ export default function VehiclesPage() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Make <span className="text-red-500">*</span>
+                  {t("form.make")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1148,14 +1125,14 @@ export default function VehiclesPage() {
                     setFormData({ ...formData, make: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="e.g., Toyota"
+                  placeholder={t("form.makePlaceholder")}
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Model <span className="text-red-500">*</span>
+                  {t("form.model")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1164,14 +1141,14 @@ export default function VehiclesPage() {
                     setFormData({ ...formData, model: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="e.g., Camry"
+                  placeholder={t("form.modelPlaceholder")}
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Year <span className="text-red-500">*</span>
+                  {t("form.year")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -1192,7 +1169,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  License Plate <span className="text-red-500">*</span>
+                  {t("form.licensePlate")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="text"
@@ -1204,14 +1181,14 @@ export default function VehiclesPage() {
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="e.g., ABC-123"
+                  placeholder={t("form.licensePlatePlaceholder")}
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  VIN
+                  {t("form.vin")}
                 </label>
                 <input
                   type="text"
@@ -1223,14 +1200,14 @@ export default function VehiclesPage() {
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="17-character VIN"
+                  placeholder={t("form.vinPlaceholder")}
                   maxLength={17}
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Vehicle Type <span className="text-red-500">*</span>
+                  {t("form.type")} <span className="text-red-500">*</span>
                 </label>
                 <select
                   value={formData.type}
@@ -1243,16 +1220,16 @@ export default function VehiclesPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   required
                 >
-                  <option value="CAR">Car</option>
-                  <option value="TRUCK">Truck</option>
-                  <option value="VAN">Van</option>
-                  <option value="MOTORCYCLE">Motorcycle</option>
+                  <option value="CAR">{t("vehicleTypes.CAR")}</option>
+                  <option value="TRUCK">{t("vehicleTypes.TRUCK")}</option>
+                  <option value="VAN">{t("vehicleTypes.VAN")}</option>
+                  <option value="MOTORCYCLE">{t("vehicleTypes.MOTORCYCLE")}</option>
                 </select>
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Current Odometer (km) <span className="text-red-500">*</span>
+                  {t("form.currentOdometerLabel")} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -1265,14 +1242,14 @@ export default function VehiclesPage() {
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   min="0"
-                  placeholder="0"
+                  placeholder={t("form.odometerPlaceholder")}
                   required
                 />
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Fuel Type
+                  {t("form.fuelType")}
                 </label>
                 <input
                   type="text"
@@ -1281,13 +1258,13 @@ export default function VehiclesPage() {
                     setFormData({ ...formData, fuelType: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="e.g., Gasoline, Diesel, Electric"
+                  placeholder={t("form.fuelTypePlaceholder")}
                 />
               </div>
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Color
+                  {t("form.color")}
                 </label>
                 <input
                   type="text"
@@ -1296,7 +1273,7 @@ export default function VehiclesPage() {
                     setFormData({ ...formData, color: e.target.value })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="e.g., White, Black, Silver"
+                  placeholder={t("form.colorPlaceholder")}
                 />
               </div>
             </div>
@@ -1306,15 +1283,26 @@ export default function VehiclesPage() {
                 variant="outline"
                 onClick={() => setShowCreateModal(false)}
               >
-                Cancel
+                {t("actions.cancel")}
               </Button>
               <Button onClick={handleCreateVehicle} disabled={creating}>
-                {creating ? "Creating..." : "Create Vehicle"}
+                {creating ? t("modal.creating") : t("modal.createVehicle")}
               </Button>
             </div>
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      {toast.toasts.map((toastItem) => (
+        <Toast
+          key={toastItem.id}
+          message={toastItem.message}
+          type={toastItem.type}
+          duration={toastItem.duration}
+          onClose={() => toast.removeToast(toastItem.id)}
+        />
+      ))}
     </div>
   );
 }

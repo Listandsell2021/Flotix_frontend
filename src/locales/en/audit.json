@@ -1,25 +1,73 @@
 {
-  "audit": {
-    "title": "Audit Logs",
-    "description": "Track all system activities and user actions for compliance",
-    "loading": "Loading audit logs...",
-    "error_title": "Error Loading Audit Logs",
-    "error_message": "Failed to load audit logs",
-    "filter": "Filter",
-    "export": "Export",
-    "stats": {
-      "total": "Total Events",
-      "create": "Create Actions",
-      "update": "Update Actions",
-      "delete": "Delete Actions"
-    },
-    "recent_activity": "Recent Activity",
-    "unknown_user": "Unknown User",
-    "unknown_ip": "Unknown",
-    "module": "Module",
-    "no_logs_title": "No audit logs found",
-    "no_logs_subtitle": "Audit logs will appear here as users interact with the system.",
-    "refresh": "Refresh",
-    "details": "Details"
+  "title": "Audit Logs",
+  "description": "Track all system activities and user actions for compliance",
+  "loading": "Loading audit logs...",
+  "error_title": "Error Loading Audit Logs",
+  "error_message": "Failed to load audit logs",
+  "filter": "Filter",
+  "export": "Export",
+  "stats": {
+    "total": "Total Events",
+    "create": "Create Actions",
+    "update": "Update Actions",
+    "delete": "Delete Actions"
+  },
+  "recent_activity": "Recent Activity",
+  "unknown_user": "Unknown User",
+  "unknown_ip": "Unknown",
+  "module": "Module",
+  "no_logs_title": "No audit logs found",
+  "no_logs_subtitle": "Audit logs will appear here as users interact with the system.",
+  "refresh": "Refresh",
+  "details": "Details",
+  "actions": {
+    "CREATE": "Create",
+    "UPDATE": "Update",
+    "DELETE": "Delete",
+    "LOGIN": "Login",
+    "LOGOUT": "Logout",
+    "EXPORT": "Export"
+  },
+  "roles": {
+    "SUPER_ADMIN": "Super Admin",
+    "ADMIN": "Admin",
+    "MANAGER": "Manager",
+    "DRIVER": "Driver",
+    "VIEWER": "Viewer"
+  },
+  "modules": {
+    "USER": "User",
+    "VEHICLE": "Vehicle",
+    "EXPENSE": "Expense",
+    "COMPANY": "Company",
+    "AUTH": "Authentication",
+    "ROLE": "Role",
+    "AUDIT": "Audit",
+    "REPORT": "Report"
+  },
+  "details": {
+    "created_user": "Created user",
+    "updated_user": "Updated user",
+    "deleted_user": "Deleted user",
+    "created_vehicle": "Created vehicle",
+    "updated_vehicle": "Updated vehicle",
+    "deleted_vehicle": "Deleted vehicle",
+    "assigned_vehicle": "Assigned vehicle",
+    "unassigned_vehicle": "Unassigned vehicle",
+    "created_expense": "Created expense",
+    "updated_expense": "Updated expense",
+    "deleted_expense": "Deleted expense",
+    "user_login": "User login",
+    "user_logout": "User logout",
+    "created_company": "Created company",
+    "updated_company": "Updated company",
+    "assigned_role": "Assigned role",
+    "removed_role": "Removed role",
+    "failed_login_inactive": "Failed login attempt - Account inactive",
+    "failed_login_password": "Failed login attempt - Invalid password"
+  },
+  "status": {
+    "SUCCESS": "Success",
+    "FAILED": "Failed"
   }
 }

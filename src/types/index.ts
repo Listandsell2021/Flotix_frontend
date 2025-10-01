@@ -241,7 +241,7 @@ export interface CreateExpenseRequest {
 // OCR Types
 export interface OCRResult {
   merchant: string | null;
-  date: string | null; // YYYY-MM-DD format
+  date: string | null; // dd.mm.yyyy format
   currency: string | null; // ISO 4217
   amount: number | null;
   confidence: number; // 0-1

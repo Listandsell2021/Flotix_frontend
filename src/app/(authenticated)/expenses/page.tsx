@@ -7,6 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import Button from "@/components/ui/Button";
 import Badge from "@/components/ui/Badge";
 import Spinner from "@/components/ui/Spinner";
+import Toast from "@/components/ui/Toast";
+import { useToast } from "@/hooks/useToast";
 import { TableSkeleton, CardSkeleton } from "@/components/ui/skeleton";
 import { formatCurrency } from "@/lib/utils";
 import type { Expense, User, Vehicle } from "@/types";
@@ -18,6 +20,7 @@ interface ExpenseWithDriver extends Omit<Expense, "driverId"> {
 
 export default function ExpensesPage() {
   const { t, i18n } = useTranslation("expenses");
+  const toast = useToast();
   const [expenses, setExpenses] = useState<ExpenseWithDriver[]>([]);
   const [filteredExpenses, setFilteredExpenses] = useState<ExpenseWithDriver[]>(
     []
@@ -215,10 +218,10 @@ export default function ExpensesPage() {
         setFilteredExpensesPaginationData(response.data.pagination);
         setStats(response.stats || null);
       } else {
-        setError(response.message || "Failed to load expenses");
+        setError(response.message || t("modal.failedToLoadExpenses"));
       }
     } catch (err: any) {
-      setError(err.message || "Failed to load expenses");
+      setError(err.message || t("modal.failedToLoadExpenses"));
     } finally {
       setLoading(false);
     }
@@ -292,14 +295,14 @@ export default function ExpensesPage() {
         setSelectedExpense(null);
       } else {
         console.error("Update failed:", response);
-        alert(response.message || "Failed to update expense");
+        toast.error(response.message || t("errors.updateFailed"));
       }
     } catch (err: any) {
       console.error("Update error:", err);
       if (err.response?.data?.message) {
-        alert(`Error: ${err.response.data.message}`);
+        toast.error(`${t("errors.exportFailedPrefix")} ${err.response.data.message}`);
       } else {
-        alert(err.message || "Failed to update expense");
+        toast.error(err.message || t("errors.updateFailed"));
       }
     }
   };
@@ -442,20 +445,22 @@ export default function ExpensesPage() {
       const response = await expensesApi.createExpense(expenseData);
 
       if (response.success) {
+        // Show success toast
+        toast.success(t("errors.expenseCreatedSuccess"));
         // Refresh expenses list
         await loadExpenses();
         // Close modal and reset form
         setShowAddExpenseModal(false);
         resetAddForm();
       } else {
-        alert(response.message || "Failed to create expense");
+        toast.error(response.message || t("errors.createFailed"));
       }
     } catch (err: any) {
       console.error("Create expense error:", err);
       if (err.response?.data?.message) {
-        alert(`Error: ${err.response.data.message}`);
+        toast.error(`${t("errors.exportFailedPrefix")} ${err.response.data.message}`);
       } else {
-        alert(err.message || "Failed to create expense");
+        toast.error(err.message || t("errors.createFailed"));
       }
     } finally {
       setCreatingExpense(false);
@@ -587,7 +592,7 @@ export default function ExpensesPage() {
       if (err.response?.data?.message) {
         alert(`Export failed: ${err.response.data.message}`);
       } else {
-        alert(err.message || "Failed to export expenses");
+        toast.error(err.message || t("errors.exportFailed"));
       }
     } finally {
       setExportingData(false);
@@ -664,7 +669,7 @@ export default function ExpensesPage() {
           </svg>
           <div>
             <h3 className="text-sm font-medium text-red-800">
-              Error Loading Expenses
+              {t("modal.errorLoadingExpenses")}
             </h3>
             <p className="text-sm text-red-700 mt-1">{error}</p>
           </div>
@@ -862,15 +867,14 @@ export default function ExpensesPage() {
                 dateToFilter ||
                 typeFilter) && (
                 <div className="flex">
-                  <Button
-                    variant="outline"
+                  <button
                     onClick={() => {
                       setSearchQuery("");
                       setDateFromFilter("");
                       setDateToFilter("");
                       setTypeFilter("");
                     }}
-                    className="h-12 px-4"
+                    className="h-12 px-4 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors duration-200 flex items-center justify-center shadow-sm hover:shadow-md"
                   >
                     <svg
                       className="w-4 h-4 mr-2"
@@ -886,7 +890,7 @@ export default function ExpensesPage() {
                       />
                     </svg>
                     {t("filters.clear")}
-                  </Button>
+                  </button>
                 </div>
               )}
             </div>
@@ -1265,7 +1269,7 @@ export default function ExpensesPage() {
                                 ? expense.driverId.name
                                 : typeof expense.driverId === "string"
                                 ? `ID: ${expense.driverId.slice(-6)}`
-                                : "Unknown"}
+                                : t("modal.unknown")}
                               {expense.kilometers &&
                                 ` • ${expense.kilometers} km`}
                             </p>
@@ -1638,10 +1642,10 @@ export default function ExpensesPage() {
             <div className="flex items-center justify-between p-6 border-b border-gray-200">
               <div>
                 <h2 className="text-xl font-semibold text-gray-900">
-                  {isEditMode ? "Edit Expense" : "Expense Details"}
+                  {isEditMode ? t("modal.editExpense") : t("modal.expenseDetails")}
                 </h2>
                 <p className="text-sm text-gray-500 mt-1">
-                  {selectedExpense.merchant || "Unknown Merchant"} •{" "}
+                  {selectedExpense.merchant || t("modal.unknownMerchant")} •{" "}
                   {new Date(selectedExpense.date).toLocaleDateString()}
                 </p>
               </div>
@@ -1789,20 +1793,9 @@ export default function ExpensesPage() {
                     Currency
                   </label>
                   {isEditMode ? (
-                    <select
-                      value={editFormData.currency}
-                      onChange={(e) =>
-                        setEditFormData({
-                          ...editFormData,
-                          currency: e.target.value,
-                        })
-                      }
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    >
-                      <option value="EUR">EUR</option>
-                      <option value="USD">USD</option>
-                      <option value="GBP">GBP</option>
-                    </select>
+                    <div className="w-full px-3 py-2 border border-gray-200 rounded-lg bg-gray-100 text-gray-900">
+                      EUR
+                    </div>
                   ) : (
                     <div className="text-gray-900">
                       {selectedExpense.currency || "EUR"}
@@ -1813,13 +1806,13 @@ export default function ExpensesPage() {
                 {/* Vehicle Information */}
                 <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Vehicle
+                    {t("modal.vehicleLabel")}
                   </label>
                   {loadingVehicle ? (
                     <div className="flex items-center">
                       <Spinner size="sm" />
                       <span className="ml-2 text-gray-500">
-                        Loading vehicle info...
+                        {t("modal.loadingVehicleInfo")}
                       </span>
                     </div>
                   ) : vehicleInfo ? (
@@ -1856,10 +1849,10 @@ export default function ExpensesPage() {
                   ) : selectedExpense.vehicleId &&
                     selectedExpense.vehicleId !== null ? (
                     <div className="text-gray-500">
-                      Vehicle information not found
+                      {t("modal.vehicleInfoNotFound")}
                     </div>
                   ) : (
-                    <div className="text-gray-500">No vehicle assigned</div>
+                    <div className="text-gray-500">{t("modal.noVehicleAssigned")}</div>
                   )}
                 </div>
               </div>
@@ -1868,7 +1861,7 @@ export default function ExpensesPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
+                    {t("modal.categoryLabel")}
                   </label>
                   {isEditMode ? (
                     <select
@@ -1881,24 +1874,24 @@ export default function ExpensesPage() {
                       }
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                     >
-                      <option value="">Select category (optional)</option>
-                      <option value="TOLL">Toll</option>
-                      <option value="PARKING">Parking</option>
-                      <option value="REPAIR">Repair</option>
-                      <option value="OTHER">Other</option>
+                      <option value="">{t("modal.selectCategoryOptional")}</option>
+                      <option value="TOLL">{t("categories.TOLL")}</option>
+                      <option value="PARKING">{t("categories.PARKING")}</option>
+                      <option value="REPAIR">{t("categories.REPAIR")}</option>
+                      <option value="OTHER">{t("categories.OTHER")}</option>
                     </select>
                   ) : selectedExpense.category ? (
                     <div className="text-gray-900">
                       {selectedExpense.category}
                     </div>
                   ) : (
-                    <div className="text-gray-500">No category set</div>
+                    <div className="text-gray-500">{t("modal.noCategorySet")}</div>
                   )}
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Kilometers
+                    {t("modal.kilometersLabel")}
                   </label>
                   {isEditMode ? (
                     <input
@@ -1912,14 +1905,14 @@ export default function ExpensesPage() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="Enter kilometers (optional)"
+                      placeholder={t("modal.enterKilometersOptional")}
                     />
                   ) : selectedExpense.kilometers ? (
                     <div className="text-gray-900">
                       {selectedExpense.kilometers} km
                     </div>
                   ) : (
-                    <div className="text-gray-500">No kilometers recorded</div>
+                    <div className="text-gray-500">{t("modal.noKilometersRecorded")}</div>
                   )}
                 </div>
 
@@ -1939,7 +1932,7 @@ export default function ExpensesPage() {
                         })
                       }
                       className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                      placeholder="Enter odometer reading (optional)"
+                      placeholder={t("modal.enterOdometerOptional")}
                     />
                   ) : selectedExpense.odometerReading ? (
                     <div className="text-gray-900">
@@ -1966,14 +1959,14 @@ export default function ExpensesPage() {
                         }
                         rows={3}
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="Enter additional notes (optional)"
+                        placeholder={t("modal.enterNotesOptional")}
                       />
                     ) : selectedExpense.notes ? (
                       <div className="text-gray-900">
                         {selectedExpense.notes}
                       </div>
                     ) : (
-                      <div className="text-gray-500">No notes</div>
+                      <div className="text-gray-500">{t("modal.noNotes")}</div>
                     )}
                   </div>
                 )}
@@ -2026,7 +2019,7 @@ export default function ExpensesPage() {
                   >
                     <img
                       src={selectedExpense.receiptUrl}
-                      alt="Receipt"
+                      alt={t("modal.receiptAlt")}
                       className="w-full h-64 object-contain bg-white transition-transform group-hover:scale-105"
                       onError={(e) => {
                         (e.target as HTMLImageElement).style.display = "none";
@@ -2073,7 +2066,7 @@ export default function ExpensesPage() {
                     </div>
                   </div>
                   <p className="text-center text-sm text-gray-500 mt-2">
-                    Click to view full size
+                    {t("modal.clickToViewFullSize")}
                   </p>
                 </div>
               )}
@@ -2114,10 +2107,10 @@ export default function ExpensesPage() {
                   setIsEditMode(false);
                 }}
               >
-                Close
+                {t("modal.close")}
               </Button>
               {isEditMode && (
-                <Button onClick={saveExpenseChanges}>Save Changes</Button>
+                <Button onClick={saveExpenseChanges}>{t("modal.saveChanges")}</Button>
               )}
               {!isEditMode && (
                 <Button variant="outline" onClick={() => setIsEditMode(true)}>
@@ -2134,7 +2127,7 @@ export default function ExpensesPage() {
                       d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                     />
                   </svg>
-                  Edit Expense
+                  {t("modal.editExpense")}
                 </Button>
               )}
             </div>
@@ -2169,7 +2162,7 @@ export default function ExpensesPage() {
             </button>
             <img
               src={selectedExpense.receiptUrl}
-              alt="Receipt - Full Size"
+              alt={t("modal.receiptFullSizeAlt")}
               className="max-w-full max-h-full object-contain"
               onClick={(e) => e.stopPropagation()}
             />
@@ -2180,7 +2173,7 @@ export default function ExpensesPage() {
       {/* Add Expense Modal */}
       {showAddExpenseModal && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 flex items-start justify-center z-50 p-4 pt-20"
+          className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4 overflow-y-auto"
           onClick={() => {
             if (!creatingExpense) {
               setShowAddExpenseModal(false);
@@ -2189,7 +2182,7 @@ export default function ExpensesPage() {
           }}
         >
           <div
-            className="bg-white rounded-lg max-w-4xl w-full max-h-[95vh] overflow-y-auto relative"
+            className="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto relative my-4"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Loading overlay */}
@@ -2335,7 +2328,7 @@ export default function ExpensesPage() {
                         <div className="p-3 text-center text-red-500 text-sm">
                           {driverSearchQuery
                             ? `No drivers found matching "${driverSearchQuery}"`
-                            : "No drivers found. Please check if drivers exist in the system."}
+                            : t("modal.noDriversFoundMessage")}
                         </div>
                       )}
                     </div>
@@ -2380,7 +2373,7 @@ export default function ExpensesPage() {
                           </div>
                         </div>
                       ) : (
-                        <div className="text-gray-500">No vehicle assigned</div>
+                        <div className="text-gray-500">{t("modal.noVehicleAssigned")}</div>
                       )}
                     </div>
                   </div>
@@ -2434,7 +2427,7 @@ export default function ExpensesPage() {
                     />
                     <div className="flex items-center justify-between mt-1">
                       <p className="text-sm text-gray-500">
-                        Upload a receipt image for automatic OCR processing
+                        {t("modal.uploadReceiptMessage")}
                       </p>
                       {ocrResult && (
                         <span className="text-xs text-green-600 bg-green-100 px-2 py-1 rounded">
@@ -2455,10 +2448,10 @@ export default function ExpensesPage() {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Merchant <span className="text-red-500">*</span>
+                        {t("modal.merchantLabel")} <span className="text-red-500">{t("modal.requiredField")}</span>
                         {ocrResult && ocrResult.merchant && (
                           <span className="ml-2 text-xs text-blue-600">
-                            ✨ OCR
+                            {t("modal.ocrExtractedLabel")}
                           </span>
                         )}
                       </label>
@@ -2482,10 +2475,10 @@ export default function ExpensesPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Date <span className="text-red-500">*</span>
+                        {t("modal.dateLabel")} <span className="text-red-500">{t("modal.requiredField")}</span>
                         {ocrResult && ocrResult.date && (
                           <span className="ml-2 text-xs text-blue-600">
-                            ✨ OCR
+                            {t("modal.ocrExtractedLabel")}
                           </span>
                         )}
                       </label>
@@ -2509,10 +2502,10 @@ export default function ExpensesPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Amount <span className="text-red-500">*</span>
+                        {t("modal.amountLabel")} <span className="text-red-500">{t("modal.requiredField")}</span>
                         {ocrResult && ocrResult.amount && (
                           <span className="ml-2 text-xs text-blue-600">
-                            ✨ OCR
+                            {t("modal.ocrExtractedLabel")}
                           </span>
                         )}
                       </label>
@@ -2537,36 +2530,21 @@ export default function ExpensesPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Currency
+                        {t("modal.currencyLabel")}
                         {ocrResult && ocrResult.currency && (
                           <span className="ml-2 text-xs text-blue-600">
-                            ✨ OCR
+                            {t("modal.ocrExtractedLabel")}
                           </span>
                         )}
                       </label>
-                      <select
-                        value={addFormData.currency}
-                        onChange={(e) =>
-                          setAddFormData({
-                            ...addFormData,
-                            currency: e.target.value,
-                          })
-                        }
-                        className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 ${
-                          ocrResult && ocrResult.currency
-                            ? "border-blue-200 bg-blue-50"
-                            : "border-gray-200"
-                        }`}
-                      >
-                        <option value="EUR">EUR</option>
-                        <option value="USD">USD</option>
-                        <option value="GBP">GBP</option>
-                      </select>
+                      <div className="w-full px-3 py-2 border rounded-lg bg-gray-100 text-gray-900 border-gray-200">
+                        EUR
+                      </div>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Type
+                        {t("modal.typeLabel")}
                       </label>
                       <select
                         value={addFormData.type}
@@ -2578,14 +2556,14 @@ export default function ExpensesPage() {
                         }
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       >
-                        <option value="FUEL">FUEL</option>
-                        <option value="MISC">MISC</option>
+                        <option value="FUEL">{t("types.FUEL")}</option>
+                        <option value="MISC">{t("types.MISC")}</option>
                       </select>
                     </div>
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Category
+                        {t("modal.categoryLabel")}
                       </label>
                       <select
                         value={addFormData.category}
@@ -2597,11 +2575,11 @@ export default function ExpensesPage() {
                         }
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                       >
-                        <option value="">Select category (optional)</option>
-                        <option value="TOLL">Toll</option>
-                        <option value="PARKING">Parking</option>
-                        <option value="REPAIR">Repair</option>
-                        <option value="OTHER">Other</option>
+                        <option value="">{t("modal.selectCategoryOptional")}</option>
+                        <option value="TOLL">{t("categories.TOLL")}</option>
+                        <option value="PARKING">{t("categories.PARKING")}</option>
+                        <option value="REPAIR">{t("categories.REPAIR")}</option>
+                        <option value="OTHER">{t("categories.OTHER")}</option>
                       </select>
                     </div>
 
@@ -2616,7 +2594,7 @@ export default function ExpensesPage() {
                               {selectedDriverVehicle.make} {selectedDriverVehicle.model} ({selectedDriverVehicle.licensePlate})
                             </span>
                             <span className="text-blue-700">
-                              Current: {selectedDriverVehicle.currentOdometer?.toLocaleString() || "0"} km
+                              {t("modal.current")}: {selectedDriverVehicle.currentOdometer?.toLocaleString() || "0"} km
                             </span>
                           </div>
                         </div>
@@ -2636,12 +2614,12 @@ export default function ExpensesPage() {
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                         placeholder={
                           selectedDriverVehicle?.currentOdometer
-                            ? `Current: ${selectedDriverVehicle.currentOdometer.toLocaleString()} km`
-                            : "Enter odometer reading"
+                            ? `${t("modal.current")}: ${selectedDriverVehicle.currentOdometer.toLocaleString()} km`
+                            : t("modal.enterOdometerReading")
                         }
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        Enter the current odometer reading. This value will be stored for both the expense kilometers and vehicle odometer.
+                        {t("modal.odometerHelperMessage")}
                       </p>
                     </div>
 
@@ -2659,7 +2637,7 @@ export default function ExpensesPage() {
                         }
                         rows={3}
                         className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="Additional notes (optional)"
+                        placeholder={t("modal.additionalNotesOptional")}
                       />
                     </div>
                   </div>
@@ -2711,13 +2689,24 @@ export default function ExpensesPage() {
                       />
                     </svg>
                   )}
-                  {creatingExpense ? "Creating..." : t("modal.createExpense")}
+                  {creatingExpense ? t("modal.creating") : t("modal.createExpense")}
                 </Button>
               )}
             </div>
           </div>
         </div>
       )}
+
+      {/* Toast Notifications */}
+      {toast.toasts.map((toastItem) => (
+        <Toast
+          key={toastItem.id}
+          message={toastItem.message}
+          type={toastItem.type}
+          duration={toastItem.duration}
+          onClose={() => toast.removeToast(toastItem.id)}
+        />
+      ))}
     </div>
   );
 }

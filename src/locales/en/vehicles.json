@@ -19,7 +19,17 @@
     "odometer": "Odometer",
     "lastService": "Last Service",
     "actions": "Actions",
-    "noData": "No vehicles found"
+    "noData": "No vehicles found",
+    "allVehicles": "All Vehicles",
+    "unknown": "Unknown",
+    "drivers": "Drivers",
+    "reassign": "Reassign",
+    "assign": "Assign",
+    "notProvided": "Not provided",
+    "notSpecified": "Not specified",
+    "notAssigned": "Not assigned",
+    "filter": "Filter",
+    "sort": "Sort"
   },
   "types": {
     "car": "Car",
@@ -31,25 +41,84 @@
     "title": "Add New Vehicle",
     "editTitle": "Edit Vehicle",
     "make": "Make",
+    "makePlaceholder": "e.g., Toyota",
     "model": "Model",
+    "modelPlaceholder": "e.g., Camry",
     "year": "Year",
     "licensePlate": "License Plate",
-    "vin": "VIN Number",
+    "licensePlatePlaceholder": "e.g., ABC-123",
+    "vin": "VIN",
+    "vinPlaceholder": "17-character VIN",
     "type": "Vehicle Type",
     "color": "Color",
+    "colorPlaceholder": "e.g., White, Black, Silver",
     "fuelType": "Fuel Type",
+    "fuelTypePlaceholder": "e.g., Gasoline, Diesel, Electric",
     "currentOdometer": "Current Odometer",
+    "currentOdometerLabel": "Current Odometer (km)",
+    "odometerPlaceholder": "0",
     "purchaseDate": "Purchase Date",
     "assignDriver": "Assign Driver",
     "submit": "Add Vehicle",
     "save": "Save Changes",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "required": "Required"
   },
   "status": {
     "active": "Active",
     "maintenance": "Maintenance",
     "retired": "Retired"
   },
+  "stats": {
+    "totalVehicles": "Total Vehicles",
+    "activeVehicles": "Active Vehicles",
+    "assigned": "Assigned",
+    "operational": "operational",
+    "toDrivers": "to drivers"
+  },
+  "import": {
+    "importVehicles": "Import Vehicles"
+  },
+  "actions": {
+    "edit": "Edit",
+    "view": "View",
+    "close": "Close",
+    "cancel": "Cancel"
+  },
+  "modal": {
+    "creating": "Creating...",
+    "createVehicle": "Create Vehicle",
+    "updating": "Updating...",
+    "updateVehicle": "Update Vehicle",
+    "assigning": "Assigning...",
+    "assign": "Assign",
+    "editVehicle": "Edit Vehicle",
+    "viewVehicle": "View Vehicle",
+    "addNewVehicle": "Add New Vehicle",
+    "vehicleDetails": "Vehicle Details",
+    "createdAt": "Created At",
+    "makeModel": "Make & Model",
+    "assignedDriver": "Assigned Driver",
+    "selectDrivers": "Select Drivers (Multiple Selection Allowed)",
+    "driversSelected": "driver(s) selected",
+    "currentlyAssignedTo": "Currently assigned to",
+    "vehicle": "Vehicle"
+  },
+  "vehicleTypes": {
+    "CAR": "Car",
+    "TRUCK": "Truck",
+    "VAN": "Van",
+    "MOTORCYCLE": "Motorcycle"
+  },
+  "errors": {
+    "failedToLoadVehicles": "Failed to load vehicles"
+  },
+  "loading": "Loading vehicles...",
+  "vehiclesText": "vehicles",
+  "available": "available",
+  "noVehiclesFound": "No vehicles found",
+  "noVehiclesMessage": "Start by adding your first vehicle to the fleet.",
+  "addFirstVehicle": "Add First Vehicle",
   "messages": {
     "createSuccess": "Vehicle added successfully",
     "updateSuccess": "Vehicle updated successfully",

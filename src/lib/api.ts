@@ -107,13 +107,21 @@ export const isAuthenticated = (): boolean => {
 // API functions
 export const authApi = {
   login: async (credentials: LoginRequest): Promise<LoginResponse> => {
-    const response = await api.post<ApiResponse<LoginResponse>>('/auth/login', credentials);
-    if (response.data.success && response.data.data) {
-      const { user, tokens } = response.data.data;
-      setTokens(tokens.accessToken, tokens.refreshToken);
-      return response.data.data;
+    try {
+      const response = await api.post<ApiResponse<LoginResponse>>('/auth/login', credentials);
+      if (response.data.success && response.data.data) {
+        const { user, tokens } = response.data.data;
+        setTokens(tokens.accessToken, tokens.refreshToken);
+        return response.data.data;
+      }
+      throw new Error(response.data.message || 'Login failed');
+    } catch (error: any) {
+      // Handle axios error response
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error(error.message || 'Login failed');
     }
-    throw new Error(response.data.message || 'Login failed');
   },
 
   logout: async (): Promise<void> => {
@@ -132,6 +140,16 @@ export const authApi = {
       return response.data.data;
     }
     throw new Error(response.data.message || 'Failed to get user data');
+  },
+
+  changePassword: async (currentPassword: string, newPassword: string): Promise<void> => {
+    const response = await api.post<ApiResponse<void>>('/auth/change-password', {
+      currentPassword,
+      newPassword,
+    });
+    if (!response.data.success) {
+      throw new Error(response.data.message || 'Failed to change password');
+    }
   },
 };
 

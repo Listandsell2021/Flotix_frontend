@@ -503,12 +503,12 @@ export default function UserManagement() {
                           <div className="flex items-center">
                             <div className="h-10 w-10 rounded-full bg-primary-100 flex items-center justify-center">
                               <span className="text-sm font-medium text-primary-700">
-                                {user.name.charAt(0).toUpperCase()}
+                                {user.name ? user.name.charAt(0).toUpperCase() : user.email ? user.email.charAt(0).toUpperCase() : '?'}
                               </span>
                             </div>
                             <div className="ml-4">
                               <div className="text-sm font-medium text-secondary-900">
-                                {user.name}
+                                {user.name || 'No Name'}
                               </div>
                               <div className="text-sm text-secondary-500">
                                 {user.email}

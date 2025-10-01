@@ -38,5 +38,6 @@
     "viewAll": "Alle Ausgaben anzeigen"
   },
   "loading": "Dashboard wird geladen...",
-  "error": "Fehler beim Laden der Dashboard-Daten"
+  "error": "Fehler beim Laden der Dashboard-Daten",
+  "unknownDriver": "Unbekannter Fahrer"
 }

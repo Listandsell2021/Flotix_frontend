@@ -23,5 +23,20 @@
   "loadError": "Failed to load profile",
   "nameRequired": "Name is required",
   "updateSuccess": "Profile updated successfully!",
-  "updateError": "Failed to update profile:"
+  "updateError": "Failed to update profile:",
+  "passwordChange": {
+    "title": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmPassword": "Confirm New Password",
+    "currentPasswordRequired": "Current password is required",
+    "newPasswordRequired": "New password is required",
+    "passwordMismatch": "Passwords do not match",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "changePassword": "Change Password",
+    "cancel": "Cancel",
+    "success": "Password changed successfully!",
+    "error": "Failed to change password:",
+    "changing": "Changing password..."
+  }
 }

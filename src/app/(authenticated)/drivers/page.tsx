@@ -129,10 +129,10 @@ export default function DriversPage() {
         setTotalDrivers(pagination?.total || 0);
         setError('');
       } else {
-        setError(response.message || 'Failed to load drivers');
+        setError(response.message || t('errors.failedToLoadDrivers'));
       }
     } catch (err: any) {
-      setError(err.message || 'Failed to load drivers');
+      setError(err.message || t('errors.failedToLoadDrivers'));
     } finally {
       // Only set main loading to false if it was true
       if (drivers.length === 0) {
@@ -176,10 +176,10 @@ export default function DriversPage() {
         setShowAddModal(false);
         setError('');
       } else {
-        setError(response.message || 'Failed to create driver');
+        setError(response.message || t('errors.failedToCreateDriver'));
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to create driver');
+      setError(err.response?.data?.message || err.message || t('errors.failedToCreateDriver'));
     } finally {
       setSubmitting(false);
     }
@@ -233,10 +233,10 @@ export default function DriversPage() {
         setSelectedDriver(null);
         setError('');
       } else {
-        setError(response.message || 'Failed to update driver');
+        setError(response.message || t('errors.failedToUpdateDriver'));
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to update driver');
+      setError(err.response?.data?.message || err.message || t('errors.failedToUpdateDriver'));
     } finally {
       setSubmitting(false);
     }
@@ -311,10 +311,10 @@ export default function DriversPage() {
         setDriverToDelete(null);
         setError('');
       } else {
-        setError(response.message || 'Failed to delete driver');
+        setError(response.message || t('errors.failedToDeleteDriver'));
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to delete driver');
+      setError(err.response?.data?.message || err.message || t('errors.failedToDeleteDriver'));
     } finally {
       setDeleting(false);
     }
@@ -374,7 +374,7 @@ export default function DriversPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <div>
-              <h3 className="text-sm font-medium text-red-800">Error Loading Drivers</h3>
+              <h3 className="text-sm font-medium text-red-800">{t('errors.errorLoadingDrivers')}</h3>
               <p className="text-sm text-red-700 mt-1">{error}</p>
             </div>
           </div>
@@ -493,12 +493,12 @@ export default function DriversPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600">With Vehicles</p>
+                  <p className="text-sm font-medium text-gray-600">{t('stats.withVehicles')}</p>
                   <p className="text-2xl font-bold text-blue-600">
                     {drivers.filter(d => !!d.assignedVehicleId).length}
                   </p>
                   <p className="text-xs text-gray-500 mt-1">
-                    {drivers.length - drivers.filter(d => !!d.assignedVehicleId).length} unassigned
+                    {drivers.length - drivers.filter(d => !!d.assignedVehicleId).length} {t('stats.unassigned')}
                   </p>
                 </div>
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
@@ -530,7 +530,7 @@ export default function DriversPage() {
                   <input
                     ref={searchInputRef}
                     type="text"
-                    placeholder="Search drivers by name or email..."
+                    placeholder={t('search.placeholder')}
                     value={searchInput}
                     onChange={(e) => handleSearchInputChange(e.target.value)}
                     className="pl-10 pr-4 py-2 w-full border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
@@ -555,10 +555,10 @@ export default function DriversPage() {
                   onChange={(e) => handleFilterChange('status', e.target.value)}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="">All Status</option>
-                  <option value="ACTIVE">Active</option>
-                  <option value="INACTIVE">Inactive</option>
-                  <option value="SUSPENDED">Suspended</option>
+                  <option value="">{t('filters.allStatus')}</option>
+                  <option value="ACTIVE">{t('filters.active')}</option>
+                  <option value="INACTIVE">{t('filters.inactive')}</option>
+                  <option value="SUSPENDED">{t('filters.suspended')}</option>
                 </select>
               </div>
 
@@ -587,14 +587,14 @@ export default function DriversPage() {
                   }}
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 >
-                  <option value="name-asc">Name (A-Z)</option>
-                  <option value="name-desc">Name (Z-A)</option>
-                  <option value="email-asc">Email (A-Z)</option>
-                  <option value="email-desc">Email (Z-A)</option>
-                  <option value="createdAt-desc">Newest First</option>
-                  <option value="createdAt-asc">Oldest First</option>
-                  <option value="lastActive-desc">Recently Active</option>
-                  <option value="lastActive-asc">Least Active</option>
+                  <option value="name-asc">{t('sort.nameAsc')}</option>
+                  <option value="name-desc">{t('sort.nameDesc')}</option>
+                  <option value="email-asc">{t('sort.emailAsc')}</option>
+                  <option value="email-desc">{t('sort.emailDesc')}</option>
+                  <option value="createdAt-desc">{t('sort.newestFirst')}</option>
+                  <option value="createdAt-asc">{t('sort.oldestFirst')}</option>
+                  <option value="lastActive-desc">{t('sort.recentlyActive')}</option>
+                  <option value="lastActive-asc">{t('sort.leastActive')}</option>
                 </select>
               </div>
             </div>
@@ -602,10 +602,10 @@ export default function DriversPage() {
             {/* Active Filters Display */}
             {(searchQuery || statusFilter || vehicleFilter) && (
               <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-200">
-                <span className="text-sm text-gray-600">Active filters:</span>
+                <span className="text-sm text-gray-600">{t('search.activeFilters')}</span>
                 {searchQuery && (
                   <span className="inline-flex items-center px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded-md">
-                    Search: "{searchQuery}"
+                    {t('search.searchLabel')} "{searchQuery}"
                     <button onClick={handleSearchClear} className="ml-1 text-blue-600 hover:text-blue-800">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -615,7 +615,7 @@ export default function DriversPage() {
                 )}
                 {statusFilter && (
                   <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-md">
-                    Status: {statusFilter}
+                    {t('search.statusLabel')} {statusFilter}
                     <button onClick={() => handleFilterChange('status', '')} className="ml-1 text-green-600 hover:text-green-800">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -625,7 +625,7 @@ export default function DriversPage() {
                 )}
                 {vehicleFilter && (
                   <span className="inline-flex items-center px-2 py-1 bg-purple-100 text-purple-800 text-xs rounded-md">
-                    Vehicle: {vehicleFilter === 'assigned' ? 'With Vehicle' : 'Without Vehicle'}
+                    {t('search.vehicleLabel')} {vehicleFilter === 'assigned' ? t('search.withVehicle') : t('search.withoutVehicle')}
                     <button onClick={() => handleFilterChange('vehicle', '')} className="ml-1 text-purple-600 hover:text-purple-800">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -643,7 +643,7 @@ export default function DriversPage() {
                   }}
                   className="text-xs text-gray-500 hover:text-gray-700 underline"
                 >
-                  Clear all filters
+                  {t('search.clearAllFilters')}
                 </button>
               </div>
             )}
@@ -686,11 +686,11 @@ export default function DriversPage() {
                               🚗 {assignedVehicle.make} {assignedVehicle.model} ({assignedVehicle.licensePlate})
                             </p>
                           ) : (
-                            <p className="text-xs text-gray-400 mt-1">No vehicle assigned</p>
+                            <p className="text-xs text-gray-400 mt-1">{t('table.noVehicleAssigned')}</p>
                           );
                         })()}
                         <p className="text-xs text-gray-400 mt-1">
-                          Last active: {driver.lastActive ? new Date(driver.lastActive).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : 'Never'}
+                          {t('table.lastActive')}: {driver.lastActive ? new Date(driver.lastActive).toLocaleDateString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric' }) : t('table.lastActiveNever')}
                         </p>
                       </div>
                     </div>
@@ -706,14 +706,14 @@ export default function DriversPage() {
                           size="sm"
                           onClick={() => handleEditDriver(driver)}
                         >
-                          Edit
+                          {t('table.edit')}
                         </Button>
                         <Button 
                           variant="outline" 
                           size="sm"
                           onClick={() => handleViewDetails(driver)}
                         >
-                          View Details
+                          {t('table.viewDetails')}
                         </Button>
                         {driver.status !== 'INACTIVE' && (
                           <Button 
@@ -724,7 +724,7 @@ export default function DriversPage() {
                             <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                             </svg>
-                            Delete
+                            {t('table.delete')}
                           </Button>
                         )}
                       </div>
@@ -737,7 +737,7 @@ export default function DriversPage() {
                 {totalPages > 1 && (
                   <div className="flex items-center justify-between mt-6 pt-6 border-t border-gray-200">
                     <div className="text-sm text-gray-600">
-                      Page {currentPage} of {totalPages}
+                      {t('table.pageOf', { current: currentPage, total: totalPages })}
                     </div>
                     
                     <div className="flex items-center space-x-2">
@@ -747,7 +747,7 @@ export default function DriversPage() {
                         disabled={currentPage === 1}
                         className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                       >
-                        Previous
+                        {t('table.previous')}
                       </button>
 
                       {/* Page Numbers */}
@@ -786,7 +786,7 @@ export default function DriversPage() {
                         disabled={currentPage === totalPages}
                         className="px-3 py-2 text-sm bg-white border border-gray-300 rounded-md hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400 disabled:cursor-not-allowed"
                       >
-                        Next
+                        {t('table.next')}
                       </button>
                     </div>
                   </div>
@@ -795,13 +795,13 @@ export default function DriversPage() {
             ) : (
               <div className="text-center py-12">
                 <div className="text-gray-400 text-6xl mb-4">🚗</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No drivers found</h3>
-                <p className="text-gray-500 mb-6">Get started by adding your first driver to the system.</p>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">{t('table.noDriversFound')}</h3>
+                <p className="text-gray-500 mb-6">{t('table.getStartedMessage')}</p>
                 <Button onClick={() => setShowAddModal(true)}>
                   <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
                   </svg>
-                  Add First Driver
+                  {t('table.addFirstDriver')}
                 </Button>
               </div>
             )}
@@ -819,7 +819,7 @@ export default function DriversPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Add New Driver</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('modal.addNewDriver')}</h3>
                 <button
                   onClick={() => setShowAddModal(false)}
                   className="text-gray-400 hover:text-gray-600 transition-colors"
@@ -833,7 +833,7 @@ export default function DriversPage() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
+                    {t('modal.fullName')}
                   </label>
                   <input
                     type="text"
@@ -841,13 +841,13 @@ export default function DriversPage() {
                     value={formData.name}
                     onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Enter driver's full name"
+                    placeholder={t('modal.placeholderFullName')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+                    {t('modal.emailAddress')}
                   </label>
                   <input
                     type="email"
@@ -855,13 +855,13 @@ export default function DriversPage() {
                     value={formData.email}
                     onChange={(e) => setFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Enter driver's email address"
+                    placeholder={t('modal.placeholderEmail')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Password
+                    {t('modal.password')}
                   </label>
                   <input
                     type="password"
@@ -869,21 +869,21 @@ export default function DriversPage() {
                     value={formData.password}
                     onChange={(e) => setFormData(prev => ({ ...prev, password: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Enter driver's password"
+                    placeholder={t('modal.placeholderPassword')}
                     minLength={6}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Assign Vehicle (Optional)
+                    {t('modal.assignVehicleOptional')}
                   </label>
                   <select
                     value={formData.assignedVehicleId}
                     onChange={(e) => setFormData(prev => ({ ...prev, assignedVehicleId: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <option value="">No vehicle assigned</option>
+                    <option value="">{t('modal.noVehicleAssigned')}</option>
                     {getAvailableVehicles().map((vehicle) => (
                       <option key={vehicle._id} value={vehicle._id}>
                         {vehicle.make} {vehicle.model} ({vehicle.licensePlate}) - {vehicle.year}
@@ -891,7 +891,7 @@ export default function DriversPage() {
                     ))}
                   </select>
                   <p className="text-xs text-gray-500 mt-1">
-                    All active vehicles are shown (including already assigned ones)
+                    {t('modal.allActiveVehiclesNote')}
                   </p>
                 </div>
 
@@ -909,14 +909,14 @@ export default function DriversPage() {
                     disabled={submitting}
                     className="flex-1"
                   >
-                    Cancel
+                    {t('modal.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     disabled={submitting}
                     className="flex-1"
                   >
-                    {submitting ? 'Creating...' : 'Create Driver'}
+                    {submitting ? t('modal.creating') : t('modal.createDriver')}
                   </Button>
                 </div>
               </form>
@@ -939,7 +939,7 @@ export default function DriversPage() {
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex justify-between items-center mb-4">
-                <h3 className="text-lg font-semibold text-gray-900">Edit Driver</h3>
+                <h3 className="text-lg font-semibold text-gray-900">{t('modal.editDriver')}</h3>
                 <button
                   onClick={() => {
                     setShowEditModal(false);
@@ -957,7 +957,7 @@ export default function DriversPage() {
               <form onSubmit={handleUpdateDriver} className="space-y-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Full Name
+                    {t('modal.fullName')}
                   </label>
                   <input
                     type="text"
@@ -965,13 +965,13 @@ export default function DriversPage() {
                     value={editFormData.name}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, name: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Enter driver's full name"
+                    placeholder={t('modal.placeholderFullName')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Email Address
+                    {t('modal.emailAddress')}
                   </label>
                   <input
                     type="email"
@@ -979,13 +979,13 @@ export default function DriversPage() {
                     value={editFormData.email}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, email: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                    placeholder="Enter driver's email address"
+                    placeholder={t('modal.placeholderEmail')}
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Status
+                    {t('modal.status')}
                   </label>
                   <select
                     required
@@ -993,22 +993,22 @@ export default function DriversPage() {
                     onChange={(e) => setEditFormData(prev => ({ ...prev, status: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <option value="ACTIVE">Active</option>
-                    <option value="INACTIVE">Inactive</option>
-                    <option value="SUSPENDED">Suspended</option>
+                    <option value="ACTIVE">{t('filters.active')}</option>
+                    <option value="INACTIVE">{t('filters.inactive')}</option>
+                    <option value="SUSPENDED">{t('filters.suspended')}</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Assign Vehicle (Optional)
+                    {t('modal.assignVehicleOptional')}
                   </label>
                   <select
                     value={editFormData.assignedVehicleId}
                     onChange={(e) => setEditFormData(prev => ({ ...prev, assignedVehicleId: e.target.value }))}
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   >
-                    <option value="">No vehicle assigned</option>
+                    <option value="">{t('modal.noVehicleAssigned')}</option>
                     {getAvailableVehicles(selectedDriver?._id).map((vehicle) => (
                       <option key={vehicle._id} value={vehicle._id}>
                         {vehicle.make} {vehicle.model} ({vehicle.licensePlate}) - {vehicle.year}
@@ -1016,7 +1016,7 @@ export default function DriversPage() {
                     ))}
                   </select>
                   <p className="text-xs text-gray-500 mt-1">
-                    All active vehicles are shown (including already assigned ones)
+                    {t('modal.allActiveVehiclesNote')}
                   </p>
                 </div>
 
@@ -1038,14 +1038,14 @@ export default function DriversPage() {
                     disabled={submitting}
                     className="flex-1"
                   >
-                    Cancel
+                    {t('modal.cancel')}
                   </Button>
                   <Button
                     type="submit"
                     disabled={submitting}
                     className="flex-1"
                   >
-                    {submitting ? 'Updating...' : 'Update Driver'}
+                    {submitting ? t('modal.updating') : t('modal.updateDriver')}
                   </Button>
                 </div>
               </form>
@@ -1074,15 +1074,14 @@ export default function DriversPage() {
                   </svg>
                 </div>
                 <div>
-                  <h3 className="text-lg font-semibold text-gray-900">Delete Driver</h3>
-                  <p className="text-sm text-gray-500">This action cannot be undone</p>
+                  <h3 className="text-lg font-semibold text-gray-900">{t('modal.deleteDriver')}</h3>
+                  <p className="text-sm text-gray-500">{t('modal.cannotBeUndone')}</p>
                 </div>
               </div>
 
               <div className="mb-6">
                 <p className="text-gray-700">
-                  Are you sure you want to delete <strong>{driverToDelete.name}</strong>? 
-                  This will deactivate their account and they will no longer be able to access the system.
+                  {t('modal.confirmDeleteMessage', { name: driverToDelete.name })}
                 </p>
                 <div className="mt-3 p-3 bg-amber-50 border border-amber-200 rounded-md">
                   <div className="flex items-start">
@@ -1090,9 +1089,9 @@ export default function DriversPage() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <div>
-                      <p className="text-sm text-amber-800 font-medium">Note:</p>
+                      <p className="text-sm text-amber-800 font-medium">{t('modal.noteLabel')}</p>
                       <p className="text-sm text-amber-700">
-                        This will set the driver's status to INACTIVE. Their data will be preserved for reporting purposes.
+                        {t('modal.inactiveStatusNote')}
                       </p>
                     </div>
                   </div>
@@ -1117,7 +1116,7 @@ export default function DriversPage() {
                   disabled={deleting}
                   className="flex-1"
                 >
-                  Cancel
+                  {t('modal.cancel')}
                 </Button>
                 <Button
                   type="button"
@@ -1131,10 +1130,10 @@ export default function DriversPage() {
                       <svg className="w-4 h-4 mr-2 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                       </svg>
-                      Deleting...
+                      {t('modal.deleting')}
                     </>
                   ) : (
-                    'Delete Driver'
+                    t('modal.deleteDriver')
                   )}
                 </Button>
               </div>

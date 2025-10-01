@@ -22,6 +22,13 @@ export default function ProfilePage() {
     email: "",
   });
   const [saving, setSaving] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const [changingPassword, setChangingPassword] = useState(false);
 
   useEffect(() => {
     loadProfile();
@@ -86,6 +93,52 @@ export default function ProfilePage() {
     } finally {
       setSaving(false);
     }
+  };
+
+  const handlePasswordChange = async () => {
+    // Validate form
+    if (!passwordForm.currentPassword) {
+      alert(t("passwordChange.currentPasswordRequired"));
+      return;
+    }
+    if (!passwordForm.newPassword) {
+      alert(t("passwordChange.newPasswordRequired"));
+      return;
+    }
+    if (passwordForm.newPassword.length < 6) {
+      alert(t("passwordChange.passwordTooShort"));
+      return;
+    }
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert(t("passwordChange.passwordMismatch"));
+      return;
+    }
+
+    setChangingPassword(true);
+    try {
+      await authApi.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+
+      alert(t("passwordChange.success"));
+      setShowPasswordModal(false);
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+    } catch (err: any) {
+      alert(t("passwordChange.error") + " " + (err.message || ""));
+    } finally {
+      setChangingPassword(false);
+    }
+  };
+
+  const handleCancelPasswordChange = () => {
+    setShowPasswordModal(false);
+    setPasswordForm({
+      currentPassword: "",
+      newPassword: "",
+      confirmPassword: "",
+    });
   };
 
   const getRoleColor = (role: string) => {
@@ -418,7 +471,7 @@ export default function ProfilePage() {
                 <Button
                   variant="outline"
                   className="w-full justify-start"
-                  disabled
+                  onClick={() => setShowPasswordModal(true)}
                 >
                   <svg
                     className="w-4 h-4 mr-3"
@@ -480,6 +533,87 @@ export default function ProfilePage() {
           </Card>
         </div>
       </div>
+
+      {/* Password Change Modal */}
+      {showPasswordModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-lg font-semibold text-gray-900">
+                {t("passwordChange.title")}
+              </h3>
+            </div>
+            <div className="px-6 py-4 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("passwordChange.currentPassword")}
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.currentPassword}
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t("passwordChange.currentPassword")}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("passwordChange.newPassword")}
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.newPassword}
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, newPassword: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t("passwordChange.newPassword")}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  {t("passwordChange.confirmPassword")}
+                </label>
+                <input
+                  type="password"
+                  value={passwordForm.confirmPassword}
+                  onChange={(e) =>
+                    setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                  placeholder={t("passwordChange.confirmPassword")}
+                />
+              </div>
+            </div>
+            <div className="px-6 py-4 border-t border-gray-200 flex space-x-3">
+              <Button
+                onClick={handlePasswordChange}
+                disabled={changingPassword}
+                className="flex-1"
+              >
+                {changingPassword ? (
+                  <>
+                    <Spinner size="sm" className="w-4 h-4 mr-2" />
+                    {t("passwordChange.changing")}
+                  </>
+                ) : (
+                  t("passwordChange.changePassword")
+                )}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={handleCancelPasswordChange}
+                disabled={changingPassword}
+                className="flex-1"
+              >
+                {t("passwordChange.cancel")}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

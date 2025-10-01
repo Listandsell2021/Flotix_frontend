@@ -23,5 +23,20 @@
   "loadError": "Profil konnte nicht geladen werden",
   "nameRequired": "Name ist erforderlich",
   "updateSuccess": "Profil erfolgreich aktualisiert!",
-  "updateError": "Profilaktualisierung fehlgeschlagen:"
+  "updateError": "Profilaktualisierung fehlgeschlagen:",
+  "passwordChange": {
+    "title": "Passwort ändern",
+    "currentPassword": "Aktuelles Passwort",
+    "newPassword": "Neues Passwort",
+    "confirmPassword": "Neues Passwort bestätigen",
+    "currentPasswordRequired": "Aktuelles Passwort ist erforderlich",
+    "newPasswordRequired": "Neues Passwort ist erforderlich",
+    "passwordMismatch": "Passwörter stimmen nicht überein",
+    "passwordTooShort": "Passwort muss mindestens 6 Zeichen lang sein",
+    "changePassword": "Passwort ändern",
+    "cancel": "Abbrechen",
+    "success": "Passwort erfolgreich geändert!",
+    "error": "Passwort ändern fehlgeschlagen:",
+    "changing": "Passwort wird geändert..."
+  }
 }

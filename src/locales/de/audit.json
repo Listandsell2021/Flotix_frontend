@@ -1,25 +1,73 @@
 {
-  "audit": {
-    "title": "Audit-Protokolle",
-    "description": "Verfolge alle Systemaktivitäten und Benutzeraktionen zur Einhaltung der Vorschriften",
-    "loading": "Audit-Protokolle werden geladen...",
-    "error_title": "Fehler beim Laden der Audit-Protokolle",
-    "error_message": "Audit-Protokolle konnten nicht geladen werden",
-    "filter": "Filtern",
-    "export": "Exportieren",
-    "stats": {
-      "total": "Gesamtereignisse",
-      "create": "Erstellte Aktionen",
-      "update": "Aktualisierte Aktionen",
-      "delete": "Gelöschte Aktionen"
-    },
-    "recent_activity": "Letzte Aktivität",
-    "unknown_user": "Unbekannter Benutzer",
-    "unknown_ip": "Unbekannt",
-    "module": "Modul",
-    "no_logs_title": "Keine Audit-Protokolle gefunden",
-    "no_logs_subtitle": "Audit-Protokolle erscheinen hier, sobald Benutzer mit dem System interagieren.",
-    "refresh": "Aktualisieren",
-    "details": "Details"
+  "title": "Audit-Protokolle",
+  "description": "Verfolge alle Systemaktivitäten und Benutzeraktionen zur Einhaltung der Vorschriften",
+  "loading": "Audit-Protokolle werden geladen...",
+  "error_title": "Fehler beim Laden der Audit-Protokolle",
+  "error_message": "Audit-Protokolle konnten nicht geladen werden",
+  "filter": "Filtern",
+  "export": "Exportieren",
+  "stats": {
+    "total": "Gesamtereignisse",
+    "create": "Erstellte Aktionen",
+    "update": "Aktualisierte Aktionen",
+    "delete": "Gelöschte Aktionen"
+  },
+  "recent_activity": "Letzte Aktivität",
+  "unknown_user": "Unbekannter Benutzer",
+  "unknown_ip": "Unbekannt",
+  "module": "Modul",
+  "no_logs_title": "Keine Audit-Protokolle gefunden",
+  "no_logs_subtitle": "Audit-Protokolle erscheinen hier, sobald Benutzer mit dem System interagieren.",
+  "refresh": "Aktualisieren",
+  "details": "Details",
+  "actions": {
+    "CREATE": "Erstellen",
+    "UPDATE": "Aktualisieren",
+    "DELETE": "Löschen",
+    "LOGIN": "Anmelden",
+    "LOGOUT": "Abmelden",
+    "EXPORT": "Exportieren"
+  },
+  "roles": {
+    "SUPER_ADMIN": "Super Admin",
+    "ADMIN": "Administrator",
+    "MANAGER": "Manager",
+    "DRIVER": "Fahrer",
+    "VIEWER": "Betrachter"
+  },
+  "modules": {
+    "USER": "Benutzer",
+    "VEHICLE": "Fahrzeug",
+    "EXPENSE": "Ausgabe",
+    "COMPANY": "Unternehmen",
+    "AUTH": "Authentifizierung",
+    "ROLE": "Rolle",
+    "AUDIT": "Audit",
+    "REPORT": "Bericht"
+  },
+  "details": {
+    "created_user": "Benutzer erstellt",
+    "updated_user": "Benutzer aktualisiert",
+    "deleted_user": "Benutzer gelöscht",
+    "created_vehicle": "Fahrzeug erstellt",
+    "updated_vehicle": "Fahrzeug aktualisiert",
+    "deleted_vehicle": "Fahrzeug gelöscht",
+    "assigned_vehicle": "Fahrzeug zugewiesen",
+    "unassigned_vehicle": "Fahrzeugzuweisung entfernt",
+    "created_expense": "Ausgabe erstellt",
+    "updated_expense": "Ausgabe aktualisiert",
+    "deleted_expense": "Ausgabe gelöscht",
+    "user_login": "Benutzeranmeldung",
+    "user_logout": "Benutzer abgemeldet",
+    "created_company": "Unternehmen erstellt",
+    "updated_company": "Unternehmen aktualisiert",
+    "assigned_role": "Rolle zugewiesen",
+    "removed_role": "Rolle entfernt",
+    "failed_login_inactive": "Fehlgeschlagener Anmeldeversuch - Konto inaktiv",
+    "failed_login_password": "Fehlgeschlagener Anmeldeversuch - Ungültiges Passwort"
+  },
+  "status": {
+    "SUCCESS": "Erfolgreich",
+    "FAILED": "Fehlgeschlagen"
   }
 }

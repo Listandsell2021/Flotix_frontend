@@ -53,7 +53,8 @@ export default function RoleManagementPage() {
       ]);
 
       if (rolesResponse.data.success) {
-        setRoles(rolesResponse.data.data || []);
+        // Backend now handles role filtering based on user permissions
+        setRoles(rolesResponse.data.data?.data || []);
       }
 
       if (permissionsResponse.data.success) {

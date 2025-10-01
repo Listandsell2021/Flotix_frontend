@@ -88,31 +88,26 @@ export default function ReportsPage() {
   const generateCSV = (data: any, reportType: string): string => {
     const { summary, breakdown, chartData } = data;
     
-    // USD to EUR conversion rate (you might want to fetch this from an API)
-    const USD_TO_EUR = 0.85;
-    
-    const convertToEur = (usdAmount: number): number => {
-      return usdAmount * USD_TO_EUR;
-    };
+    // All amounts are already in EUR - no conversion needed
     
     let csv = '\ufeff'; // BOM for UTF-8
     csv += `Report Type,${reportType.charAt(0).toUpperCase() + reportType.slice(1)} Report\n`;
     csv += `Generated On,${new Date().toLocaleString()}\n`;
-    csv += `Currency,EUR (converted from USD at rate ${USD_TO_EUR})\n\n`;
+    csv += `Currency,EUR\n\n`;
     
     // Summary section
     csv += 'SUMMARY\n';
     csv += 'Metric,Value\n';
-    csv += `Total Amount,€${convertToEur(summary.totalAmount).toFixed(2)}\n`;
+    csv += `Total Amount,€${summary.totalAmount.toFixed(2)}\n`;
     csv += `Expense Count,${summary.expenseCount}\n`;
-    csv += `Average Amount,€${convertToEur(summary.avgExpenseAmount).toFixed(2)}\n\n`;
+    csv += `Average Amount,€${summary.avgExpenseAmount.toFixed(2)}\n\n`;
     
     // Breakdown section
     if (breakdown && breakdown.length > 0) {
       csv += 'BREAKDOWN\n';
       csv += 'Category,Amount,Count\n';
       breakdown.forEach((item: any) => {
-        csv += `"${item.label}",€${convertToEur(item.value).toFixed(2)},${item.count}\n`;
+        csv += `"${item.label}",€${item.value.toFixed(2)},${item.count}\n`;
       });
       csv += '\n';
     }
@@ -122,7 +117,7 @@ export default function ReportsPage() {
       csv += 'DAILY DATA\n';
       csv += 'Date,Amount,Count\n';
       chartData.forEach((item: any) => {
-        csv += `${item.date},€${convertToEur(item.amount).toFixed(2)},${item.count}\n`;
+        csv += `${item.date},€${item.amount.toFixed(2)},${item.count}\n`;
       });
     }
     

@@ -30,13 +30,13 @@ export default function AuditPage() {
         // API returns paginated response: { data: AuditLog[], pagination: {...} }
         setAuditLogs(response.data.data.data || []);
       } else {
-        setError(response.data.message || "Failed to load audit logs");
+        setError(response.data.message || t("error_message"));
       }
     } catch (err: any) {
       setError(
         err.response?.data?.message ||
           err.message ||
-          "Failed to load audit logs"
+          t("error_message")
       );
     } finally {
       setLoading(false);
@@ -48,7 +48,7 @@ export default function AuditPage() {
       <div className="flex items-center justify-center h-64">
         <div className="text-center">
           <Spinner size="lg" />
-          <p className="mt-4 text-gray-600">{t("audit.loading")}</p>
+          <p className="mt-4 text-gray-600">{t("loading")}</p>
         </div>
       </div>
     );
@@ -73,7 +73,7 @@ export default function AuditPage() {
           </svg>
           <div>
             <h3 className="text-sm font-medium text-red-800">
-              {t("audit.error_title")}
+              {t("error_title")}
             </h3>
             <p className="text-sm text-red-700 mt-1">{error}</p>
           </div>
@@ -215,40 +215,78 @@ export default function AuditPage() {
     };
   };
 
+  const translateAction = (action: string) => {
+    return t(`actions.${action}`) || action;
+  };
+
+  const translateRole = (role: string) => {
+    return t(`roles.${role}`) || role.replace("_", " ");
+  };
+
+  const translateModule = (module: string) => {
+    return t(`modules.${module}`) || module;
+  };
+
+  const translateDetails = (details: string) => {
+    if (!details) return details;
+
+    // For complex details, try to translate common patterns
+    if (details.includes('Created') && details.includes('vehicle')) {
+      return t('details.created_vehicle');
+    }
+    if (details.includes('Assigned') && details.includes('vehicle')) {
+      return t('details.assigned_vehicle');
+    }
+    if (details.includes('Updated') && details.includes('vehicle')) {
+      return t('details.updated_vehicle');
+    }
+    if (details.includes('Created') && details.includes('user')) {
+      return t('details.created_user');
+    }
+    if (details.includes('Updated') && details.includes('user')) {
+      return t('details.updated_user');
+    }
+    if (details.includes('Created') && details.includes('expense')) {
+      return t('details.created_expense');
+    }
+    if (details.includes('Updated') && details.includes('expense')) {
+      return t('details.updated_expense');
+    }
+    if (details.includes('deleted') && details.includes('user')) {
+      return t('details.deleted_user');
+    }
+    if (details.includes('deleted') && details.includes('vehicle')) {
+      return t('details.deleted_vehicle');
+    }
+    if (details.includes('deleted') && details.includes('expense')) {
+      return t('details.deleted_expense');
+    }
+    if (details.includes('logged in') || details.includes('login')) {
+      return t('details.user_login');
+    }
+    if (details.includes('logged out') || details.includes('logout')) {
+      return t('details.user_logout');
+    }
+    if (details.includes('role') && details.includes('assigned')) {
+      return t('details.assigned_role');
+    }
+    if (details.includes('role') && details.includes('removed')) {
+      return t('details.removed_role');
+    }
+
+    // If no pattern matches, return original
+    return details;
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex justify-between items-center">
         <div>
           <h1 className="text-3xl font-bold text-gray-900">
-            {t("audit.title")}
+            {t("title")}
           </h1>
-          <p className="text-gray-600 mt-2">{t("audit.description")}</p>
-        </div>
-        <div className="flex space-x-3">
-          <Button variant="outline">
-            <svg
-              className="w-4 h-4 mr-2"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-              />
-            </svg>
-            {t("audit.filter")}
-          </Button>
-          {/* HIDDEN: Export functionality - Re-enable when backend ready */}
-          {/* <Button variant="outline">
-              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-              Export
-            </Button> */}
+          <p className="text-gray-600 mt-2">{t("description")}</p>
         </div>
       </div>
 
@@ -259,7 +297,7 @@ export default function AuditPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  {t("audit.stats.total")}
+                  {t("stats.total")}
                 </p>
                 <p className="text-2xl font-bold text-gray-900">
                   {auditLogs.length}
@@ -289,7 +327,7 @@ export default function AuditPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  {t("audit.stats.create")}
+                  {t("stats.create")}
                 </p>
                 <p className="text-2xl font-bold text-green-600">
                   {auditLogs.filter((log) => log.action === "CREATE").length}
@@ -319,7 +357,7 @@ export default function AuditPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  {t("audit.stats.update")}
+                  {t("stats.update")}
                 </p>
                 <p className="text-2xl font-bold text-yellow-600">
                   {auditLogs.filter((log) => log.action === "UPDATE").length}
@@ -349,7 +387,7 @@ export default function AuditPage() {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">
-                  {t("audit.stats.delete")}
+                  {t("stats.delete")}
                 </p>
                 <p className="text-2xl font-bold text-red-600">
                   {auditLogs.filter((log) => log.action === "DELETE").length}
@@ -378,7 +416,7 @@ export default function AuditPage() {
       {/* Audit Logs List */}
       <Card>
         <CardHeader>
-          <CardTitle>{t("audit.recent_activity")}</CardTitle>
+          <CardTitle>{t("recent_activity")}</CardTitle>
         </CardHeader>
         <CardContent>
           {auditLogs.length > 0 ? (
@@ -413,33 +451,27 @@ export default function AuditPage() {
                           <h3 className="font-semibold text-gray-900">
                             {typeof log.userId === "object" && log.userId?.name
                               ? log.userId.name
-                              : t("audit.unknown_user")}
+                              : t("unknown_user")}
                           </h3>
                           <Badge variant={getActionColor(log.action)}>
-                            {log.action}
+                            {translateAction(log.action)}
                           </Badge>
                           {log.role && (
                             <Badge variant="default">
-                              {log.role.replace("_", " ")}
+                              {translateRole(log.role)}
                             </Badge>
                           )}
                         </div>
                         <p className="text-sm text-gray-600 mt-1">
-                          {log.details || `${log.action} ${log.module}`}
+                          {log.details ? translateDetails(log.details) : `${translateAction(log.action)} ${translateModule(log.module)}`}
                         </p>
                         <p className="text-xs text-gray-400 mt-1">
-                          IP: {log.ipAddress || t("audit.unknown_ip")} •{" "}
-                          {t("audit.module")}: {log.module} • {timestamp.date}{" "}
+                          {t("module")}: {translateModule(log.module)} • {timestamp.date}{" "}
                           at {timestamp.time}
                         </p>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-3">
-                      <Button variant="outline" size="sm">
-                        {t("audit.details")}
-                      </Button>
-                    </div>
                   </div>
                 );
               })}
@@ -448,10 +480,10 @@ export default function AuditPage() {
             <div className="text-center py-12">
               <div className="text-gray-400 text-6xl mb-4">🔍</div>
               <h3 className="text-lg font-medium text-gray-900 mb-2">
-                No audit logs found
+                {t("no_logs_title")}
               </h3>
               <p className="text-gray-500 mb-6">
-                Audit logs will appear here as users interact with the system.
+                {t("no_logs_subtitle")}
               </p>
               <Button variant="outline" onClick={loadAuditLogs}>
                 <svg
@@ -467,7 +499,7 @@ export default function AuditPage() {
                     d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                   />
                 </svg>
-                {t("audit.refresh")}
+                {t("refresh")}
               </Button>
             </div>
           )}

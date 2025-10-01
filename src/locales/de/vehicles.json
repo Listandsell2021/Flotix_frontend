@@ -19,7 +19,17 @@
     "odometer": "Kilometerstand",
     "lastService": "Letzte Wartung",
     "actions": "Aktionen",
-    "noData": "Keine Fahrzeuge gefunden"
+    "noData": "Keine Fahrzeuge gefunden",
+    "allVehicles": "Alle Fahrzeuge",
+    "unknown": "Unbekannt",
+    "drivers": "Fahrer",
+    "reassign": "Neu zuweisen",
+    "assign": "Zuweisen",
+    "notProvided": "Nicht angegeben",
+    "notSpecified": "Nicht spezifiziert",
+    "notAssigned": "Nicht zugewiesen",
+    "filter": "Filtern",
+    "sort": "Sortieren"
   },
   "types": {
     "car": "Auto",
@@ -31,25 +41,84 @@
     "title": "Neues Fahrzeug hinzufügen",
     "editTitle": "Fahrzeug bearbeiten",
     "make": "Marke",
+    "makePlaceholder": "z.B. Toyota",
     "model": "Modell",
-    "year": "Jahr",
+    "modelPlaceholder": "z.B. Camry",
+    "year": "Baujahr",
     "licensePlate": "Kennzeichen",
+    "licensePlatePlaceholder": "z.B. ABC-123",
     "vin": "FIN-Nummer",
+    "vinPlaceholder": "17-stellige Fahrzeug-Identifizierungsnummer",
     "type": "Fahrzeugtyp",
     "color": "Farbe",
+    "colorPlaceholder": "z.B. Weiß, Schwarz, Silber",
     "fuelType": "Kraftstoffart",
+    "fuelTypePlaceholder": "z.B. Benzin, Diesel, Elektro",
     "currentOdometer": "Aktueller Kilometerstand",
+    "currentOdometerLabel": "Aktueller Kilometerstand (km)",
+    "odometerPlaceholder": "0",
     "purchaseDate": "Kaufdatum",
     "assignDriver": "Fahrer zuweisen",
     "submit": "Fahrzeug hinzufügen",
     "save": "Änderungen speichern",
-    "cancel": "Abbrechen"
+    "cancel": "Abbrechen",
+    "required": "Pflichtfeld"
   },
   "status": {
     "active": "Aktiv",
     "maintenance": "Wartung",
     "retired": "Außer Dienst"
   },
+  "stats": {
+    "totalVehicles": "Fahrzeuge insgesamt",
+    "activeVehicles": "Aktive Fahrzeuge",
+    "assigned": "Zugewiesen",
+    "operational": "einsatzbereit",
+    "toDrivers": "an Fahrer"
+  },
+  "import": {
+    "importVehicles": "Fahrzeuge importieren"
+  },
+  "actions": {
+    "edit": "Bearbeiten",
+    "view": "Anzeigen",
+    "close": "Schließen",
+    "cancel": "Abbrechen"
+  },
+  "modal": {
+    "creating": "Erstelle...",
+    "createVehicle": "Fahrzeug erstellen",
+    "updating": "Aktualisiere...",
+    "updateVehicle": "Fahrzeug aktualisieren",
+    "assigning": "Weise zu...",
+    "assign": "Zuweisen",
+    "editVehicle": "Fahrzeug bearbeiten",
+    "viewVehicle": "Fahrzeug anzeigen",
+    "addNewVehicle": "Neues Fahrzeug hinzufügen",
+    "vehicleDetails": "Fahrzeugdetails",
+    "createdAt": "Erstellt am",
+    "makeModel": "Marke & Modell",
+    "assignedDriver": "Zugewiesener Fahrer",
+    "selectDrivers": "Fahrer auswählen (Mehrfachauswahl möglich)",
+    "driversSelected": "Fahrer ausgewählt",
+    "currentlyAssignedTo": "Derzeit zugewiesen an",
+    "vehicle": "Fahrzeug"
+  },
+  "vehicleTypes": {
+    "CAR": "Auto",
+    "TRUCK": "LKW",
+    "VAN": "Transporter",
+    "MOTORCYCLE": "Motorrad"
+  },
+  "errors": {
+    "failedToLoadVehicles": "Fehler beim Laden der Fahrzeuge"
+  },
+  "loading": "Fahrzeuge werden geladen...",
+  "vehiclesText": "Fahrzeuge",
+  "available": "verfügbar",
+  "noVehiclesFound": "Keine Fahrzeuge gefunden",
+  "noVehiclesMessage": "Beginnen Sie, indem Sie Ihr erstes Fahrzeug zur Flotte hinzufügen.",
+  "addFirstVehicle": "Erstes Fahrzeug hinzufügen",
   "messages": {
     "createSuccess": "Fahrzeug erfolgreich hinzugefügt",
     "updateSuccess": "Fahrzeug erfolgreich aktualisiert",

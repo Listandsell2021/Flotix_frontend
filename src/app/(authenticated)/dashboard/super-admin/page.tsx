@@ -39,10 +39,20 @@ interface RecentActivity {
   timestamp: string;
 }
 
+interface RegistrationEmail {
+  _id: string;
+  email: string;
+  company?: string;
+  message?: string;
+  status: 'pending' | 'contacted' | 'converted';
+  createdAt: string;
+}
+
 export default function SuperAdminDashboard() {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [companies, setCompanies] = useState<CompanyOverview[]>([]);
   const [recentActivities, setRecentActivities] = useState<RecentActivity[]>([]);
+  const [registrationEmails, setRegistrationEmails] = useState<RegistrationEmail[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -55,9 +65,13 @@ export default function SuperAdminDashboard() {
       setLoading(true);
 
       // Load system-wide data
-      const [companiesResponse, expensesResponse] = await Promise.all([
+      const [companiesResponse, expensesResponse, emailsResponse] = await Promise.all([
         api.get('/companies'),
-        expensesApi.getExpenses({ limit: 100 }) // Get recent expenses for analytics
+        expensesApi.getExpenses({ limit: 100 }), // Get recent expenses for analytics
+        api.get('/registration-emails?limit=20').catch(err => {
+          console.log('Cannot fetch registration emails:', err.response?.status);
+          return { data: { data: { emails: [] } } }; // Return empty array if forbidden
+        }) // Get recent registration emails
       ]);
 
       if (!companiesResponse.data.success) {
@@ -67,6 +81,10 @@ export default function SuperAdminDashboard() {
 
       const companiesData = companiesResponse.data.data.data || [];
       setCompanies(companiesData);
+
+      // Set registration emails
+      const emailsData = emailsResponse.data?.data?.emails || [];
+      setRegistrationEmails(emailsData);
 
       // Calculate system stats
       const now = new Date();
@@ -126,6 +144,22 @@ export default function SuperAdminDashboard() {
     }
   };
 
+  const updateEmailStatus = async (emailId: string, status: 'pending' | 'contacted' | 'converted') => {
+    try {
+      const response = await api.patch(`/registration-emails/${emailId}`, { status });
+      if (response.data.success) {
+        setRegistrationEmails(prev =>
+          prev.map(email =>
+            email._id === emailId ? { ...email, status } : email
+          )
+        );
+      }
+    } catch (error) {
+      console.error('Failed to update email status:', error);
+      alert('Failed to update email status');
+    }
+  };
+
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
@@ -176,6 +210,19 @@ export default function SuperAdminDashboard() {
         return 'bg-purple-100 text-purple-800';
       default:
         return 'bg-gray-100 text-gray-800';
+    }
+  };
+
+  const getEmailStatusColor = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'warning';
+      case 'contacted':
+        return 'info';
+      case 'converted':
+        return 'success';
+      default:
+        return 'secondary';
     }
   };
 
@@ -432,6 +479,98 @@ export default function SuperAdminDashboard() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Registration Emails */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center justify-between">
+              <span>Portal Registration Requests</span>
+              <div className="flex items-center space-x-2">
+                <div className="text-sm text-gray-500">
+                  {registrationEmails.filter(e => e.status === 'pending').length} pending
+                </div>
+              </div>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {registrationEmails.length > 0 ? (
+              <div className="space-y-4">
+                {registrationEmails.map((email) => (
+                  <div key={email._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
+                    <div className="flex items-center space-x-4">
+                      <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                        <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-semibold text-gray-900">{email.email}</h3>
+                          <Badge variant={getEmailStatusColor(email.status)}>
+                            {email.status}
+                          </Badge>
+                        </div>
+                        {email.company && (
+                          <p className="text-sm text-gray-600">Company: {email.company}</p>
+                        )}
+                        {email.message && (
+                          <p className="text-sm text-gray-500 truncate max-w-md">
+                            Message: {email.message}
+                          </p>
+                        )}
+                        <p className="text-xs text-gray-400">
+                          {formatDate(new Date(email.createdAt))}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center space-x-2">
+                      {email.status === 'pending' && (
+                        <>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateEmailStatus(email._id, 'contacted')}
+                          >
+                            Mark Contacted
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => updateEmailStatus(email._id, 'converted')}
+                          >
+                            Mark Converted
+                          </Button>
+                        </>
+                      )}
+                      {email.status === 'contacted' && (
+                        <Button
+                          size="sm"
+                          onClick={() => updateEmailStatus(email._id, 'converted')}
+                        >
+                          Mark Converted
+                        </Button>
+                      )}
+                      {email.status === 'converted' && (
+                        <div className="flex items-center space-x-1 text-green-600">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                          </svg>
+                          <span className="text-sm font-medium">Converted</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <div className="text-gray-400 text-4xl mb-4">📧</div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">No registration requests</h3>
+                <p className="text-gray-500">Portal registration requests will appear here.</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
   );
 }

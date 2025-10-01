@@ -60,6 +60,7 @@ i18n
   // Initialize i18next
   .init({
     resources,
+    lng: "de", // Set German as default language
     fallbackLng: "en",
     defaultNS: "common",
     ns: [

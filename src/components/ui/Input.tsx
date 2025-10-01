@@ -7,6 +7,8 @@ interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   helperText?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+  rightIconClickable?: boolean;
+  onRightIconClick?: () => void;
   variant?: 'default' | 'filled';
   onChangeText?: (value: string) => void;
 }
@@ -17,6 +19,8 @@ const Input: React.FC<InputProps> = ({
   helperText,
   leftIcon,
   rightIcon,
+  rightIconClickable = false,
+  onRightIconClick,
   variant = 'default',
   onChangeText,
   className,
@@ -72,7 +76,13 @@ const Input: React.FC<InputProps> = ({
         />
         
         {rightIcon && (
-          <div className="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+          <div
+            className={cn(
+              "absolute inset-y-0 right-0 pr-3 flex items-center",
+              rightIconClickable ? "cursor-pointer hover:text-gray-600" : "pointer-events-none"
+            )}
+            onClick={rightIconClickable ? onRightIconClick : undefined}
+          >
             <div className="text-gray-400">
               {rightIcon}
             </div>
