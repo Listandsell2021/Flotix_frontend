@@ -31,7 +31,14 @@ if (typeof window !== 'undefined') {
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    if (accessToken) {
+    // Always check localStorage for the latest token
+    if (typeof window !== 'undefined') {
+      const token = localStorage.getItem('accessToken');
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+        accessToken = token; // Update the in-memory token
+      }
+    } else if (accessToken) {
       config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
@@ -48,11 +55,16 @@ api.interceptors.response.use(
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
-      if (refreshToken) {
+      // Get fresh refresh token from localStorage
+      const storedRefreshToken = typeof window !== 'undefined'
+        ? localStorage.getItem('refreshToken')
+        : refreshToken;
+
+      if (storedRefreshToken) {
         try {
           const response = await axios.post<ApiResponse<AuthTokens>>(
             `${API_BASE_URL}/api/auth/refresh`,
-            { refreshToken }
+            { refreshToken: storedRefreshToken }
           );
 
           if (response.data.success && response.data.data) {
@@ -151,6 +163,15 @@ export const authApi = {
       throw new Error(response.data.message || 'Failed to change password');
     }
   },
+
+  // Super Admin impersonation: Get admin token for a company
+  impersonateCompanyAdmin: async (companyId: string): Promise<LoginResponse> => {
+    const response = await api.post<ApiResponse<LoginResponse>>(`/auth/impersonate-admin/${companyId}`);
+    if (response.data.success && response.data.data) {
+      return response.data.data;
+    }
+    throw new Error(response.data.message || 'Failed to impersonate admin');
+  },
 };
 
 export const expensesApi = {
@@ -208,6 +229,21 @@ export const reportsApi = {
 
   getSummary: async (params: any) => {
     const response = await api.get('/reports/summary', { params });
+    return response.data;
+  },
+
+  getTrends: async (months: number = 6) => {
+    const response = await api.get('/reports/trends', { params: { months } });
+    return response.data;
+  },
+
+  getComparison: async (params: {
+    period1Start: string;
+    period1End: string;
+    period2Start: string;
+    period2End: string;
+  }) => {
+    const response = await api.get('/reports/comparison', { params });
     return response.data;
   },
 };

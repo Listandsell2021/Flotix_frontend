@@ -6,11 +6,12 @@ import { useTranslation } from 'react-i18next';
 import { reportsApi, expensesApi } from '@/lib/api';
 import StatCard from '@/components/dashboard/StatCard';
 import RecentExpenses from '@/components/dashboard/RecentExpenses';
+import TrendChart from '@/components/dashboard/TrendChart';
+import ComparisonCard from '@/components/dashboard/ComparisonCard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Spinner from '@/components/ui/Spinner';
-import { formatCurrency as utilFormatCurrency, formatNumber } from '@/lib/utils';
-import { formatCurrency, formatDate } from '@/lib/i18n';
+import { formatCurrency, formatDate, formatNumber } from '@/lib/i18n';
 import type { DashboardKPIs } from '@/types';
 
 export default function AdminDashboard() {
@@ -20,6 +21,9 @@ export default function AdminDashboard() {
   const [error, setError] = useState('');
   const [recentExpenses, setRecentExpenses] = useState<any[]>([]);
   const [totalExpenses, setTotalExpenses] = useState(0);
+  const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
+  const [trendsData, setTrendsData] = useState<any>(null);
+  const [comparisonData, setComparisonData] = useState<any>(null);
 
   useEffect(() => {
     loadDashboardData();
@@ -27,38 +31,78 @@ export default function AdminDashboard() {
 
   const loadDashboardData = async () => {
     try {
-      const [dashboardResponse, expensesResponse] = await Promise.all([
+      setLoading(true);
+      setError('');
+
+      // Calculate comparison periods (this month vs last month)
+      const now = new Date();
+      const thisMonthStart = new Date(now.getFullYear(), now.getMonth(), 1);
+      const thisMonthEnd = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+      const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+      const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0);
+
+      // Use Promise.allSettled for graceful error handling
+      const results = await Promise.allSettled([
         reportsApi.getDashboard(),
-        expensesApi.getExpenses({ limit: 3, sortBy: 'createdAt', sortOrder: 'desc' })
+        expensesApi.getExpenses({ limit: 5, sortBy: 'createdAt', sortOrder: 'desc' }),
+        reportsApi.getTrends(6),
+        reportsApi.getComparison({
+          period1Start: lastMonthStart.toISOString().split('T')[0],
+          period1End: lastMonthEnd.toISOString().split('T')[0],
+          period2Start: thisMonthStart.toISOString().split('T')[0],
+          period2End: thisMonthEnd.toISOString().split('T')[0]
+        })
       ]);
 
-      if (dashboardResponse.success) {
-        setKpis(dashboardResponse.data);
+      // Handle dashboard KPIs
+      if (results[0].status === 'fulfilled' && results[0].value.success) {
+        setKpis(results[0].value.data);
       } else {
-        setError(dashboardResponse.message || t('error'));
+        const errorMsg = results[0].status === 'rejected'
+          ? results[0].reason?.message
+          : results[0].value.message;
+        setError(errorMsg || t('dashboard:error'));
       }
 
-      if (expensesResponse.success && expensesResponse.data) {
-        // Map the expense data to match the RecentExpenses component interface
+      // Handle expenses
+      if (results[1].status === 'fulfilled' && results[1].value.success && results[1].value.data) {
+        const expensesResponse = results[1].value;
         const mappedExpenses = (expensesResponse.data.data || []).map((expense: any) => ({
           id: expense._id,
-          driverName: expense.driverId?.name || t('unknownDriver'),
+          driverName: expense.driverId?.name || t('dashboard:unknownDriver'),
           amount: expense.amountFinal || 0,
           currency: expense.currency || 'EUR',
           type: expense.type,
           category: expense.category,
           merchant: expense.merchant,
           date: expense.date || expense.createdAt,
-          status: 'approved' // Default status since this system doesn't have approval workflow
+          status: 'approved'
         }));
         setRecentExpenses(mappedExpenses);
 
-        // Set total expenses count from pagination
         const total = expensesResponse.data.pagination?.total || expensesResponse.data.data?.length || 0;
         setTotalExpenses(total);
       }
+
+      // Handle trends chart data
+      if (results[2].status === 'fulfilled' && results[2].value.success) {
+        console.log('✅ Trends data received:', results[2].value.data);
+        setTrendsData(results[2].value.data);
+      } else {
+        console.error('❌ Trends data failed:', results[2]);
+      }
+
+      // Handle comparison data
+      if (results[3].status === 'fulfilled' && results[3].value.success) {
+        console.log('✅ Comparison data received:', results[3].value.data);
+        setComparisonData(results[3].value.data);
+      } else {
+        console.error('❌ Comparison data failed:', results[3]);
+      }
+
+      setLastUpdated(new Date());
     } catch (err: any) {
-      setError(err.message || t('error'));
+      setError(err.message || t('dashboard:error'));
     } finally {
       setLoading(false);
     }
@@ -76,9 +120,10 @@ export default function AdminDashboard() {
     );
   }
 
-  if (error) {
+  if (error && !kpis) {
     return (
       <div className="bg-red-50 border border-red-200 rounded-lg p-6">
+        <div className="flex items-center justify-between">
           <div className="flex items-center">
             <svg className="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -86,11 +131,36 @@ export default function AdminDashboard() {
             <div>
               <h3 className="text-sm font-medium text-red-800">{t('dashboard:error')}</h3>
               <p className="text-sm text-red-700 mt-1">{error}</p>
+            </div>
           </div>
+          <Button
+            onClick={() => loadDashboardData()}
+            variant="outline"
+            className="ml-4"
+          >
+            <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+            {t('common:retry')}
+          </Button>
         </div>
       </div>
     );
   }
+
+  const getPercentageDisplay = (value: number, total: number): string => {
+    if (total === 0) return '0%';
+    return `${Math.round((value / total) * 100)}%`;
+  };
+
+  const formatTimeSince = (date: Date): string => {
+    const seconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    if (seconds < 60) return t('dashboard:justNow');
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return t('dashboard:minutesAgo', { count: minutes });
+    const hours = Math.floor(minutes / 60);
+    return t('dashboard:hoursAgo', { count: hours });
+  };
 
   return (
     <div className="space-y-6 lg:space-y-8">
@@ -99,6 +169,23 @@ export default function AdminDashboard() {
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">{t('dashboard:title')}</h1>
             <p className="text-gray-600 mt-1 sm:mt-2">{t('dashboard:welcome')}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <div className="text-right">
+              <p className="text-xs text-gray-500">{t('dashboard:lastUpdated')}</p>
+              <p className="text-sm font-medium text-gray-900">{formatTimeSince(lastUpdated)}</p>
+            </div>
+            <Button
+              onClick={() => loadDashboardData()}
+              variant="outline"
+              disabled={loading}
+              className="flex items-center gap-2"
+            >
+              <svg className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+              </svg>
+              {t('dashboard:refresh')}
+            </Button>
           </div>
         </div>
 
@@ -124,9 +211,10 @@ export default function AdminDashboard() {
               <StatCard
                 title={t('dashboard:kpi.fuel')}
                 value={formatCurrency(kpis.fuelVsMiscSplit?.fuel || 0)}
-                description={kpis.fuelVsMiscSplit && (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc) > 0
-                  ? `${Math.round((kpis.fuelVsMiscSplit.fuel / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`
-                  : '0% of total spend'}
+                description={`${getPercentageDisplay(
+                  kpis.fuelVsMiscSplit?.fuel || 0,
+                  (kpis.fuelVsMiscSplit?.fuel || 0) + (kpis.fuelVsMiscSplit?.misc || 0)
+                )} ${t('dashboard:kpi.ofTotalSpend')}`}
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
@@ -137,9 +225,10 @@ export default function AdminDashboard() {
               <StatCard
                 title={t('dashboard:kpi.misc')}
                 value={formatCurrency(kpis.fuelVsMiscSplit?.misc || 0)}
-                description={kpis.fuelVsMiscSplit && (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc) > 0
-                  ? `${Math.round((kpis.fuelVsMiscSplit.misc / (kpis.fuelVsMiscSplit.fuel + kpis.fuelVsMiscSplit.misc)) * 100)}% of total spend`
-                  : '0% of total spend'}
+                description={`${getPercentageDisplay(
+                  kpis.fuelVsMiscSplit?.misc || 0,
+                  (kpis.fuelVsMiscSplit?.fuel || 0) + (kpis.fuelVsMiscSplit?.misc || 0)
+                )} ${t('dashboard:kpi.ofTotalSpend')}`}
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -148,15 +237,63 @@ export default function AdminDashboard() {
               />
 
               <StatCard
-                title={t('dashboard:kpi.totalDrivers')}
-                value={formatNumber(kpis.topDriversBySpend?.length || 0)}
-                description={t('dashboard:kpi.thisMonth')}
+                title={t('dashboard:kpi.activeDrivers')}
+                value={formatNumber(kpis.totalActiveDrivers || 0)}
+                description={t('dashboard:kpi.driversWithExpenses', {
+                  count: kpis.driversWithExpensesThisMonth || 0
+                })}
                 icon={
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z" />
                   </svg>
                 }
               />
+            </div>
+
+            {/* Charts Section */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
+              {/* Trend Chart */}
+              {trendsData ? (
+                <TrendChart
+                  labels={trendsData.labels}
+                  fuelData={trendsData.datasets.fuel}
+                  miscData={trendsData.datasets.misc}
+                  totalData={trendsData.datasets.total}
+                />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Monthly Spending Trend</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-80 flex items-center justify-center">
+                      <div className="text-center">
+                        <Spinner size="md" />
+                        <p className="mt-4 text-gray-500 text-sm">Loading chart data...</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
+
+              {/* Comparison Card */}
+              {comparisonData ? (
+                <ComparisonCard data={comparisonData} />
+              ) : (
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Period Comparison</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-80 flex items-center justify-center">
+                      <div className="text-center">
+                        <Spinner size="md" />
+                        <p className="mt-4 text-gray-500 text-sm">Loading comparison data...</p>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
             </div>
 
             {/* Grid Layout for detailed sections */}

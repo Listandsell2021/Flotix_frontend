@@ -12,6 +12,7 @@ import type { User } from "@/types";
 
 export default function ProfilePage() {
   const { t } = useTranslation("profile");
+  const { t: tCommon } = useTranslation("common");
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -164,6 +165,19 @@ export default function ProfilePage() {
         return "bg-red-100 text-red-800";
       default:
         return "bg-gray-100 text-gray-800";
+    }
+  };
+
+  const getTranslatedStatus = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE':
+        return tCommon('status.active');
+      case 'INACTIVE':
+        return tCommon('status.inactive');
+      case 'SUSPENDED':
+        return tCommon('status.suspended');
+      default:
+        return status;
     }
   };
 
@@ -370,7 +384,7 @@ export default function ProfilePage() {
                           user?.status || ""
                         )}`}
                       >
-                        {user?.status}
+                        {getTranslatedStatus(user?.status || "")}
                       </span>
                     </div>
                     <div>
@@ -422,7 +436,7 @@ export default function ProfilePage() {
                       user?.status || ""
                     )}`}
                   >
-                    {user?.status}
+                    {getTranslatedStatus(user?.status || "")}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

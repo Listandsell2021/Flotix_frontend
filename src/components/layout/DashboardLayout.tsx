@@ -21,6 +21,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const [authCheck, setAuthCheck] = useState(0); // Force re-check trigger
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -35,7 +36,32 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     };
 
     checkAuth();
-  }, [router]);
+  }, [router, authCheck]);
+
+  // Listen for storage changes (token changes from impersonation)
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key === 'accessToken' || e.key === 'currentUser') {
+        // Token or user changed, trigger re-auth check
+        setLoading(true);
+        setAuthCheck(prev => prev + 1);
+      }
+    };
+
+    const handleUserChange = () => {
+      // Custom event from impersonation context
+      setLoading(true);
+      setAuthCheck(prev => prev + 1);
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('userChanged', handleUserChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('userChanged', handleUserChange);
+    };
+  }, []);
 
   if (loading) {
     return (

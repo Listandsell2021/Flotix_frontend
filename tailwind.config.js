@@ -8,18 +8,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Modern soft neutrals with sophisticated blue accent
+        // Professional blue palette based on #336489
         primary: {
-          50: '#f0f9ff',
-          100: '#e0f2fe',
-          200: '#bae6fd',
-          300: '#7dd3fc',
-          400: '#38bdf8',
-          500: '#0ea5e9',
-          600: '#0284c7',
-          700: '#0369a1',
-          800: '#075985',
-          900: '#0c4a6e',
+          50: '#f0f5f9',
+          100: '#dce7f0',
+          200: '#b9cfe1',
+          300: '#8fb1cd',
+          400: '#6890b4',
+          500: '#336489',
+          600: '#2d5778',
+          700: '#254762',
+          800: '#1d3750',
+          900: '#162942',
         },
         secondary: {
           50: '#f8fafc',
@@ -75,7 +75,7 @@ module.exports = {
         'soft': '0 2px 15px 0 rgba(0, 0, 0, 0.04)',
         'medium': '0 4px 25px 0 rgba(0, 0, 0, 0.07)',
         'large': '0 8px 35px 0 rgba(0, 0, 0, 0.10)',
-        'glow': '0 0 20px 0 rgba(14, 165, 233, 0.15)',
+        'glow': '0 0 20px 0 rgba(51, 100, 137, 0.15)',
         'inner': 'inset 0 2px 4px 0 rgba(0, 0, 0, 0.06)',
       },
       animation: {
@@ -123,8 +123,8 @@ module.exports = {
           '50%': { transform: 'translateY(-5px)' },
         },
         pulseGlow: {
-          '0%': { boxShadow: '0 0 5px rgba(14, 165, 233, 0.4)' },
-          '100%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.8)' },
+          '0%': { boxShadow: '0 0 5px rgba(51, 100, 137, 0.4)' },
+          '100%': { boxShadow: '0 0 20px rgba(51, 100, 137, 0.8)' },
         },
         float: {
           '0%, 100%': { transform: 'translateY(0px)' },

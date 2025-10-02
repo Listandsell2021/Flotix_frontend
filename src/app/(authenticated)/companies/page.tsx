@@ -3,11 +3,14 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { api, usersApi } from '@/lib/api';
+import { useTranslation } from 'react-i18next';
+import { api, usersApi, authApi } from '@/lib/api';
+import { useImpersonation } from '@/contexts/ImpersonationContext';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
+import Toast from '@/components/ui/Toast';
 
 interface Company {
   _id: string;
@@ -21,10 +24,23 @@ interface Company {
 }
 
 export default function CompaniesPage() {
+  const { t } = useTranslation('common');
+  const { startImpersonation } = useImpersonation();
+
   const [companies, setCompanies] = useState<Company[]>([]);
+  const [filteredCompanies, setFilteredCompanies] = useState<Company[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAddModal, setShowAddModal] = useState(false);
+  const [impersonatingCompanyId, setImpersonatingCompanyId] = useState<string | null>(null);
+
+  // Filter and Search States
+  const [searchQuery, setSearchQuery] = useState('');
+  const [statusFilter, setStatusFilter] = useState<string>('ALL');
+  const [planFilter, setPlanFilter] = useState<string>('ALL');
+  const [sortBy, setSortBy] = useState<'name' | 'createdAt' | 'driverLimit'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [showFilters, setShowFilters] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     driverLimit: 50,
@@ -43,10 +59,71 @@ export default function CompaniesPage() {
     driverLimit: 50,
     status: 'ACTIVE' as 'ACTIVE' | 'INACTIVE' | 'SUSPENDED'
   });
+  const [showPassword, setShowPassword] = useState(false);
+  const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'warning' | 'info' } | null>(null);
 
   useEffect(() => {
     loadCompanies();
   }, []);
+
+  // Apply filters, search, and sorting whenever they change
+  useEffect(() => {
+    let result = [...companies];
+
+    // Search filter
+    if (searchQuery) {
+      const query = searchQuery.toLowerCase();
+      result = result.filter(company =>
+        company.name.toLowerCase().includes(query) ||
+        company._id.toLowerCase().includes(query)
+      );
+    }
+
+    // Status filter
+    if (statusFilter !== 'ALL') {
+      result = result.filter(company => company.status === statusFilter);
+    }
+
+    // Plan filter
+    if (planFilter !== 'ALL') {
+      result = result.filter(company => company.plan === planFilter);
+    }
+
+    // Sorting
+    result.sort((a, b) => {
+      let comparison = 0;
+
+      switch (sortBy) {
+        case 'name':
+          comparison = a.name.localeCompare(b.name);
+          break;
+        case 'createdAt':
+          comparison = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+          break;
+        case 'driverLimit':
+          comparison = a.driverLimit - b.driverLimit;
+          break;
+      }
+
+      return sortOrder === 'asc' ? comparison : -comparison;
+    });
+
+    setFilteredCompanies(result);
+  }, [companies, searchQuery, statusFilter, planFilter, sortBy, sortOrder]);
+
+  const clearFilters = () => {
+    setSearchQuery('');
+    setStatusFilter('ALL');
+    setPlanFilter('ALL');
+    setSortBy('name');
+    setSortOrder('asc');
+  };
+
+  const activeFilterCount = [
+    searchQuery,
+    statusFilter !== 'ALL' ? statusFilter : null,
+    planFilter !== 'ALL' ? planFilter : null,
+  ].filter(Boolean).length;
 
   const loadCompanies = async () => {
     try {
@@ -55,10 +132,18 @@ export default function CompaniesPage() {
         // API returns paginated response: { data: Company[], pagination: {...} }
         setCompanies(response.data.data.data || []);
       } else {
-        setError(response.data.message || 'Failed to load companies');
+        setToast({
+          message: response.data.message || 'Failed to load companies',
+          type: 'error'
+        });
       }
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to load companies');
+      const errorMessage = err.response?.data?.message || err.message || 'Failed to load companies';
+      console.error('Error loading companies:', err);
+      setToast({
+        message: errorMessage,
+        type: 'error'
+      });
     } finally {
       setLoading(false);
     }
@@ -67,46 +152,66 @@ export default function CompaniesPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitting(true);
+    setError(''); // Clear previous errors
 
     try {
-      // First create the company
-      const companyData = {
-        name: formData.name,
-        driverLimit: formData.driverLimit
-      };
-      
-      const companyResponse = await api.post('/companies', companyData);
-      if (!companyResponse.data.success) {
-        setError(companyResponse.data.message || 'Failed to create company');
-        return;
+      // First, check if the email already exists (optional check - if it fails, we continue)
+      try {
+        const emailCheckResponse = await usersApi.getUsers({ limit: 1000 });
+
+        if (emailCheckResponse.success && emailCheckResponse.data) {
+          const users = Array.isArray(emailCheckResponse.data)
+            ? emailCheckResponse.data
+            : emailCheckResponse.data.users || [];
+
+          const existingUser = users.find(
+            (user: any) => user.email.toLowerCase() === formData.adminEmail.toLowerCase()
+          );
+
+          if (existingUser) {
+            setToast({
+              message: `Email "${formData.adminEmail}" is already registered. Please use a different email.`,
+              type: 'error'
+            });
+            setSubmitting(false);
+            return;
+          }
+        }
+      } catch (checkError) {
+        // If email check fails, just log and continue - backend will validate
+        console.log('Email check failed, continuing with submission:', checkError);
       }
 
-      const createdCompany = companyResponse.data.data;
-
-      // Then create the admin user for this company
-      const adminData = {
-        name: formData.adminName,
-        email: formData.adminEmail,
-        password: formData.adminPassword,
-        role: 'ADMIN' as const,
-        companyId: createdCompany._id
+      // Use atomic endpoint to create company and admin together
+      const requestData = {
+        company: {
+          name: formData.name,
+          driverLimit: formData.driverLimit
+        },
+        admin: {
+          name: formData.adminName,
+          email: formData.adminEmail,
+          password: formData.adminPassword
+        }
       };
 
-      const adminResponse = await usersApi.createUser(adminData);
-      if (!adminResponse.success) {
-        // If admin creation fails, we should handle this gracefully
-        // The company was already created, so we inform the user
-        setError(`Company created successfully, but failed to create admin user: ${adminResponse.message || 'Unknown error'}`);
-        setCompanies(prev => [createdCompany, ...prev]);
-      } else {
+      const response = await api.post('/companies/create-with-admin', requestData);
+
+      if (response.data.success) {
+        const { company: createdCompany, admin: createdAdmin } = response.data.data;
+
         // Both company and admin created successfully
         setCompanies(prev => [createdCompany, ...prev]);
+        setToast({
+          message: `Company "${formData.name}" created successfully with admin user.`,
+          type: 'success'
+        });
         setError('');
       }
-      
+
       // Reset form and close modal
-      setFormData({ 
-        name: '', 
+      setFormData({
+        name: '',
         driverLimit: 50,
         adminName: '',
         adminEmail: '',
@@ -115,7 +220,53 @@ export default function CompaniesPage() {
       setShowAddModal(false);
 
     } catch (err: any) {
-      setError(err.response?.data?.message || err.message || 'Failed to create company');
+      console.error('Error creating company:', err);
+      console.error('Error response:', err.response);
+
+      // Extract the actual error message
+      let errorMessage = 'Failed to create company';
+
+      // Try to get the most specific error message
+      if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.response?.data?.error) {
+        errorMessage = err.response.data.error;
+      } else if (err.response?.data) {
+        // Sometimes the entire data object is the error message
+        errorMessage = typeof err.response.data === 'string'
+          ? err.response.data
+          : err.message || 'Failed to create company';
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+
+      // Make email-related errors more user-friendly
+      const lowerMessage = errorMessage.toLowerCase();
+
+      // Check for email-related errors
+      if (lowerMessage.includes('email')) {
+        if (lowerMessage.includes('exist') ||
+            lowerMessage.includes('already') ||
+            lowerMessage.includes('duplicate') ||
+            lowerMessage.includes('unique')) {
+          errorMessage = `Email "${formData.adminEmail}" is already registered. Please use a different email.`;
+        }
+      }
+
+      // Check for validation errors
+      if (lowerMessage === 'validation error' || lowerMessage.includes('validation')) {
+        errorMessage = `Email "${formData.adminEmail}" is already registered. Please use a different email.`;
+      }
+
+      // Check for generic server errors - likely email duplicate
+      if (lowerMessage.includes('internal server') || lowerMessage.includes('500')) {
+        errorMessage = `Email "${formData.adminEmail}" is already registered. Please use a different email.`;
+      }
+
+      setToast({
+        message: errorMessage,
+        type: 'error'
+      });
     } finally {
       setSubmitting(false);
     }
@@ -147,10 +298,10 @@ export default function CompaniesPage() {
       const response = await api.put(`/companies/${selectedCompany._id}`, editFormData);
       if (response.data.success) {
         // Update the company in the list
-        setCompanies(prev => prev.map(c => 
+        setCompanies(prev => prev.map(c =>
           c._id === selectedCompany._id ? { ...c, ...response.data.data } : c
         ));
-        
+
         // Close modal and reset
         setShowEditModal(false);
         setSelectedCompany(null);
@@ -162,6 +313,28 @@ export default function CompaniesPage() {
       setError(err.response?.data?.message || err.message || 'Failed to update company');
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleLoginAsAdmin = async (company: Company) => {
+    if (impersonatingCompanyId) return; // Prevent multiple clicks
+
+    setImpersonatingCompanyId(company._id);
+
+    try {
+      // Get admin token for this company
+      const response = await authApi.impersonateCompanyAdmin(company._id);
+
+      // Start impersonation with the complete admin data (user + tokens)
+      startImpersonation(company._id, company.name, {
+        user: response.user,
+        tokens: response.tokens,
+      });
+
+    } catch (err: any) {
+      console.error('Impersonation error:', err);
+      alert(err.message || 'Failed to login as admin. Please ensure the company has an active admin user.');
+      setImpersonatingCompanyId(null);
     }
   };
 
@@ -177,22 +350,6 @@ export default function CompaniesPage() {
     );
   }
 
-  if (error) {
-    return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6">
-          <div className="flex items-center">
-            <svg className="w-6 h-6 text-red-600 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <div>
-              <h3 className="text-sm font-medium text-red-800">Error Loading Companies</h3>
-              <p className="text-sm text-red-700 mt-1">{error}</p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'ACTIVE':
@@ -203,6 +360,19 @@ export default function CompaniesPage() {
         return 'danger';
       default:
         return 'secondary';
+    }
+  };
+
+  const getTranslatedStatus = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE':
+        return t('status.active');
+      case 'INACTIVE':
+        return t('status.inactive');
+      case 'SUSPENDED':
+        return t('status.suspended');
+      default:
+        return status;
     }
   };
 
@@ -346,21 +516,177 @@ export default function CompaniesPage() {
           </Card>
         </div>
 
+        {/* Search and Filters */}
+        <Card>
+          <CardContent className="p-6">
+            {/* Search Bar */}
+            <div className="flex flex-col md:flex-row gap-4 mb-4">
+              <div className="flex-1 relative">
+                <svg className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                </svg>
+                <input
+                  type="text"
+                  placeholder="Search by company name or ID..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                )}
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => setShowFilters(!showFilters)}
+                className="flex items-center space-x-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+                </svg>
+                <span>Filters</span>
+                {activeFilterCount > 0 && (
+                  <span className="ml-2 px-2 py-0.5 bg-primary-500 text-white text-xs rounded-full">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </Button>
+            </div>
+
+            {/* Filter Panel */}
+            {showFilters && (
+              <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Status Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
+                    <select
+                      value={statusFilter}
+                      onChange={(e) => setStatusFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="ALL">All Status</option>
+                      <option value="ACTIVE">Active</option>
+                      <option value="INACTIVE">Inactive</option>
+                      <option value="SUSPENDED">Suspended</option>
+                    </select>
+                  </div>
+
+                  {/* Plan Filter */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Plan</label>
+                    <select
+                      value={planFilter}
+                      onChange={(e) => setPlanFilter(e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                    >
+                      <option value="ALL">All Plans</option>
+                      <option value="STARTER">Starter</option>
+                      <option value="PROFESSIONAL">Professional</option>
+                      <option value="ENTERPRISE">Enterprise</option>
+                    </select>
+                  </div>
+
+                  {/* Sort By */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Sort By</label>
+                    <div className="flex gap-2">
+                      <select
+                        value={sortBy}
+                        onChange={(e) => setSortBy(e.target.value as 'name' | 'createdAt' | 'driverLimit')}
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                      >
+                        <option value="name">Name</option>
+                        <option value="createdAt">Date Created</option>
+                        <option value="driverLimit">Driver Limit</option>
+                      </select>
+                      <button
+                        onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                        className="px-3 py-2 border border-gray-300 rounded-lg hover:bg-gray-100 transition-colors"
+                        title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
+                      >
+                        {sortOrder === 'asc' ? (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
+                          </svg>
+                        ) : (
+                          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h9m5-4v12m0 0l-4-4m4 4l4-4" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Active Filters Display & Clear Button */}
+                {activeFilterCount > 0 && (
+                  <div className="mt-4 flex items-center justify-between">
+                    <div className="flex flex-wrap gap-2">
+                      {searchQuery && (
+                        <span className="px-3 py-1 bg-primary-100 text-primary-700 rounded-full text-sm flex items-center gap-2">
+                          Search: "{searchQuery}"
+                          <button onClick={() => setSearchQuery('')} className="hover:text-primary-900">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </span>
+                      )}
+                      {statusFilter !== 'ALL' && (
+                        <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-sm flex items-center gap-2">
+                          Status: {statusFilter}
+                          <button onClick={() => setStatusFilter('ALL')} className="hover:text-green-900">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </span>
+                      )}
+                      {planFilter !== 'ALL' && (
+                        <span className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm flex items-center gap-2">
+                          Plan: {planFilter}
+                          <button onClick={() => setPlanFilter('ALL')} className="hover:text-purple-900">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                          </button>
+                        </span>
+                      )}
+                    </div>
+                    <Button variant="outline" size="sm" onClick={clearFilters}>
+                      Clear All
+                    </Button>
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Results Count */}
+            <div className="mb-4 text-sm text-gray-600">
+              Showing <span className="font-semibold">{filteredCompanies.length}</span> of <span className="font-semibold">{companies.length}</span> companies
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Companies List */}
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center justify-between">
-              <span>All Companies</span>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm">Filter</Button>
-                <Button variant="outline" size="sm">Sort</Button>
-              </div>
+              <span>Companies</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {companies.length > 0 ? (
+            {filteredCompanies.length > 0 ? (
               <div className="space-y-4">
-                {companies.map((company) => (
+                {filteredCompanies.map((company) => (
                   <div key={company._id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors">
                     <div className="flex items-center space-x-4">
                       <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${getPlanColor(company.plan)}`}>
@@ -383,24 +709,56 @@ export default function CompaniesPage() {
                     <div className="flex items-center space-x-4">
                       <div className="text-right">
                         <Badge variant={getStatusColor(company.status)} className="mb-2">
-                          {company.status}
+                          {getTranslatedStatus(company.status)}
                         </Badge>
                         <Badge variant="default" className={`block ${getPlanColor(company.plan)}`}>
                           {company.plan}
                         </Badge>
                       </div>
                       
-                      <div className="flex space-x-2">
-                        <Link href={`/companies/${company._id}`}>
-                          <Button variant="outline" size="sm" title={`View data for company ID: ${company._id}`}>
-                            View Full Data
+                      <div className="flex flex-col space-y-2">
+                        <div className="flex space-x-2">
+                          <Link href={`/companies/${company._id}`}>
+                            <Button variant="outline" size="sm" title={`View data for company ID: ${company._id}`}>
+                              <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                              </svg>
+                              View Data
+                            </Button>
+                          </Link>
+                          <Button variant="outline" size="sm" onClick={() => handleViewCompany(company)}>
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                            </svg>
+                            Quick View
                           </Button>
-                        </Link>
-                        <Button variant="outline" size="sm" onClick={() => handleViewCompany(company)}>
-                          Quick View
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => handleEditCompany(company)}>
-                          Edit
+                          <Button variant="outline" size="sm" onClick={() => handleEditCompany(company)}>
+                            <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                            </svg>
+                            Edit
+                          </Button>
+                        </div>
+                        <Button
+                          className="w-full bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02]"
+                          size="sm"
+                          onClick={() => handleLoginAsAdmin(company)}
+                          disabled={impersonatingCompanyId === company._id || company.status !== 'ACTIVE'}
+                        >
+                          {impersonatingCompanyId === company._id ? (
+                            <>
+                              <Spinner size="sm" className="w-4 h-4 mr-2" />
+                              Logging in...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                              </svg>
+                              Login as Admin
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -409,15 +767,33 @@ export default function CompaniesPage() {
               </div>
             ) : (
               <div className="text-center py-12">
-                <div className="text-gray-400 text-6xl mb-4">🏢</div>
-                <h3 className="text-lg font-medium text-gray-900 mb-2">No companies found</h3>
-                <p className="text-gray-500 mb-6">Get started by adding your first company to the system.</p>
-                <Button onClick={() => setShowAddModal(true)}>
-                  <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                  </svg>
-                  Add First Company
-                </Button>
+                <div className="text-gray-400 text-6xl mb-4">
+                  {companies.length === 0 ? '🏢' : '🔍'}
+                </div>
+                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  {companies.length === 0 ? 'No companies found' : 'No matching companies'}
+                </h3>
+                <p className="text-gray-500 mb-6">
+                  {companies.length === 0
+                    ? 'Get started by adding your first company to the system.'
+                    : 'Try adjusting your filters or search query to find what you\'re looking for.'
+                  }
+                </p>
+                {companies.length === 0 ? (
+                  <Button onClick={() => setShowAddModal(true)}>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                    </svg>
+                    Add First Company
+                  </Button>
+                ) : (
+                  <Button variant="outline" onClick={clearFilters}>
+                    <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                    </svg>
+                    Clear Filters
+                  </Button>
+                )}
               </div>
             )}
           </CardContent>
@@ -514,15 +890,53 @@ export default function CompaniesPage() {
                       <label className="block text-sm font-medium text-gray-700 mb-1">
                         Admin Password
                       </label>
-                      <input
-                        type="password"
-                        required
-                        value={formData.adminPassword}
-                        onChange={(e) => setFormData(prev => ({ ...prev, adminPassword: e.target.value }))}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
-                        placeholder="Enter admin password"
-                        minLength={6}
-                      />
+                      <div className="flex gap-2">
+                        <div className="relative flex-1">
+                          <input
+                            type={showPassword ? "text" : "password"}
+                            required
+                            value={formData.adminPassword}
+                            onChange={(e) => setFormData(prev => ({ ...prev, adminPassword: e.target.value }))}
+                            className="w-full px-3 py-2 pr-10 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                            placeholder="Enter admin password"
+                            minLength={6}
+                          />
+                          <button
+                            type="button"
+                            onClick={() => setShowPassword(!showPassword)}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                          >
+                            {showPassword ? (
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                              </svg>
+                            ) : (
+                              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                              </svg>
+                            )}
+                          </button>
+                        </div>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          onClick={() => {
+                            // Generate simple, easy password: Word + Number (e.g., Apple123, Blue456)
+                            const words = ['Apple', 'Blue', 'Green', 'Red', 'Sun', 'Moon', 'Star', 'Cloud', 'Rain', 'Wind'];
+                            const randomWord = words[Math.floor(Math.random() * words.length)];
+                            const randomNum = Math.floor(100 + Math.random() * 900); // 3-digit number
+                            const password = randomWord + randomNum;
+                            setFormData(prev => ({ ...prev, adminPassword: password }));
+                          }}
+                          className="whitespace-nowrap"
+                        >
+                          <svg className="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Generate
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -603,7 +1017,7 @@ export default function CompaniesPage() {
                     Status
                   </label>
                   <Badge variant={getStatusColor(selectedCompany.status)}>
-                    {selectedCompany.status}
+                    {getTranslatedStatus(selectedCompany.status)}
                   </Badge>
                 </div>
 
@@ -771,6 +1185,15 @@ export default function CompaniesPage() {
             </div>
           </div>
         )}
+
+      {/* Toast Notifications */}
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       </div>
   );
 }

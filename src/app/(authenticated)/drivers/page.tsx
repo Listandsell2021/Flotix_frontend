@@ -19,6 +19,20 @@ interface UserWithVehicle extends Omit<User, 'assignedVehicleId'> {
 export default function DriversPage() {
   const { t } = useTranslation('users');
   const router = useRouter();
+
+  // Helper function to translate status
+  const getTranslatedStatus = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE':
+        return t('filters.active');
+      case 'INACTIVE':
+        return t('filters.inactive');
+      case 'SUSPENDED':
+        return t('filters.suspended');
+      default:
+        return status;
+    }
+  };
   const [drivers, setDrivers] = useState<UserWithVehicle[]>([]);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [loading, setLoading] = useState(true);
@@ -615,7 +629,7 @@ export default function DriversPage() {
                 )}
                 {statusFilter && (
                   <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-xs rounded-md">
-                    {t('search.statusLabel')} {statusFilter}
+                    {t('search.statusLabel')} {getTranslatedStatus(statusFilter)}
                     <button onClick={() => handleFilterChange('status', '')} className="ml-1 text-green-600 hover:text-green-800">
                       <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -697,7 +711,7 @@ export default function DriversPage() {
                     
                     <div className="flex items-center space-x-3">
                       <Badge variant={getStatusColor(driver.status)}>
-                        {driver.status}
+                        {getTranslatedStatus(driver.status)}
                       </Badge>
                       
                       <div className="flex space-x-2">

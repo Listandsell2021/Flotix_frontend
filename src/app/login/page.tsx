@@ -20,12 +20,16 @@ export default function LoginPage() {
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [maintenanceMessage, setMaintenanceMessage] = useState('');
   const [showPassword, setShowPassword] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError('');
+    setMaintenanceMode(false);
+    setMaintenanceMessage('');
 
     try {
       const response = await authApi.login(credentials);
@@ -53,7 +57,16 @@ export default function LoginPage() {
         setError('Web access is only available for Admin users');
       }
     } catch (err: any) {
-      setError(err.message || 'Login failed');
+      // Check if it's a maintenance mode error (503)
+      if (err.response?.status === 503 || err.response?.data?.maintenanceMode) {
+        setMaintenanceMode(true);
+        setMaintenanceMessage(
+          err.response?.data?.message ||
+          'The system is currently undergoing maintenance. Please check back soon.'
+        );
+      } else {
+        setError(err.message || 'Login failed');
+      }
     } finally {
       setLoading(false);
     }
@@ -93,7 +106,29 @@ export default function LoginPage() {
 
           <CardContent>
             <form className="space-y-6" onSubmit={handleSubmit}>
-              {error && (
+              {/* Maintenance Mode Message */}
+              {maintenanceMode && (
+                <div className="p-5 bg-yellow-50 border-2 border-yellow-400 rounded-xl flex items-start shadow-md">
+                  <svg className="w-6 h-6 text-yellow-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                  <div className="flex-1">
+                    <h3 className="text-base font-bold text-yellow-900 mb-2 flex items-center">
+                      <span className="mr-2">🚧</span>
+                      System Maintenance
+                    </h3>
+                    <p className="text-sm text-yellow-800 leading-relaxed">
+                      {maintenanceMessage}
+                    </p>
+                    <p className="text-xs text-yellow-700 mt-2 italic">
+                      Super Admins can still access the system during maintenance.
+                    </p>
+                  </div>
+                </div>
+              )}
+
+              {/* Regular Error Message */}
+              {error && !maintenanceMode && (
                 <div className="p-4 bg-red-50 border border-red-200 rounded-lg flex items-start">
                   <svg className="w-5 h-5 text-red-600 mr-3 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -103,7 +138,7 @@ export default function LoginPage() {
                       {t('auth.loginFailed')}
                     </h3>
                     <p className="text-sm text-red-700">
-                      {t('auth.wrongEmailPassword')}
+                      {error}
                     </p>
                   </div>
                 </div>

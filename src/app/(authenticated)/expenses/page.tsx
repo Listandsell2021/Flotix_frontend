@@ -2195,8 +2195,8 @@ export default function ExpensesPage() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  <p className="text-primary-600 font-medium">Creating expense...</p>
-                  <p className="text-sm text-gray-500 mt-1">Please wait while we process your request</p>
+                  <p className="text-primary-600 font-medium">{t("modal.creatingExpense")}</p>
+                  <p className="text-sm text-gray-500 mt-1">{t("modal.pleaseWait")}</p>
                 </div>
               </div>
             )}
@@ -2306,8 +2306,8 @@ export default function ExpensesPage() {
                             </button>
                           ))}
                           <div className="px-3 py-2 text-xs text-gray-500 border-t bg-gray-50">
-                            Found {drivers.length} driver{drivers.length !== 1 ? "s" : ""}
-                            {driverSearchQuery && ` matching "${driverSearchQuery}"`}
+                            {t("modal.foundDrivers", { count: drivers.length, plural: drivers.length !== 1 ? "s" : "" })}
+                            {driverSearchQuery && t("modal.matchingDrivers", { query: driverSearchQuery })}
                           </div>
                         </>
                       ) : (
@@ -2372,7 +2372,7 @@ export default function ExpensesPage() {
                   {/* Receipt Upload */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Receipt Image (Optional)
+                      {t("modal.receiptOptional")}
                       {ocrProcessing && (
                         <span className="ml-2 inline-flex items-center text-blue-600 text-sm">
                           <svg
@@ -2395,7 +2395,7 @@ export default function ExpensesPage() {
                               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                             />
                           </svg>
-                          Processing with OCR...
+                          {t("modal.processingOcr")}
                         </span>
                       )}
                     </label>
@@ -2575,7 +2575,7 @@ export default function ExpensesPage() {
 
                     <div>
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Odometer Reading
+                        {t("modal.odometerReading")}
                       </label>
                       {selectedDriverVehicle && (
                         <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
@@ -2615,7 +2615,7 @@ export default function ExpensesPage() {
 
                     <div className="md:col-span-2">
                       <label className="block text-sm font-medium text-gray-700 mb-2">
-                        Notes
+                        {t("modal.notes")}
                       </label>
                       <textarea
                         value={addFormData.notes}

@@ -88,7 +88,7 @@ export default function UserManagement() {
 
       if (usersResponse.data.success) {
         const allUsers = usersResponse.data.data?.data || [];
-        // Filter out ADMIN and SUPER_ADMIN - show only company-level users
+        // Filter out ADMIN and SUPER_ADMIN - User Management is only for company-level users
         const companyLevelUsers = allUsers.filter((user: User) =>
           user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN'
         );
@@ -98,22 +98,44 @@ export default function UserManagement() {
       if (rolesResponse.data.success) {
         // The response might be in different formats, let's handle both
         const responseData = rolesResponse.data.data;
+        console.log("Raw roles response:", rolesResponse.data);
+        console.log("Response data structure:", responseData);
 
         let allRoles: Role[] = [];
 
         // Check if it's directly an array or has a data property
         if (Array.isArray(responseData)) {
           allRoles = responseData;
+          console.log("Roles are directly an array");
         } else if (responseData && Array.isArray(responseData.data)) {
           allRoles = responseData.data;
+          console.log("Roles are in responseData.data");
         } else if (responseData) {
           // It might be a single object, convert to array
           allRoles = [responseData];
+          console.log("Single role object, converted to array");
         }
+
+        // Debug: Log all roles to see what's coming from the backend
+        console.log("All roles from backend:", allRoles);
+        console.log(
+          "Role details:",
+          allRoles.map((r: Role) => ({
+            name: r.name,
+            displayName: r.displayName,
+            isSystem: r.isSystem,
+            companyId: r.companyId,
+          }))
+        );
 
         // IMPORTANT: Only show CUSTOM roles (non-system roles) for assignment
         // System roles are assigned directly when creating the user, not through assign-multiple
         let customRoles = allRoles.filter((role: Role) => !role.isSystem);
+        console.log(
+          "After filtering for custom (non-system) roles:",
+          customRoles.length,
+          "roles"
+        );
 
         // Re-enable company filtering for custom roles
         // Further filter by company if not Super Admin
@@ -128,6 +150,22 @@ export default function UserManagement() {
                 currentUserResponse.companyId.id
               : currentUserResponse.companyId;
 
+          console.log(
+            "User companyId:",
+            userCompanyId,
+            "Type:",
+            typeof currentUserResponse.companyId
+          );
+          console.log(
+            "Comparing with role companyIds:",
+            customRoles.map((r) => ({
+              name: r.name,
+              displayName: r.displayName,
+              companyId: r.companyId,
+              companyIdType: typeof r.companyId,
+            }))
+          );
+
           // Filter custom roles by company
           customRoles = customRoles.filter((role: Role) => {
             // Custom roles should have a companyId
@@ -139,8 +177,16 @@ export default function UserManagement() {
                 : role.companyId;
             return roleCompanyId === userCompanyId;
           });
+          console.log(
+            `After company filter (companyId: ${userCompanyId}):`,
+            customRoles.length,
+            "roles (was",
+            beforeCompanyFilter,
+            ")"
+          );
         }
 
+        console.log("Custom roles available for assignment:", customRoles);
         setRoles(customRoles);
       }
 

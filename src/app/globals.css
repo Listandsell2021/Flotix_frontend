@@ -147,10 +147,10 @@ body {
 /* Glow Animation */
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 20px rgba(51, 100, 137, 0.3);
   }
   50% {
-    box-shadow: 0 0 40px rgba(59, 130, 246, 0.6);
+    box-shadow: 0 0 40px rgba(51, 100, 137, 0.6);
   }
 }
 
@@ -214,15 +214,15 @@ body {
 @keyframes pulseEnhanced {
   0% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7);
+    box-shadow: 0 0 0 0 rgba(51, 100, 137, 0.7);
   }
   70% {
     transform: scale(1.05);
-    box-shadow: 0 0 0 20px rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 20px rgba(51, 100, 137, 0);
   }
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(59, 130, 246, 0);
+    box-shadow: 0 0 0 0 rgba(51, 100, 137, 0);
   }
 }
 
@@ -466,7 +466,7 @@ body {
 }
 
 .hover-glow:hover {
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.6);
+  box-shadow: 0 0 30px rgba(51, 100, 137, 0.6);
   transform: scale(1.05);
 }
 
@@ -494,10 +494,10 @@ body {
 .gradient-text {
   background: linear-gradient(
     45deg,
-    #3b82f6,
-    #8b5cf6,
-    #06b6d4,
-    #3b82f6
+    #336489,
+    #6890b4,
+    #2d5778,
+    #336489
   );
   background-size: 300% 300%;
   -webkit-background-clip: text;
@@ -544,7 +544,7 @@ html {
 
 /* Professional Box Shadows */
 .shadow-glow-blue {
-  box-shadow: 0 0 30px rgba(59, 130, 246, 0.3);
+  box-shadow: 0 0 30px rgba(51, 100, 137, 0.3);
 }
 
 .shadow-glow-purple {
@@ -558,7 +558,7 @@ html {
 /* Professional Borders */
 .border-gradient {
   position: relative;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6);
+  background: linear-gradient(45deg, #336489, #6890b4);
   border-radius: 12px;
   padding: 2px;
 }

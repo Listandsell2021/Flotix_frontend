@@ -1,11 +1,11 @@
 {
   "title": {
-    "superAdmin": "Admin Management",
-    "default": "User Management"
+    "superAdmin": "Company Users",
+    "default": "Company Users"
   },
   "subtitle": {
-    "superAdmin": "Manage company administrators and assign roles",
-    "default": "Manage company users and assign roles to control access"
+    "superAdmin": "Manage all company users and assign roles",
+    "default": "Manage all company users and assign roles to control access"
   },
   "buttons": {
     "refresh": "Refresh data",

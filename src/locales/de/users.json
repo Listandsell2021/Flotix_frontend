@@ -203,5 +203,39 @@
     "unableToLoadReceipt": "Belegbild kann nicht geladen werden",
     "imageMayBeDeleted": "Das Bild wurde möglicherweise verschoben oder gelöscht",
     "na": "N/V"
+  },
+  "systemUsers": "Systembenutzer",
+  "systemUsersDescription": "Super Admins und Company Admins verwalten",
+  "addSystemUser": "Systembenutzer hinzufügen",
+  "totalSystemUsers": "Systembenutzer gesamt",
+  "superAdmins": "Super Admins",
+  "companyAdmins": "Unternehmensadministratoren",
+  "systemUsersList": "Systembenutzer-Liste",
+  "noSystemUsers": "Keine Systembenutzer gefunden",
+  "superAdmin": "Super Admin",
+  "admin": "Administrator",
+  "editUser": "Benutzer bearbeiten",
+  "newPassword": "Neues Passwort",
+  "leaveBlankToKeep": "Leer lassen, um das aktuelle Passwort beizubehalten",
+  "selectCompany": "Unternehmen auswählen",
+  "confirmDeactivate": "Möchten Sie {{name}} wirklich deaktivieren?",
+  "confirmDelete": "Möchten Sie {{name}} wirklich dauerhaft löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+  "success": {
+    "userCreated": "Benutzer {{name}} erfolgreich erstellt",
+    "userUpdated": "Benutzer {{name}} erfolgreich aktualisiert",
+    "userDeactivated": "Benutzer {{name}} erfolgreich deaktiviert",
+    "userDeleted": "Benutzer {{name}} erfolgreich gelöscht"
+  },
+  "errors": {
+    "companyRequired": "Bitte wählen Sie ein Unternehmen für Admin-Benutzer aus",
+    "createFailed": "Fehler beim Erstellen des Benutzers",
+    "updateFailed": "Fehler beim Aktualisieren des Benutzers",
+    "deactivateFailed": "Fehler beim Deaktivieren des Benutzers",
+    "deleteFailed": "Fehler beim Löschen des Benutzers",
+    "errorLoadingDrivers": "Fehler beim Laden der Fahrer",
+    "failedToLoadDrivers": "Fehler beim Laden der Fahrer",
+    "failedToCreateDriver": "Fehler beim Erstellen des Fahrers",
+    "failedToUpdateDriver": "Fehler beim Aktualisieren des Fahrers",
+    "failedToDeleteDriver": "Fehler beim Löschen des Fahrers"
   }
 }

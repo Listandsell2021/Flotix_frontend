@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
 import Badge from '@/components/ui/Badge';
 import { formatCurrency } from '@/lib/utils';
-import { useTranslation } from 'react-i18next';
 
 interface Expense {
   id: string;
@@ -23,24 +22,22 @@ interface RecentExpensesProps {
 }
 
 const RecentExpenses: React.FC<RecentExpensesProps> = ({ expenses, loading, totalExpenses }) => {
-  const { t } = useTranslation('dashboard');
-
   const getTypeIcon = (type: string) => {
     return type === 'FUEL' ? '⛽' : '📄';
   };
 
   const getStatusBadge = (status: string) => {
     if (!status) return null;
-
+    
     const variants = {
       approved: 'success' as const,
       pending: 'warning' as const,
       rejected: 'danger' as const,
     };
-
+    
     return (
       <Badge variant={variants[status as keyof typeof variants] || 'secondary'} size="sm">
-        {t(`recentExpenses.${status}`)}
+        {status.charAt(0).toUpperCase() + status.slice(1)}
       </Badge>
     );
   };
@@ -56,7 +53,7 @@ const RecentExpenses: React.FC<RecentExpensesProps> = ({ expenses, loading, tota
     return (
       <Card>
         <CardHeader>
-          <CardTitle>{t('recentExpenses.title')}</CardTitle>
+          <CardTitle>Recent Expenses</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
@@ -84,12 +81,12 @@ const RecentExpenses: React.FC<RecentExpensesProps> = ({ expenses, loading, tota
             <svg className="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
             </svg>
-            {t('recentExpenses.title')}
+            Recent Expenses
           </div>
           {expenses.length > 0 && (
             <div className="flex items-center space-x-2">
               <span className="text-xs font-medium text-secondary-500">
-                {t('recentExpenses.showing')} {expenses.length} {totalExpenses ? `${t('recentExpenses.of')} ${totalExpenses}` : t('recentExpenses.recent')}
+                Showing {expenses.length} {totalExpenses ? `of ${totalExpenses}` : 'recent'}
               </span>
               {totalExpenses && totalExpenses > expenses.length && (
                 <div className="w-2 h-2 bg-primary-500 rounded-full animate-pulse"></div>
@@ -104,13 +101,13 @@ const RecentExpenses: React.FC<RecentExpensesProps> = ({ expenses, loading, tota
             <div className="w-16 h-16 bg-gradient-to-br from-secondary-100 to-secondary-50 rounded-2xl flex items-center justify-center mx-auto mb-4 animate-bounce-gentle shadow-soft">
               <div className="text-2xl animate-float">📄</div>
             </div>
-            <p className="text-secondary-600 font-medium mb-2">{t('recentExpenses.noExpenses')}</p>
-            <p className="text-secondary-500 text-sm">{t('recentExpenses.noExpensesDescription')}</p>
+            <p className="text-secondary-600 font-medium mb-2">No recent expenses</p>
+            <p className="text-secondary-500 text-sm">Expense receipts will appear here</p>
             <button className="mt-4 inline-flex items-center px-4 py-2 bg-primary-500 text-white text-sm font-medium rounded-lg hover:bg-primary-600 transition-all duration-300 hover:scale-105 shadow-soft hover:shadow-glow">
               <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
-              {t('recentExpenses.addExpense')}
+              Add Expense
             </button>
           </div>
         ) : (
@@ -176,10 +173,10 @@ const RecentExpenses: React.FC<RecentExpensesProps> = ({ expenses, loading, tota
                 </div>
                 <div className="text-left">
                   <p className="text-sm font-semibold text-primary-700 group-hover:text-primary-800 transition-colors duration-300">
-                    {t('recentExpenses.viewAll')}
+                    View All Expenses
                   </p>
                   <p className="text-xs text-primary-600 group-hover:text-primary-700 transition-colors duration-300">
-                    {totalExpenses} {t('recentExpenses.expensesTotal')}
+                    {totalExpenses} expenses total
                   </p>
                 </div>
                 <svg className="w-4 h-4 text-primary-500 group-hover:text-primary-600 group-hover:translate-x-1 transition-all duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">

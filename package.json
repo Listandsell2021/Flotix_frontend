@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
     "axios": "^1.6.2",
+    "chart.js": "^4.5.0",
     "clsx": "^2.0.0",
     "date-fns": "^2.30.0",
     "i18next": "^25.5.2",

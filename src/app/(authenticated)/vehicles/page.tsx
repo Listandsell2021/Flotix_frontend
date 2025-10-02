@@ -39,6 +39,20 @@ interface VehicleWithDriver
 export default function VehiclesPage() {
   const { t } = useTranslation(["vehicles", "common"]);
   const toast = useToast();
+
+  // Helper function to translate status
+  const getTranslatedStatus = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE':
+        return t('vehicles:status.active');
+      case 'INACTIVE':
+        return t('vehicles:status.inactive');
+      case 'MAINTENANCE':
+        return t('vehicles:status.maintenance');
+      default:
+        return status;
+    }
+  };
   const [vehicles, setVehicles] = useState<VehicleWithDriver[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -456,7 +470,7 @@ export default function VehiclesPage() {
                   <div className="flex items-center space-x-4">
                     <div className="text-right">
                       <Badge variant={getStatusColor(vehicle.status)}>
-                        {vehicle.status}
+                        {getTranslatedStatus(vehicle.status)}
                       </Badge>
                       {(() => {
                         // Check if we have populated assignedDriverIds

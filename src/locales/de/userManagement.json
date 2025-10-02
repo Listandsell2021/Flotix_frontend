@@ -1,11 +1,11 @@
 {
   "title": {
-    "superAdmin": "Admin-Verwaltung",
-    "default": "Benutzerverwaltung"
+    "superAdmin": "Unternehmensbenutzer",
+    "default": "Unternehmensbenutzer"
   },
   "subtitle": {
-    "superAdmin": "Verwalten Sie Unternehmensadministratoren und weisen Sie Rollen zu",
-    "default": "Verwalten Sie Benutzer und weisen Sie Rollen zu, um den Zugriff zu steuern"
+    "superAdmin": "Verwalten Sie alle Unternehmensbenutzer und weisen Sie Rollen zu",
+    "default": "Verwalten Sie alle Unternehmensbenutzer und weisen Sie Rollen zu, um den Zugriff zu steuern"
   },
   "buttons": {
     "refresh": "Daten aktualisieren",

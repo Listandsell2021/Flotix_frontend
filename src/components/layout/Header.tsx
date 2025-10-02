@@ -10,6 +10,7 @@ import Button from '@/components/ui/Button';
 import { cn } from '@/lib/utils';
 import LanguageSwitcher from '@/components/LanguageSwitcher';
 import { useTranslation } from 'react-i18next';
+import { useImpersonation } from '@/contexts/ImpersonationContext';
 
 interface HeaderProps {
   user?: {
@@ -24,6 +25,7 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ user, onMenuToggle, isMobileMenuOpen }) => {
   const { t } = useTranslation(['common', 'audit']);
   const router = useRouter();
+  const { isImpersonating, impersonatedCompany, originalUser, endImpersonation } = useImpersonation();
   const [showDropdown, setShowDropdown] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -57,9 +59,52 @@ const Header: React.FC<HeaderProps> = ({ user, onMenuToggle, isMobileMenuOpen })
   };
 
   return (
-    <header className="layout-stable fixed top-0 right-0 left-0 lg:left-64 z-30 bg-white/85 backdrop-blur-xl border-b border-secondary-200/50 shadow-soft">
-      <div className="px-4 sm:px-6 lg:px-8">
-        <div className="flex justify-between items-center h-16">
+    <>
+      {/* Impersonation Banner */}
+      {isImpersonating && impersonatedCompany && originalUser && (
+        <div className="layout-stable fixed top-0 right-0 left-0 lg:left-64 z-50 bg-gradient-to-r from-amber-500 via-orange-500 to-red-500 text-white shadow-2xl">
+          <div className="px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center justify-between h-14">
+              <div className="flex items-center space-x-3 flex-1">
+                <div className="flex items-center justify-center w-10 h-10 bg-white/20 rounded-lg backdrop-blur-sm">
+                  <svg className="w-6 h-6 text-white animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                  </svg>
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center space-x-2">
+                    <span className="font-bold text-sm sm:text-base">Super Admin Mode</span>
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                  <p className="text-xs sm:text-sm opacity-90">
+                    Viewing as Admin of <span className="font-semibold">{impersonatedCompany.name}</span>
+                  </p>
+                </div>
+              </div>
+              <Button
+                onClick={endImpersonation}
+                className="bg-white/20 hover:bg-white/30 backdrop-blur-sm text-white border-2 border-white/40 hover:border-white/60 shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                size="sm"
+              >
+                <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                </svg>
+                <span className="hidden sm:inline">Return to Super Admin</span>
+                <span className="sm:hidden">Return</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <header className={cn(
+        "layout-stable fixed right-0 left-0 lg:left-64 z-30 bg-white/85 backdrop-blur-xl border-b border-secondary-200/50 shadow-soft",
+        isImpersonating ? "top-14" : "top-0"
+      )}>
+        <div className="px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
           {/* Mobile Menu Toggle and Logo */}
           <div className="flex items-center">
             {/* Mobile Menu Toggle */}
@@ -263,8 +308,9 @@ const Header: React.FC<HeaderProps> = ({ user, onMenuToggle, isMobileMenuOpen })
           </div>
         </div>
       </div>
-    
+
     </header>
+    </>
   );
 };
 

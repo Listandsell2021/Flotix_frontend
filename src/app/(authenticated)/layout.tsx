@@ -6,6 +6,7 @@ import Header from '@/components/layout/Header';
 import Sidebar, { adminSidebarItems, superAdminSidebarItems } from '@/components/layout/Sidebar';
 import MobileMenu from '@/components/layout/MobileMenu';
 import { authApi } from '@/lib/api';
+import { ImpersonationProvider, useImpersonation } from '@/contexts/ImpersonationContext';
 
 interface User {
   name: string;
@@ -13,13 +14,10 @@ interface User {
   role: string;
 }
 
-export default function AuthenticatedLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+function LayoutContent({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const pathname = usePathname();
+  const { isImpersonating } = useImpersonation();
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -91,7 +89,7 @@ export default function AuthenticatedLayout({
         />
 
         {/* Main Content */}
-        <main className="flex-1 lg:ml-64 pt-16" style={{ minHeight: '100vh' }}>
+        <main className={`flex-1 lg:ml-64 ${isImpersonating ? 'pt-[7.5rem]' : 'pt-16'}`} style={{ minHeight: '100vh' }}>
           <div className="p-4 sm:p-6 lg:p-8 h-full">
             <div className="max-w-7xl mx-auto" style={{ minHeight: 'calc(100vh - 10rem)' }}>
               {children}
@@ -100,5 +98,17 @@ export default function AuthenticatedLayout({
         </main>
       </div>
     </div>
+  );
+}
+
+export default function AuthenticatedLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <ImpersonationProvider>
+      <LayoutContent>{children}</LayoutContent>
+    </ImpersonationProvider>
   );
 }
