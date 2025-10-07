@@ -6,6 +6,7 @@
   "exporting": "Exportiere...",
   "filters": {
     "search": "Suche nach Händler, Fahrer, Typ oder Kategorie...",
+    "dateRange": "Datumsbereich auswählen",
     "fromDate": "Von Datum",
     "toDate": "Bis Datum",
     "clear": "Löschen",

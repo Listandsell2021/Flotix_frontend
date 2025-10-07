@@ -327,6 +327,12 @@ export const vehiclesApi = {
     const response = await api.post(`/vehicles/${id}/unassign`);
     return response.data;
   },
+
+  // Get vehicle by driver ID
+  getVehicleByDriver: async (driverId: string) => {
+    const response = await api.get(`/users/${driverId}`);
+    return response.data;
+  },
 };
 
 export const rolesApi = {

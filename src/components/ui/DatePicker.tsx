@@ -354,6 +354,23 @@ const DatePicker: React.FC<DatePickerProps> = ({
         )}
 
         <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+            <div className="w-10 h-10 bg-gradient-to-br from-primary-500 to-primary-600 rounded-lg flex items-center justify-center shadow-sm">
+              <svg
+                className="w-5 h-5 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                />
+              </svg>
+            </div>
+          </div>
           <input
             ref={inputRef}
             type="text"
@@ -362,29 +379,16 @@ const DatePicker: React.FC<DatePickerProps> = ({
             placeholder={placeholder || (mode === 'single' ? 'Select date' : 'Select date range')}
             onClick={() => !disabled && setIsOpen(!isOpen)}
             className={`
-              w-full px-3 py-2 pr-10 border border-gray-200 rounded-lg
-              focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500
-              cursor-pointer bg-white
-              ${disabled ? 'bg-gray-100 cursor-not-allowed' : ''}
+              w-full pl-[4.5rem] pr-4 py-4 text-base font-medium
+              bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl
+              focus:outline-none focus:bg-white focus:ring-2 focus:ring-primary-500 focus:border-primary-500
+              cursor-pointer shadow-sm hover:shadow hover:border-gray-300
+              transition-all placeholder:text-gray-400
+              ${disabled ? 'bg-gray-100 cursor-not-allowed opacity-50' : ''}
               ${className}
             `}
             disabled={disabled}
           />
-          <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
-            <svg
-              className="w-5 h-5 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-          </div>
         </div>
       </div>
 

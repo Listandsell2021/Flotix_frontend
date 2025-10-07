@@ -6,6 +6,7 @@
   "exporting": "Exporting...",
   "filters": {
     "search": "Search by merchant, driver, type, or category...",
+    "dateRange": "Select date range",
     "fromDate": "From Date",
     "toDate": "To Date",
     "clear": "Clear",
