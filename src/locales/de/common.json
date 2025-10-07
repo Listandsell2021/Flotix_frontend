@@ -38,6 +38,9 @@
     "creating": "Erstelle...",
     "updating": "Aktualisiere..."
   },
+  "form": {
+    "optional": "(Optional)"
+  },
   "name": "Name",
   "email": "E-Mail",
   "password": "Passwort",

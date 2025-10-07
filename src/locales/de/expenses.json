@@ -23,7 +23,11 @@
     "totalExpenses": "Gesamte Ausgaben",
     "totalAmount": "Gesamtbetrag",
     "fuelExpenses": "Kraftstoffausgaben",
-    "miscExpenses": "Sonstige Ausgaben"
+    "miscExpenses": "Sonstige Ausgaben",
+    "count": "Anzahl",
+    "totalValue": "Gesamtwert",
+    "fuelCategory": "Kraftstoff-Kategorie",
+    "miscCategory": "Sonstige Kategorie"
   },
   "table": {
     "allExpenses": "Alle Ausgaben",
@@ -87,7 +91,18 @@
     "close": "Schließen",
     "saveChanges": "Änderungen speichern",
     "cancel": "Abbrechen",
+    "requiredFields": "Pflichtfelder",
     "selectDriver": "Fahrer auswählen",
+    "selectDriverTitle": "Fahrer auswählen",
+    "selectDriverSubtitle": "Wählen Sie den Fahrer für diese Ausgabe",
+    "stepDriver": "Fahrer",
+    "stepDetails": "Details",
+    "stepReview": "Überprüfen",
+    "changeDriver": "Ändern",
+    "current": "Aktuell",
+    "uploadReceipt": "Beleg hochladen",
+    "changeReceipt": "Beleg ändern",
+    "back": "Zurück",
     "required": "*",
     "searchDrivers": "Fahrer nach Name oder E-Mail suchen...",
     "chooseDriver": "Wählen Sie einen Fahrer...",
@@ -147,10 +162,13 @@
     "noCategorySet": "Keine Kategorie festgelegt",
     "noKilometersRecorded": "Keine Kilometer erfasst",
     "noNotes": "Keine Notizen",
-    "current": "Aktuell"
+    "current": "Aktuell",
+    "additionalDetails": "Zusätzliche Details",
+    "editable": "Bearbeitbar"
   },
   "errors": {
     "updateFailed": "Fehler beim Aktualisieren der Ausgabe",
+    "updateSuccess": "Ausgabe erfolgreich aktualisiert!",
     "createFailed": "Fehler beim Erstellen der Ausgabe",
     "expenseCreatedSuccess": "Ausgabe erfolgreich erstellt!",
     "exportFailed": "Fehler beim Exportieren der Ausgaben",

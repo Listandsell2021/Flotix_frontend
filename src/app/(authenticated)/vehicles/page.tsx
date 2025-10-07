@@ -181,7 +181,7 @@ export default function VehiclesPage() {
   };
 
   const handleCreateVehicle = async () => {
-    if (!formData.make || !formData.model || !formData.licensePlate) {
+    if (!formData.make || !formData.model || !formData.licensePlate || formData.currentOdometer === undefined || formData.currentOdometer === null) {
       toast.warning(t("common:alerts.fillRequiredFields"));
       return;
     }
@@ -786,7 +786,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.year")} <span className="text-red-500">*</span>
+                  {t("form.year")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="number"
@@ -801,7 +801,6 @@ export default function VehiclesPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
                   min="1900"
                   max={new Date().getFullYear() + 1}
-                  required
                 />
               </div>
 
@@ -825,7 +824,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.vin")}
+                  {t("form.vin")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="text"
@@ -843,7 +842,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.type")} <span className="text-red-500">*</span>
+                  {t("form.type")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <select
                   value={formData.type}
@@ -854,7 +853,6 @@ export default function VehiclesPage() {
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500"
-                  required
                 >
                   <option value="CAR">{t("vehicleTypes.CAR")}</option>
                   <option value="TRUCK">{t("vehicleTypes.TRUCK")}</option>
@@ -884,7 +882,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.fuelType")}
+                  {t("form.fuelType")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="text"
@@ -899,7 +897,7 @@ export default function VehiclesPage() {
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.color")}
+                  {t("form.color")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="text"
@@ -1162,7 +1160,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.year")} <span className="text-red-500">*</span>
+                  {t("form.year")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="number"
@@ -1177,7 +1175,6 @@ export default function VehiclesPage() {
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   min="1900"
                   max={new Date().getFullYear() + 1}
-                  required
                 />
               </div>
 
@@ -1202,7 +1199,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.vin")}
+                  {t("form.vin")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="text"
@@ -1221,7 +1218,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.type")} <span className="text-red-500">*</span>
+                  {t("form.type")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <select
                   value={formData.type}
@@ -1232,7 +1229,6 @@ export default function VehiclesPage() {
                     })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  required
                 >
                   <option value="CAR">{t("vehicleTypes.CAR")}</option>
                   <option value="TRUCK">{t("vehicleTypes.TRUCK")}</option>
@@ -1263,7 +1259,7 @@ export default function VehiclesPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.fuelType")}
+                  {t("form.fuelType")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="text"
@@ -1278,7 +1274,7 @@ export default function VehiclesPage() {
 
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  {t("form.color")}
+                  {t("form.color")} <span className="text-gray-500 text-xs">{t("common:form.optional")}</span>
                 </label>
                 <input
                   type="text"

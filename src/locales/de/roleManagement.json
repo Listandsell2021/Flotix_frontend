@@ -83,10 +83,49 @@
     "forceDelete": "Möchten Sie diese Rolle zwangsweise löschen und alle Zuweisungen entfernen?"
   },
   "systemRoleDescriptions": {
-    "SYSTEM_SUPER_ADMIN": "Vollständiger Systemzugriff mit allen Berechtigungen",
-    "SYSTEM_ADMIN": "Unternehmensadministrator mit vollständigen Unternehmensverwaltungsberechtigungen",
-    "SYSTEM_MANAGER": "Fuhrparkmanager mit Fahrer- und Fahrzeugverwaltungsberechtigungen",
-    "SYSTEM_DRIVER": "Fahrer mit Ausgabenverwaltungsberechtigungen",
-    "SYSTEM_VIEWER": "Nur-Lese-Zugriff auf Flottendaten und Berichte"
+    "SYSTEM_SUPER_ADMIN": "Vollständiger Systemzugriff - verwaltet alle Unternehmen, Administratoren und Systemeinstellungen",
+    "SYSTEM_ADMIN": "Verwaltet Unternehmensvorgänge - Fahrer, Fahrzeuge und Ausgaben innerhalb ihres Unternehmens",
+    "SYSTEM_MANAGER": "Verwaltet Fahrzeuge und überwacht Fahrerausgaben",
+    "SYSTEM_DRIVER": "Mobile App-Zugriff - kann eigene Ausgaben erstellen und verwalten",
+    "SYSTEM_VIEWER": "Nur-Ansicht-Zugriff auf Berichte und Dashboards"
+  },
+  "systemRoleNames": {
+    "SYSTEM_SUPER_ADMIN": "Super-Administrator",
+    "SYSTEM_ADMIN": "Unternehmensadministrator",
+    "SYSTEM_MANAGER": "Fuhrparkmanager",
+    "SYSTEM_DRIVER": "Fahrer",
+    "SYSTEM_VIEWER": "Berichtsbetrachter"
+  },
+  "permissionNames": {
+    "COMPANY_CREATE": "Unternehmen erstellen",
+    "COMPANY_READ": "Unternehmen lesen",
+    "COMPANY_UPDATE": "Unternehmen ändern",
+    "COMPANY_DELETE": "Unternehmen löschen",
+    "USER_CREATE": "Benutzer erstellen",
+    "USER_READ": "Benutzer lesen",
+    "USER_UPDATE": "Benutzer ändern",
+    "USER_DELETE": "Benutzer löschen",
+    "USER_ASSIGN_ROLE": "Rolle zuweisen",
+    "DRIVER_CREATE": "Fahrer erstellen",
+    "DRIVER_READ": "Fahrer lesen",
+    "DRIVER_UPDATE": "Fahrer ändern",
+    "DRIVER_DELETE": "Fahrer löschen",
+    "VEHICLE_CREATE": "Fahrzeug erstellen",
+    "VEHICLE_READ": "Fahrzeug lesen",
+    "VEHICLE_UPDATE": "Fahrzeug ändern",
+    "VEHICLE_DELETE": "Fahrzeug löschen",
+    "VEHICLE_ASSIGN": "Fahrzeug zuweisen",
+    "EXPENSE_CREATE": "Ausgabe erstellen",
+    "EXPENSE_READ": "Ausgabe lesen",
+    "EXPENSE_UPDATE": "Ausgabe ändern",
+    "EXPENSE_DELETE": "Ausgabe löschen",
+    "EXPENSE_APPROVE": "Ausgabe genehmigen",
+    "EXPENSE_EXPORT": "Ausgabe exportieren",
+    "REPORT_VIEW": "Bericht anzeigen",
+    "REPORT_EXPORT": "Bericht exportieren",
+    "DASHBOARD_VIEW": "Dashboard anzeigen",
+    "SYSTEM_SETTINGS": "Systemeinstellungen",
+    "AUDIT_LOG_VIEW": "Audit-Log anzeigen",
+    "ROLE_MANAGEMENT": "Rollenverwaltung"
   }
 }

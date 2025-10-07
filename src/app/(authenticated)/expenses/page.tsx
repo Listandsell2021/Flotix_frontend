@@ -861,7 +861,7 @@ export default function ExpensesPage() {
           onSave={async (data) => {
             try {
               await expensesApi.updateExpense(selectedExpense._id, data);
-              toast.success(t("errors.updateSuccess") || "Expense updated successfully");
+              toast.success(t("errors.updateSuccess"));
               await loadExpenses();
               setShowExpenseModal(false);
               setSelectedExpense(null);

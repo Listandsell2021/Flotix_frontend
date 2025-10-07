@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
+import DatePicker from '@/components/ui/DatePicker';
 import { formatDate } from '@/lib/utils';
 import type { User, Expense } from '@/types';
 
@@ -189,25 +190,18 @@ export default function ExpenseEditModal({
 
                 {/* Date */}
                 <div>
-                  <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    {t('modal.dateLabel')} <span className="text-red-500">*</span>
-                  </label>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                      </svg>
-                    </div>
-                    <input
-                      type="date"
-                      value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      className={`w-full pl-10 pr-4 py-2.5 border-2 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all ${
-                        errors.date ? 'border-red-500 bg-red-50' : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                      disabled={isSaving}
-                    />
-                  </div>
+                  <DatePicker
+                    mode="single"
+                    value={formData.date}
+                    onChange={(value) => setFormData({ ...formData, date: value as string })}
+                    label={
+                      <>
+                        {t('modal.dateLabel')} <span className="text-red-500">*</span>
+                      </>
+                    }
+                    disabled={isSaving}
+                    className={errors.date ? 'border-red-500 bg-red-50' : ''}
+                  />
                   {errors.date && (
                     <p className="text-sm text-red-600 mt-2 flex items-center gap-1">
                       <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
@@ -391,7 +385,7 @@ export default function ExpenseEditModal({
         {/* Modern Footer with Actions */}
         <div className="bg-gray-50 px-8 py-5 border-t border-gray-200 flex items-center justify-between rounded-b-2xl flex-shrink-0">
           <div className="text-sm text-gray-500">
-            <span className="text-red-500">*</span> {t('modal.requiredField')} Required fields
+            <span className="text-red-500">*</span> {t('modal.requiredFields')}
           </div>
           <div className="flex gap-3">
             <Button

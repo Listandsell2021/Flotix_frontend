@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
+import DatePicker from '@/components/ui/DatePicker';
 import type { User, Vehicle } from '@/types';
 
 interface AddExpenseModalProps {
@@ -247,21 +248,21 @@ export default function AddExpenseModal({
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step >= 1 ? 'bg-white text-primary-600' : 'bg-white/30 text-white'}`}>
                 {step > 1 ? '✓' : '1'}
               </div>
-              <span className="ml-1.5 text-sm font-medium hidden sm:inline">Driver</span>
+              <span className="ml-1.5 text-sm font-medium hidden sm:inline">{t('modal.stepDriver')}</span>
             </div>
             <div className={`h-0.5 w-10 rounded ${step >= 2 ? 'bg-white' : 'bg-white/30'}`}></div>
             <div className={`flex items-center ${step >= 2 ? 'opacity-100' : 'opacity-50'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step >= 2 ? 'bg-white text-primary-600' : 'bg-white/30 text-white'}`}>
                 {step > 2 ? '✓' : '2'}
               </div>
-              <span className="ml-1.5 text-sm font-medium hidden sm:inline">Details</span>
+              <span className="ml-1.5 text-sm font-medium hidden sm:inline">{t('modal.stepDetails')}</span>
             </div>
             <div className={`h-0.5 w-10 rounded ${step >= 3 ? 'bg-white' : 'bg-white/30'}`}></div>
             <div className={`flex items-center ${step >= 3 ? 'opacity-100' : 'opacity-50'}`}>
               <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step >= 3 ? 'bg-white text-primary-600' : 'bg-white/30 text-white'}`}>
                 3
               </div>
-              <span className="ml-1.5 text-sm font-medium hidden sm:inline">Review</span>
+              <span className="ml-1.5 text-sm font-medium hidden sm:inline">{t('modal.stepReview')}</span>
             </div>
           </div>
         </div>
@@ -273,8 +274,8 @@ export default function AddExpenseModal({
             {step === 1 && (
               <div className="space-y-4 animate-fadeIn">
                 <div className="text-center mb-6">
-                  <h3 className="text-lg font-bold text-gray-900">Select Driver</h3>
-                  <p className="text-sm text-gray-600 mt-1">Choose the driver for this expense</p>
+                  <h3 className="text-lg font-bold text-gray-900">{t('modal.selectDriverTitle')}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{t('modal.selectDriverSubtitle')}</p>
                 </div>
 
                 <div className="max-w-2xl mx-auto">
@@ -389,7 +390,7 @@ export default function AddExpenseModal({
                       <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 17l-5-5m0 0l5-5m-5 5h12" />
                       </svg>
-                      Change
+                      {t('modal.changeDriver')}
                     </button>
                   </div>
 
@@ -475,7 +476,7 @@ export default function AddExpenseModal({
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                         </svg>
                         <span className="text-purple-700 font-semibold">
-                          {receiptPreview ? 'Change Receipt' : 'Upload Receipt'}
+                          {receiptPreview ? t('modal.changeReceipt') : t('modal.uploadReceipt')}
                         </span>
                       </button>
                       {ocrResult && (
@@ -515,17 +516,17 @@ export default function AddExpenseModal({
 
                   {/* Date */}
                   <div>
-                    <label className="block text-sm font-bold text-gray-700 mb-2">
-                      {t('modal.dateLabel')} <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                      type="date"
+                    <DatePicker
+                      mode="single"
                       value={formData.date}
-                      onChange={(e) => setFormData({ ...formData, date: e.target.value })}
-                      className={`w-full px-4 py-3 border-2 rounded-lg focus:ring-2 focus:ring-primary-300 transition-all ${
-                        errors.date ? 'border-red-500' : 'border-gray-300 focus:border-primary-500'
-                      }`}
+                      onChange={(value) => setFormData({ ...formData, date: value as string })}
+                      label={
+                        <>
+                          {t('modal.dateLabel')} <span className="text-red-500">*</span>
+                        </>
+                      }
                       disabled={isCreating}
+                      className={errors.date ? 'border-red-500' : ''}
                     />
                     {errors.date && <p className="text-sm text-red-600 mt-1">{errors.date}</p>}
                   </div>
@@ -613,7 +614,7 @@ export default function AddExpenseModal({
                       {t('modal.odometerReading')}
                       {selectedDriverVehicle && (
                         <span className="ml-2 text-xs text-blue-600 font-normal">
-                          Current: {selectedDriverVehicle.currentOdometer?.toLocaleString()} km
+                          {t('modal.current')}: {selectedDriverVehicle.currentOdometer?.toLocaleString()} km
                         </span>
                       )}
                     </label>
@@ -664,7 +665,7 @@ export default function AddExpenseModal({
                     <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
-                    Back
+                    {t('modal.back')}
                   </Button>
                   <Button
                     type="submit"
@@ -697,7 +698,7 @@ export default function AddExpenseModal({
         {/* Footer */}
         <div className="sticky bottom-0 bg-gray-50 px-8 py-4 border-t-2 border-gray-200 rounded-b-2xl flex justify-between items-center">
           <p className="text-sm text-gray-500">
-            <span className="text-red-500">*</span> Required fields
+            <span className="text-red-500">*</span> {t('modal.requiredFields')}
           </p>
           <Button
             type="button"
@@ -706,7 +707,7 @@ export default function AddExpenseModal({
             disabled={isCreating}
             className="text-gray-600 hover:text-gray-900"
           >
-            Cancel
+            {t('modal.cancel')}
           </Button>
         </div>
       </div>

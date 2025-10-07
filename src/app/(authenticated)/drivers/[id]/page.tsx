@@ -80,6 +80,19 @@ export default function DriverDetailsPage() {
     }
   };
 
+  const getTranslatedStatus = (status: string) => {
+    switch (status?.toUpperCase()) {
+      case 'ACTIVE':
+        return t('filters.active');
+      case 'INACTIVE':
+        return t('filters.inactive');
+      case 'SUSPENDED':
+        return t('filters.suspended', 'Suspended');
+      default:
+        return status;
+    }
+  };
+
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case 'active':
@@ -178,7 +191,7 @@ export default function DriverDetailsPage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">{t('driverDetails.status')}</label>
                 <Badge variant={getStatusColor(driver.status)}>
-                  {driver.status}
+                  {getTranslatedStatus(driver.status)}
                 </Badge>
               </div>
               <div>

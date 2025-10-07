@@ -217,6 +217,20 @@ export default function RoleManagementPage() {
     return t(`permissions.descriptions.${permission}`, { defaultValue: permission });
   };
 
+  const getPermissionName = (permission: Permission): string => {
+    return t(`permissionNames.${permission}`, { defaultValue: permission.replace(/_/g, ' ').toLowerCase() });
+  };
+
+  const getRoleDisplayName = (role: RoleWithUsers): string => {
+    // If it's a system role, try to translate using predefined translations
+    if (role.isSystem && role.name) {
+      const translatedName = t(`systemRoleNames.${role.name}`, { defaultValue: '' });
+      if (translatedName) return translatedName;
+    }
+    // Otherwise return the display name from database (for custom roles)
+    return role.displayName;
+  };
+
   const getRoleDescription = (role: RoleWithUsers): string => {
     // If it's a system role, try to translate using predefined translations
     if (role.isSystem && role.name) {
@@ -281,7 +295,7 @@ export default function RoleManagementPage() {
                 <div className="flex justify-between items-start">
                   <div>
                     <CardTitle className="flex items-center gap-2">
-                      {role.displayName}
+                      {getRoleDisplayName(role)}
                       {role.isSystem && (
                         <Badge variant="secondary" className="text-xs">
                           {t('systemRole')}
@@ -325,7 +339,7 @@ export default function RoleManagementPage() {
                     <div className="flex flex-wrap gap-1">
                       {role.permissions.slice(0, 6).map((permission) => (
                         <Badge key={permission} variant="default" className="text-xs">
-                          {permission.replace(/_/g, ' ').toLowerCase()}
+                          {getPermissionName(permission)}
                         </Badge>
                       ))}
                       {role.permissions.length > 6 && (

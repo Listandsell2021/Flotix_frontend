@@ -83,10 +83,49 @@
     "forceDelete": "Do you want to force delete this role and remove all assignments?"
   },
   "systemRoleDescriptions": {
-    "SYSTEM_SUPER_ADMIN": "Full system access with all permissions",
-    "SYSTEM_ADMIN": "Company administrator with full company management permissions",
-    "SYSTEM_MANAGER": "Fleet manager with driver and vehicle management permissions",
-    "SYSTEM_DRIVER": "Driver with expense management permissions",
-    "SYSTEM_VIEWER": "Read-only access to fleet data and reports"
+    "SYSTEM_SUPER_ADMIN": "Full system access - manages all companies, admins, and system settings",
+    "SYSTEM_ADMIN": "Manages company operations - drivers, vehicles, and expenses within their company",
+    "SYSTEM_MANAGER": "Manages vehicles and monitors driver expenses",
+    "SYSTEM_DRIVER": "Mobile app access - can create and manage own expenses",
+    "SYSTEM_VIEWER": "View-only access to reports and dashboards"
+  },
+  "systemRoleNames": {
+    "SYSTEM_SUPER_ADMIN": "Super Administrator",
+    "SYSTEM_ADMIN": "Company Administrator",
+    "SYSTEM_MANAGER": "Fleet Manager",
+    "SYSTEM_DRIVER": "Driver",
+    "SYSTEM_VIEWER": "Report Viewer"
+  },
+  "permissionNames": {
+    "COMPANY_CREATE": "company create",
+    "COMPANY_READ": "company read",
+    "COMPANY_UPDATE": "company update",
+    "COMPANY_DELETE": "company delete",
+    "USER_CREATE": "user create",
+    "USER_READ": "user read",
+    "USER_UPDATE": "user update",
+    "USER_DELETE": "user delete",
+    "USER_ASSIGN_ROLE": "assign role",
+    "DRIVER_CREATE": "driver create",
+    "DRIVER_READ": "driver read",
+    "DRIVER_UPDATE": "driver update",
+    "DRIVER_DELETE": "driver delete",
+    "VEHICLE_CREATE": "vehicle create",
+    "VEHICLE_READ": "vehicle read",
+    "VEHICLE_UPDATE": "vehicle update",
+    "VEHICLE_DELETE": "vehicle delete",
+    "VEHICLE_ASSIGN": "vehicle assign",
+    "EXPENSE_CREATE": "expense create",
+    "EXPENSE_READ": "expense read",
+    "EXPENSE_UPDATE": "expense update",
+    "EXPENSE_DELETE": "expense delete",
+    "EXPENSE_APPROVE": "expense approve",
+    "EXPENSE_EXPORT": "expense export",
+    "REPORT_VIEW": "report view",
+    "REPORT_EXPORT": "report export",
+    "DASHBOARD_VIEW": "dashboard view",
+    "SYSTEM_SETTINGS": "system settings",
+    "AUDIT_LOG_VIEW": "audit log view",
+    "ROLE_MANAGEMENT": "role management"
   }
 }

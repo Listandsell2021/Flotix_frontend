@@ -34,6 +34,9 @@
     "refresh": "Refresh",
     "retry": "Retry"
   },
+  "form": {
+    "optional": "(Optional)"
+  },
   "status": {
     "active": "Active",
     "inactive": "Inactive",

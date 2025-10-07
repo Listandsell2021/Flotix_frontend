@@ -23,7 +23,11 @@
     "totalExpenses": "Total Expenses",
     "totalAmount": "Total Amount",
     "fuelExpenses": "Fuel Expenses",
-    "miscExpenses": "Misc Expenses"
+    "miscExpenses": "Misc Expenses",
+    "count": "Count",
+    "totalValue": "Total Value",
+    "fuelCategory": "Fuel Category",
+    "miscCategory": "Misc Category"
   },
   "table": {
     "allExpenses": "All Expenses",
@@ -87,7 +91,18 @@
     "close": "Close",
     "saveChanges": "Save Changes",
     "cancel": "Cancel",
+    "requiredFields": "Required fields",
     "selectDriver": "Select Driver",
+    "selectDriverTitle": "Select Driver",
+    "selectDriverSubtitle": "Choose the driver for this expense",
+    "stepDriver": "Driver",
+    "stepDetails": "Details",
+    "stepReview": "Review",
+    "changeDriver": "Change",
+    "current": "Current",
+    "uploadReceipt": "Upload Receipt",
+    "changeReceipt": "Change Receipt",
+    "back": "Back",
     "required": "*",
     "searchDrivers": "Search drivers by name or email...",
     "chooseDriver": "Choose a driver...",
@@ -147,10 +162,13 @@
     "noCategorySet": "No category set",
     "noKilometersRecorded": "No kilometers recorded",
     "noNotes": "No notes",
-    "current": "Current"
+    "current": "Current",
+    "additionalDetails": "Additional Details",
+    "editable": "Editable"
   },
   "errors": {
     "updateFailed": "Failed to update expense",
+    "updateSuccess": "Expense updated successfully!",
     "createFailed": "Failed to create expense",
     "expenseCreatedSuccess": "Expense created successfully!",
     "exportFailed": "Failed to export expenses",
