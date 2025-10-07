@@ -123,7 +123,7 @@ export default function TrendChart({ labels, fuelData, miscData, totalData, titl
                 padding: 20,
                 font: {
                   size: 13,
-                  weight: '600',
+                  weight: 600,
                   family: "'Inter', 'system-ui', sans-serif",
                 },
                 color: '#374151',
@@ -146,12 +146,12 @@ export default function TrendChart({ labels, fuelData, miscData, totalData, titl
               usePointStyle: true,
               titleFont: {
                 size: 14,
-                weight: 'bold',
+                weight: 'bold' as const,
                 family: "'Inter', 'system-ui', sans-serif",
               },
               bodyFont: {
                 size: 13,
-                weight: '500',
+                weight: 500,
                 family: "'Inter', 'system-ui', sans-serif",
               },
               bodySpacing: 8,
@@ -190,13 +190,12 @@ export default function TrendChart({ labels, fuelData, miscData, totalData, titl
               grid: {
                 display: true,
                 color: 'rgba(156, 163, 175, 0.1)',
-                drawBorder: false,
               },
               ticks: {
                 color: '#6b7280',
                 font: {
                   size: 12,
-                  weight: '500',
+                  weight: 500,
                   family: "'Inter', 'system-ui', sans-serif",
                 },
                 padding: 10,
@@ -210,13 +209,12 @@ export default function TrendChart({ labels, fuelData, miscData, totalData, titl
               grid: {
                 display: true,
                 color: 'rgba(156, 163, 175, 0.15)',
-                drawBorder: false,
               },
               ticks: {
                 color: '#6b7280',
                 font: {
                   size: 12,
-                  weight: '500',
+                  weight: 500,
                   family: "'Inter', 'system-ui', sans-serif",
                 },
                 padding: 12,

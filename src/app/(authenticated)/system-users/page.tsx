@@ -9,6 +9,7 @@ import Badge from '@/components/ui/Badge';
 import Spinner from '@/components/ui/Spinner';
 import Toast from '@/components/ui/Toast';
 import type { User } from '@/types';
+import { UserStatus } from '@/types';
 
 export default function SystemUsersPage() {
   const { t } = useTranslation(['common', 'users']);
@@ -84,12 +85,17 @@ export default function SystemUsersPage() {
 
   const handleEditUser = (user: User) => {
     setSelectedUser(user);
+    // Handle companyId which can be string or object
+    const companyIdValue = typeof user.companyId === 'object' && user.companyId !== null
+      ? (user.companyId._id || user.companyId.id || '')
+      : (user.companyId || '');
+
     setFormData({
       name: user.name,
       email: user.email,
       password: '', // Don't populate password
       role: user.role as 'ADMIN' | 'SUPER_ADMIN',
-      companyId: user.companyId?._id || user.companyId || ''
+      companyId: companyIdValue
     });
     setError('');
     setShowEditModal(true);
@@ -181,7 +187,7 @@ export default function SystemUsersPage() {
 
       if (response.success) {
         setUsers(prev => prev.map(u =>
-          u._id === user._id ? { ...u, status: 'INACTIVE' } : u
+          u._id === user._id ? { ...u, status: UserStatus.INACTIVE } : u
         ));
         setToast({
           message: t('users:success.userDeactivated', { name: user.name }),
@@ -198,7 +204,7 @@ export default function SystemUsersPage() {
     if (!confirm(t('users:confirmDelete', { name: user.name }))) return;
 
     try {
-      const response = await usersApi.deleteUser(user._id, { hard: true });
+      const response = await usersApi.deleteUser(user._id);
 
       if (response.success) {
         setUsers(prev => prev.filter(u => u._id !== user._id));
@@ -303,12 +309,12 @@ export default function SystemUsersPage() {
                       {user.email}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <Badge variant={user.role === 'SUPER_ADMIN' ? 'primary' : 'secondary'}>
+                      <Badge variant={user.role === 'SUPER_ADMIN' ? 'info' : 'secondary'}>
                         {user.role === 'SUPER_ADMIN' ? t('users:superAdmin') : t('users:admin')}
                       </Badge>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                      {user.companyId?.name || user.companyId || '-'}
+                      {typeof user.companyId === 'object' && user.companyId !== null && '_id' in user.companyId ? (user.companyId as any).name : (user.companyId || '-')}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <Badge variant={user.status === 'ACTIVE' ? 'success' : 'default'}>
@@ -334,7 +340,7 @@ export default function SystemUsersPage() {
                       ) : (
                         <Button
                           size="sm"
-                          variant="danger"
+                          variant="destructive"
                           onClick={() => handleDelete(user)}
                         >
                           {t('common:delete')}

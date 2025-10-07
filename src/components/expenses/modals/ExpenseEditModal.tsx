@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import Button from '@/components/ui/Button';
 import DatePicker from '@/components/ui/DatePicker';
 import { formatDate } from '@/lib/utils';
-import type { User, Expense } from '@/types';
+import type { User, Expense, ExpenseType } from '@/types';
 
 interface ExpenseWithDriver extends Omit<Expense, 'driverId'> {
   driverId: User | string;
@@ -225,7 +225,7 @@ export default function ExpenseEditModal({
                     </div>
                     <select
                       value={formData.type}
-                      onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                      onChange={(e) => setFormData({ ...formData, type: e.target.value as ExpenseType })}
                       className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-200 rounded-xl focus:ring-2 focus:ring-primary-500 focus:border-primary-500 hover:border-gray-300 transition-all appearance-none bg-white"
                       disabled={isSaving}
                     >
