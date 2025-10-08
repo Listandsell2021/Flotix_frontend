@@ -63,7 +63,9 @@
     "vehicleLabel": "Vehicle:",
     "withVehicle": "With Vehicle",
     "withoutVehicle": "Without Vehicle",
-    "clearAllFilters": "Clear all filters"
+    "clearAllFilters": "Clear all filters",
+    "sort": "Sort:",
+    "sortOptions": "Sort Options"
   },
   "sort": {
     "nameAsc": "Name (A-Z)",

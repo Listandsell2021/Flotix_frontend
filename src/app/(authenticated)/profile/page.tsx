@@ -9,10 +9,12 @@ import Button from "@/components/ui/Button";
 import Spinner from "@/components/ui/Spinner";
 import { formatDate } from "@/lib/utils";
 import type { User } from "@/types";
+import { useRouter } from "next/navigation";
 
 export default function ProfilePage() {
   const { t } = useTranslation("profile");
   const { t: tCommon } = useTranslation("common");
+  const router = useRouter();
 
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -117,7 +119,10 @@ export default function ProfilePage() {
 
     setChangingPassword(true);
     try {
-      await authApi.changePassword(passwordForm.currentPassword, passwordForm.newPassword);
+      await authApi.changePassword(
+        passwordForm.currentPassword,
+        passwordForm.newPassword
+      );
 
       alert(t("passwordChange.success"));
       setShowPasswordModal(false);
@@ -126,10 +131,23 @@ export default function ProfilePage() {
         newPassword: "",
         confirmPassword: "",
       });
+      await handleLogout();
     } catch (err: any) {
       alert(t("passwordChange.error") + " " + (err.message || ""));
     } finally {
       setChangingPassword(false);
+    }
+  };
+
+  const handleLogout = async () => {
+    setLoading(true);
+    try {
+      await authApi.logout();
+      router.push("/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -170,12 +188,12 @@ export default function ProfilePage() {
 
   const getTranslatedStatus = (status: string) => {
     switch (status?.toUpperCase()) {
-      case 'ACTIVE':
-        return tCommon('status.active');
-      case 'INACTIVE':
-        return tCommon('status.inactive');
-      case 'SUSPENDED':
-        return tCommon('status.suspended');
+      case "ACTIVE":
+        return tCommon("status.active");
+      case "INACTIVE":
+        return tCommon("status.inactive");
+      case "SUSPENDED":
+        return tCommon("status.suspended");
       default:
         return status;
     }
@@ -566,7 +584,10 @@ export default function ProfilePage() {
                   type="password"
                   value={passwordForm.currentPassword}
                   onChange={(e) =>
-                    setPasswordForm({ ...passwordForm, currentPassword: e.target.value })
+                    setPasswordForm({
+                      ...passwordForm,
+                      currentPassword: e.target.value,
+                    })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder={t("passwordChange.currentPassword")}
@@ -580,7 +601,10 @@ export default function ProfilePage() {
                   type="password"
                   value={passwordForm.newPassword}
                   onChange={(e) =>
-                    setPasswordForm({ ...passwordForm, newPassword: e.target.value })
+                    setPasswordForm({
+                      ...passwordForm,
+                      newPassword: e.target.value,
+                    })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder={t("passwordChange.newPassword")}
@@ -594,7 +618,10 @@ export default function ProfilePage() {
                   type="password"
                   value={passwordForm.confirmPassword}
                   onChange={(e) =>
-                    setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })
+                    setPasswordForm({
+                      ...passwordForm,
+                      confirmPassword: e.target.value,
+                    })
                   }
                   className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                   placeholder={t("passwordChange.confirmPassword")}

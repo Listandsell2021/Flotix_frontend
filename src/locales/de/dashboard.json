@@ -72,5 +72,8 @@
   },
   "loading": "Dashboard wird geladen...",
   "error": "Fehler beim Laden der Dashboard-Daten",
-  "unknownDriver": "Unbekannter Fahrer"
+  "unknownDriver": "Unbekannter Fahrer",
+  "analytics": "Analytik",
+  "lastMonths": "Letzter Monat",
+  "lastMonths_plural": "Letzte {{count}} Monate"
 }

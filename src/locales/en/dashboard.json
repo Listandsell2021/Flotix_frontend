@@ -72,5 +72,8 @@
   },
   "loading": "Loading dashboard...",
   "error": "Failed to load dashboard data",
-  "unknownDriver": "Unknown Driver"
+  "unknownDriver": "Unknown Driver",
+  "analytics": "Analytics",
+  "lastMonths": "Last month",
+  "lastMonths_plural": "Last {{count}} months"
 }
